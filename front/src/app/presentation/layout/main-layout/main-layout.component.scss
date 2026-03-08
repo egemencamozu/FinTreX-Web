@@ -1,0 +1,275 @@
+// ─── Main Layout ────────────────────────────────────────────────────────────
+// Sidebar + top bar + content area. Role-aware sidebar items are driven by TS.
+// Uses only design tokens from styles.scss — no raw colors.
+// ─────────────────────────────────────────────────────────────────────────────
+
+$sidebar-width: 260px;
+$sidebar-width-collapsed: 72px;
+$topbar-height: 64px;
+
+:host {
+  display: block;
+  height: 100vh;
+}
+
+// ═══ GRID SHELL ═══════════════════════════════════════════════════════════════
+.layout {
+  display: grid;
+  grid-template-columns: $sidebar-width 1fr;
+  height: 100%;
+  transition: grid-template-columns var(--duration-normal, 250ms) var(--ease-default, ease);
+
+  &--collapsed {
+    grid-template-columns: $sidebar-width-collapsed 1fr;
+  }
+}
+
+// ═══ SIDEBAR ══════════════════════════════════════════════════════════════════
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  border-right: 1px solid var(--border-sidebar);
+  overflow: hidden;
+}
+
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  height: $topbar-height;
+  padding: 0 var(--space-4, 16px);
+}
+
+.sidebar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  text-decoration: none;
+  color: var(--text-inverse);
+}
+
+.sidebar__logo {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md, 6px);
+  background: linear-gradient(135deg, var(--color-navy-500), var(--color-gold-500));
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-sm, 14px);
+  letter-spacing: 0.06em;
+}
+
+.sidebar__brand-text {
+  font-size: var(--font-size-md, 18px);
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+// ── Nav links ─────────────────────────────────────────────────────────────────
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+  padding: var(--space-4, 16px) var(--space-2, 8px);
+  overflow-y: auto;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-3, 12px);
+  border-radius: var(--radius-DEFAULT, 8px);
+  color: var(--text-sidebar);
+  text-decoration: none;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  transition:
+    background-color var(--duration-fast, 150ms) var(--ease-default, ease),
+    color var(--duration-fast, 150ms) var(--ease-default, ease);
+
+  &:hover {
+    background: var(--bg-sidebar-hover);
+    color: var(--text-sidebar-hover);
+  }
+
+  &--active {
+    background: var(--bg-sidebar-active);
+    color: var(--text-sidebar-active);
+  }
+}
+
+.sidebar__icon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  text-align: center;
+  font-size: 1.15rem;
+}
+
+.sidebar__label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Footer toggle ─────────────────────────────────────────────────────────────
+.sidebar__footer {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3, 12px);
+  border-top: 1px solid var(--border-sidebar);
+}
+
+.sidebar__toggle {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  background: transparent;
+  color: var(--text-sidebar);
+  cursor: pointer;
+  transition: background-color var(--duration-fast, 150ms) var(--ease-default, ease);
+
+  &:hover {
+    background: var(--bg-sidebar-hover);
+    color: var(--text-sidebar-hover);
+  }
+}
+
+.sidebar__toggle-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ═══ MAIN AREA ════════════════════════════════════════════════════════════════
+.main-area {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--bg-app);
+}
+
+// ── Top bar ───────────────────────────────────────────────────────────────────
+.topbar {
+  display: flex;
+  align-items: center;
+  height: $topbar-height;
+  padding: 0 var(--space-6, 24px);
+  background: var(--bg-navbar);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.topbar__hamburger {
+  display: none;
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.topbar__spacer {
+  flex: 1;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+}
+
+.topbar__icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full, 9999px);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast, 150ms) var(--ease-default, ease),
+    border-color var(--duration-fast, 150ms) var(--ease-default, ease);
+
+  &:hover {
+    background: var(--state-hover);
+  }
+}
+
+.topbar__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid var(--border-brand);
+  border-radius: var(--radius-full, 9999px);
+  background: var(--color-navy-700);
+  color: var(--text-inverse);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-sm, 14px);
+  cursor: pointer;
+}
+
+// ── Content area ──────────────────────────────────────────────────────────────
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6, 24px);
+}
+
+// ═══ RESPONSIVE ═══════════════════════════════════════════════════════════════
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: $sidebar-width-collapsed 1fr;
+  }
+
+  .sidebar__label,
+  .sidebar__brand-text {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset-block: 0;
+    left: 0;
+    z-index: var(--z-sidebar, 30);
+    width: $sidebar-width;
+    transform: translateX(-100%);
+    transition: transform var(--duration-normal, 250ms) var(--ease-out, ease-out);
+    box-shadow: var(--shadow-sidebar);
+  }
+
+  .layout:not(.layout--collapsed) .sidebar {
+    transform: translateX(0);
+  }
+
+  .layout--collapsed .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .topbar__hamburger {
+    display: grid;
+  }
+}

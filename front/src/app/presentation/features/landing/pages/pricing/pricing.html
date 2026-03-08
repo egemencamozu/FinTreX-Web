@@ -1,0 +1,119 @@
+<div class="pricing-page">
+	<div class="pricing-page__backdrop"></div>
+
+	<app-public-navbar></app-public-navbar>
+
+	<main class="pricing-page__content">
+		<section class="pricing-page__hero">
+			<a class="pricing-page__back" routerLink="/">Ana sayfaya don</a>
+			<p class="pricing-page__eyebrow">Fiyatlandirma</p>
+			<h1>Her rol icin net sinirlar, yukselen ihtiyaclar icin genisleyen paketler.</h1>
+			<p class="pricing-page__description">
+				Default, Premium ve Ultra planlari ayni merkezi katalog mantigi ile tanimlanir. Bu sayede
+				ileride admin panelinde yapilan plan guncellemeleri, plana bagli haklari tek yerden
+				yonetebilir.
+			</p>
+
+			<div class="pricing-page__hero-meta">
+				<div class="pricing-page__hero-meta-card">
+					<span>Katalog yapisi</span>
+					<strong>3 plan, 1 merkezi kaynak</strong>
+				</div>
+				<div class="pricing-page__hero-meta-card">
+					<span>Guncelleme mantigi</span>
+					<strong>Admin degisimi tier bazli yansitilabilir</strong>
+				</div>
+			</div>
+		</section>
+
+		<section class="pricing-page__plans" aria-labelledby="pricing-planlari">
+			<div class="pricing-page__section-heading">
+				<p class="pricing-page__section-eyebrow">Plan Kartlari</p>
+				<h2 id="pricing-planlari">Uye yolculuguna gore secilebilen 3 paket</h2>
+			</div>
+
+			<div class="pricing-page__plan-grid">
+				@for (plan of plans; track plan.tier) {
+					<article
+						class="pricing-page__plan-card"
+						[class.pricing-page__plan-card--highlighted]="plan.highlighted"
+					>
+						<div class="pricing-page__plan-head">
+							<div>
+								<p class="pricing-page__plan-name">{{ plan.name }}</p>
+								<h3>{{ plan.tagline }}</h3>
+							</div>
+
+							@if (plan.highlighted) {
+								<span class="pricing-page__plan-badge">En cok tercih edilen</span>
+							}
+						</div>
+
+						<div class="pricing-page__plan-price-block">
+							<strong class="pricing-page__plan-price">{{ plan.priceLabel }}</strong>
+							<span class="pricing-page__plan-billing">{{ plan.billingNote }}</span>
+						</div>
+
+						<p class="pricing-page__plan-description">{{ plan.description }}</p>
+
+						<ul class="pricing-page__plan-highlights">
+							<li *ngFor="let highlight of plan.highlights">{{ highlight }}</li>
+						</ul>
+
+						<a class="pricing-page__plan-cta" [routerLink]="plan.ctaRoute">{{ plan.ctaLabel }}</a>
+					</article>
+				}
+			</div>
+		</section>
+
+		<section class="pricing-page__comparison" aria-labelledby="pricing-karsilastirma">
+			<div class="pricing-page__section-heading">
+				<p class="pricing-page__section-eyebrow">Karsilastirma Tablosu</p>
+				<h2 id="pricing-karsilastirma">Planlar ayni tabloda karsilastirilabilir</h2>
+				<p>
+					Bu yapiyi tek katalog kaynagindan besledigimiz icin ayni veriler daha sonra admin ekraninda
+					duzenlenip uye planlarina tier bazli uygulanabilir.
+				</p>
+			</div>
+
+			<div class="pricing-page__table-shell">
+				<table class="pricing-page__table">
+					<thead>
+						<tr>
+							<th scope="col">Ozellik</th>
+							@for (plan of plans; track plan.tier) {
+								<th scope="col">{{ plan.name }}</th>
+							}
+						</tr>
+					</thead>
+					<tbody>
+						@for (row of comparisonRows; track row.id) {
+							<tr>
+								<th scope="row">
+									<strong>{{ row.label }}</strong>
+									<span>{{ row.description }}</span>
+								</th>
+
+								@for (plan of plans; track plan.tier) {
+									<td [class.pricing-page__table-cell--included]="isFeatureIncluded(getFeatureValue(row, plan.tier))">
+										{{ formatFeatureValue(getFeatureValue(row, plan.tier)) }}
+									</td>
+								}
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="pricing-page__note" aria-label="Plan guncelleme notu">
+			<p class="pricing-page__note-eyebrow">Yapisal Not</p>
+			<h2>Plan detaylari kullanici kaydina kopyalanmak yerine tier referansi ile yonetilmeli.</h2>
+			<p>
+				Boylece admin bir planin limitlerini veya ozelliklerini degistirdiginde, ilgili tier'a bagli
+				uyeler yeni katalog kurallarini alabilir. Istisna gerekiyorsa daha sonra kullanici bazli override
+				katmani eklenebilir.
+			</p>
+		</section>
+	</main>
+</div>

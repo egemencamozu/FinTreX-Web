@@ -1,0 +1,29 @@
+.role-home {
+  padding: 2rem;
+  border: 1px solid var(--border-default);
+  border-radius: 1.25rem;
+  background: var(--bg-surface);
+}
+
+.role-home__eyebrow {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  color: var(--color-gold-600);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.role-home__title {
+  margin: 0 0 0.75rem;
+  color: var(--text-primary);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.role-home__description {
+  margin: 0;
+  max-width: 40rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}

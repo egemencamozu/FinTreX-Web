@@ -1,0 +1,19 @@
+<section class="feature-page">
+  <header class="feature-page__header">
+    <p class="feature-page__eyebrow">Admin</p>
+    <h1>Basvurular ve talepler</h1>
+    <p class="feature-page__description">
+      Ekonomist basvurulari ve panel uzerinden gelen degisiklik talepleri bu sayfada gruplanir.
+    </p>
+  </header>
+
+  <div class="feature-page__grid">
+    @for (section of sections; track section.title) {
+      <article class="feature-card">
+        <span class="feature-card__metric">{{ section.highlight }}</span>
+        <h2>{{ section.title }}</h2>
+        <p>{{ section.description }}</p>
+      </article>
+    }
+  </div>
+</section>

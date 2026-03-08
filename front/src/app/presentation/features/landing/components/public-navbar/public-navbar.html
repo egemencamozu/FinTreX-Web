@@ -1,0 +1,52 @@
+<header class="public-navbar-c">
+	<div class="public-navbar-c__wrapper">
+		<div class="public-navbar-c__container">
+			<div class="public-navbar-c__shell">
+				<div class="public-navbar-c__brand-group">
+					<a class="public-navbar-c__brand" routerLink="/" aria-label="FinTreX ana sayfa">
+						<span class="public-navbar-c__logo" aria-hidden="true">FT</span>
+						<span class="public-navbar-c__brand-text">FinTreX</span>
+					</a>
+				</div>
+
+				<div class="public-navbar-c__navigation-group">
+					<nav class="public-navbar-c__nav" aria-label="Ana menu">
+						@for (item of navItems; track item.label) {
+							<a class="public-navbar-c__link" [routerLink]="item.route">{{ item.label }}</a>
+						}
+					</nav>
+				</div>
+
+				<div class="public-navbar-c__actions-group">
+					<div class="public-navbar-c__actions" aria-label="Kullanici islemleri">
+						<button
+							class="public-navbar-c__icon-button"
+							type="button"
+							aria-label="Tema degistir"
+							title="Tema degistir"
+						>
+							<span class="public-navbar-c__icon-glyph" aria-hidden="true">◐</span>
+						</button>
+
+						<div class="public-navbar-c__language-switcher" role="group" aria-label="Dil secimi">
+							@for (language of languageOptions; track language) {
+								<button
+									class="public-navbar-c__language-option"
+									type="button"
+									[class.public-navbar-c__language-option--active]="language === 'TR'"
+									[attr.aria-label]="'Dil: ' + language"
+									[attr.aria-pressed]="language === 'TR'"
+									[attr.title]="'Dil: ' + language"
+								>
+									{{ language }}
+								</button>
+							}
+						</div>
+
+						<a class="public-navbar-c__login-button" routerLink="/auth/login">Giris Yap</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>

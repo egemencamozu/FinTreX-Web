@@ -1,0 +1,77 @@
+<div class="layout" [class.layout--collapsed]="sidebarCollapsed()">
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a class="sidebar__brand" routerLink="/app/dashboard">
+        <span class="sidebar__logo" aria-hidden="true">FT</span>
+        @if (!sidebarCollapsed()) {
+          <span class="sidebar__brand-text">FinTreX</span>
+        }
+      </a>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Ana navigasyon">
+      @for (item of sidebarItems; track item.route) {
+        <a
+          class="sidebar__link"
+          [routerLink]="item.route"
+          routerLinkActive="sidebar__link--active"
+          [title]="item.label"
+        >
+          <span class="sidebar__icon" aria-hidden="true">{{ item.icon }}</span>
+          @if (!sidebarCollapsed()) {
+            <span class="sidebar__label">{{ item.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar__footer">
+      <button
+        class="sidebar__toggle"
+        type="button"
+        (click)="toggleSidebar()"
+        [attr.aria-label]="sidebarCollapsed() ? 'Menüyü genişlet' : 'Menüyü daralt'"
+          title="Kenar cubugunu daralt veya genislet"
+      >
+        <span class="sidebar__toggle-icon" aria-hidden="true">
+          {{ sidebarCollapsed() ? '▶' : '◀' }}
+        </span>
+          <span class="sidebar__toggle-text">
+            {{ sidebarCollapsed() ? 'Menüyü genişlet' : 'Menüyü daralt' }}
+          </span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN AREA ═══ -->
+  <div class="main-area">
+    <header class="topbar">
+      <button
+        class="topbar__hamburger"
+        type="button"
+        (click)="toggleSidebar()"
+        aria-label="Menüyü aç/kapat"
+      >
+        ☰
+      </button>
+
+      <div class="topbar__spacer"></div>
+
+      <div class="topbar__actions">
+        <button class="topbar__icon-btn" type="button" aria-label="Tema değiştir">◐</button>
+        <button class="topbar__icon-btn" type="button" aria-label="Bildirimler">🔔</button>
+        <button class="topbar__icon-btn" type="button" aria-label="Cikis yap" (click)="logout()">
+          Cikis
+        </button>
+        <button class="topbar__avatar" type="button" aria-label="Kullanıcı menüsü">
+          <span class="topbar__avatar-placeholder">{{ avatarInitial }}</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

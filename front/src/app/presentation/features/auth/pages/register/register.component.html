@@ -1,0 +1,132 @@
+<div class="register-page">
+  <!-- Sol Panel — Marka & Slogan -->
+  <aside class="register-page__hero">
+    <a class="register-page__brand" routerLink="/">
+      <span class="register-page__logo">F</span>
+      <span class="register-page__brand-name">FinTreX</span>
+    </a>
+
+    <div class="register-page__hero-content">
+      <h1 class="register-page__title">
+        Hemen<br />
+        <span class="register-page__title--accent">ucretsiz</span><br />
+        baslayin.
+      </h1>
+      <p class="register-page__subtitle">
+        Hesabinizi olusturun, portfoyunuzu takip edin,
+        uzman ekonomistlerden danismanlik alin.
+      </p>
+    </div>
+
+    <div class="register-page__hero-footer">
+      <span>BIST</span>
+      <span class="register-page__dot"></span>
+      <span>Kripto</span>
+      <span class="register-page__dot"></span>
+      <span>Degerli Madenler</span>
+    </div>
+  </aside>
+
+  <!-- Sag Panel — Form -->
+  <main class="register-page__form-panel">
+    <div class="register-page__form-wrapper">
+      <h2 class="register-page__form-title">Kayit Ol</h2>
+      <p class="register-page__form-desc">
+        Yeni hesap olusturarak hemen baslayin.
+      </p>
+
+      @if (errorMessage) {
+        <p class="register-page__status register-page__status--error">{{ errorMessage }}</p>
+      }
+
+      @if (successMessage) {
+        <p class="register-page__status register-page__status--success">{{ successMessage }}</p>
+      }
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="register-page__name-row">
+          <div class="register-page__field">
+            <label for="firstName">Ad</label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              placeholder="Adiniz"
+            />
+          </div>
+          <div class="register-page__field">
+            <label for="lastName">Soyad</label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="Soyadiniz"
+            />
+          </div>
+        </div>
+
+        <div class="register-page__field">
+          <label for="regEmail">Email</label>
+          <input
+            id="regEmail"
+            type="email"
+            formControlName="email"
+            placeholder="ornek&#64;fintrex.com"
+          />
+        </div>
+
+        <div class="register-page__field">
+          <label for="regPassword">Sifre</label>
+          <input
+            id="regPassword"
+            type="password"
+            formControlName="password"
+            placeholder="En az 6 karakter"
+          />
+        </div>
+
+        <div class="register-page__field">
+          <label for="confirmPassword">Sifre Tekrar</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Sifrenizi tekrar girin"
+          />
+          @if (registerForm.hasError('passwordsMismatch') && registerForm.get('confirmPassword')?.touched) {
+            <span class="register-page__error">Sifreler eslesmiyor.</span>
+          }
+        </div>
+
+        <fieldset class="register-page__roles">
+          <legend>Hesap Turu</legend>
+          <div class="register-page__role-options">
+            <label class="register-page__role" [class.register-page__role--active]="registerForm.get('role')?.value === UserRole.USER">
+              <input type="radio" formControlName="role" [value]="UserRole.USER" />
+              <span class="register-page__role-icon">👤</span>
+              <span class="register-page__role-label">Bireysel Yatirimci</span>
+            </label>
+            <label class="register-page__role" [class.register-page__role--active]="registerForm.get('role')?.value === UserRole.ECONOMIST">
+              <input type="radio" formControlName="role" [value]="UserRole.ECONOMIST" />
+              <span class="register-page__role-icon">📊</span>
+              <span class="register-page__role-label">Ekonomist</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button
+          class="register-page__submit"
+          type="submit"
+          [disabled]="registerForm.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? 'Hesap Olusturuluyor...' : 'Hesap Olustur' }}
+        </button>
+      </form>
+
+      <p class="register-page__footer">
+        Zaten hesabiniz var mi?
+        <a routerLink="/auth/login">Giris Yap</a>
+      </p>
+    </div>
+  </main>
+</div>

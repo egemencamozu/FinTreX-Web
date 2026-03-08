@@ -1,0 +1,32 @@
+:host {
+	display: block;
+}
+
+.landing-subpage {
+	display: grid;
+	gap: var(--space-4, 16px);
+	width: min(960px, 100%);
+	margin: 0 auto;
+	padding: var(--space-10, 40px) var(--space-6, 24px);
+}
+
+.landing-subpage__back {
+	color: var(--text-link);
+}
+
+.landing-subpage__eyebrow {
+	color: var(--text-accent);
+	font-size: var(--font-size-sm, 14px);
+	font-weight: var(--font-weight-bold, 700);
+	text-transform: uppercase;
+}
+
+.landing-subpage h1,
+.landing-subpage p {
+	margin: 0;
+}
+
+.landing-subpage p {
+	color: var(--text-secondary);
+	line-height: 1.7;
+}

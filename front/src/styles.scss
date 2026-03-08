@@ -1,0 +1,701 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+// ============================================================================
+// FinTreX — Global Design Token System
+// ============================================================================
+//
+// RULE: No component may use a raw hex, rgb, or hsl value.
+//       Every visual property must reference a token from this file.
+//       If the token you need doesn't exist — ASK, don't invent.
+//
+// STRUCTURE:
+//   1. Fonts
+//   2. Brand Color Scales (Navy, Gold, Slate)
+//   3. Semantic Color Scales (Success, Danger, Warning, Info)
+//   4. Neutral Gray Scale
+//   5. Surfaces & Backgrounds
+//   6. Text Colors
+//   7. Border Colors
+//   8. Interaction States
+//   9. Chart / Data Visualization Palette
+//  10. Typography Scale
+//  11. Spacing (8px grid)
+//  12. Border Radius
+//  13. Shadows & Elevation
+//  14. Z-Index
+//  15. Transitions
+//  16. Breakpoints
+//  17. Dark Theme Override
+//  18. Global Reset & Base Styles
+// ============================================================================
+
+
+// ─── 1. FONTS ───────────────────────────────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+
+// ─── 16. BREAKPOINTS (SCSS variables — used in @media queries) ──────────────
+$breakpoint-mobile:   480px;
+$breakpoint-tablet:   768px;
+$breakpoint-desktop:  1024px;
+$breakpoint-wide:     1280px;
+$breakpoint-ultra:    1536px;
+
+
+// ============================================================================
+// LIGHT THEME (default)
+// ============================================================================
+:root {
+
+  // ─── 2. BRAND COLOR SCALES ──────────────────────────────────────────────
+  // Deep Navy — Primary brand. Trust, stability, professionalism.
+  --color-navy-50:  #eef2f7;
+  --color-navy-100: #d5deeb;
+  --color-navy-200: #b3c3d5;
+  --color-navy-300: #8ba3bc;
+  --color-navy-400: #6883a1;
+  --color-navy-500: #486581;
+  --color-navy-600: #334e68;
+  --color-navy-700: #243b53;
+  --color-navy-800: #1a2b40;
+  --color-navy-900: #102a43;
+  --color-navy-950: #0a1929;
+
+  // Accent Gold — Wealth, premium, call-to-action highlights.
+  --color-gold-50:  #fdf8eb;
+  --color-gold-100: #f9ebc4;
+  --color-gold-200: #f3d88f;
+  --color-gold-300: #ebc45a;
+  --color-gold-400: #e0ae2e;
+  --color-gold-500: #c9951a;
+  --color-gold-600: #b8860b;
+  --color-gold-700: #936b09;
+  --color-gold-800: #78560e;
+  --color-gold-900: #634512;
+  --color-gold-950: #3a2508;
+
+  // Slate — Neutral backbone. Used for secondary text, borders, muted backgrounds.
+  --color-slate-50:  #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
+
+  // ─── 3. SEMANTIC COLOR SCALES ───────────────────────────────────────────
+  // Success / Green — Profit, positive change, confirmations.
+  --color-success-50:  #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+  --color-success-950: #052e16;
+
+  // Danger / Red — Loss, errors, destructive actions, negative P&L.
+  --color-danger-50:  #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-800: #991b1b;
+  --color-danger-900: #7f1d1d;
+  --color-danger-950: #450a0a;
+
+  // Warning / Amber — Caution, pending states, approaching limits.
+  --color-warning-50:  #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
+
+  // Info / Blue — Neutral informational messages, links, secondary actions.
+  --color-info-50:  #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-200: #bfdbfe;
+  --color-info-300: #93c5fd;
+  --color-info-400: #60a5fa;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+  --color-info-800: #1e40af;
+  --color-info-900: #1e3a8a;
+  --color-info-950: #172554;
+
+
+  // ─── 4. NEUTRAL GRAY SCALE ─────────────────────────────────────────────
+  // Pure gray without blue/warm undertone. Use for dividers, disabled states, skeleton loaders.
+  --color-gray-50:  #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
+
+  // White & Black
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+
+  // ─── 5. SURFACES & BACKGROUNDS ─────────────────────────────────────────
+  // Layered elevation system: app-bg < surface < surface-raised < surface-overlay
+  --bg-app:              var(--color-slate-50);      // Deepest background (page body)
+  --bg-surface:          var(--color-white);          // Cards, panels, content areas
+  --bg-surface-raised:   var(--color-slate-50);       // Elevated cards, popovers, dropdowns
+  --bg-surface-overlay:  rgba(15, 23, 42, 0.5);      // Modal/dialog backdrop
+
+  --bg-sidebar:          var(--color-navy-900);       // Main sidebar
+  --bg-sidebar-hover:    var(--color-navy-800);       // Sidebar item hover
+  --bg-sidebar-active:   var(--color-navy-700);       // Sidebar active item
+  --bg-navbar:           var(--color-white);          // Top navigation bar
+  --bg-footer:           var(--color-slate-100);      // Footer area
+
+  --bg-input:            var(--color-white);          // Input fields
+  --bg-input-disabled:   var(--color-slate-100);      // Disabled input
+  --bg-input-focus:      var(--color-white);          // Focused input
+
+  --bg-badge:            var(--color-slate-100);      // Default badge background
+  --bg-tooltip:          var(--color-navy-900);       // Tooltip background
+  --bg-skeleton:         var(--color-slate-200);      // Skeleton loader placeholder
+
+  // Semantic surface tints (subtle colored backgrounds for alerts, banners, tags)
+  --bg-success-subtle:   var(--color-success-50);
+  --bg-danger-subtle:    var(--color-danger-50);
+  --bg-warning-subtle:   var(--color-warning-50);
+  --bg-info-subtle:      var(--color-info-50);
+  --bg-gold-subtle:      var(--color-gold-50);
+  --bg-navy-subtle:      var(--color-navy-50);
+
+
+  // ─── 6. TEXT COLORS ─────────────────────────────────────────────────────
+  --text-primary:        var(--color-slate-900);      // Main body text, headings
+  --text-secondary:      var(--color-slate-600);      // Descriptions, secondary info
+  --text-tertiary:       var(--color-slate-400);      // Placeholders, timestamps, hints
+  --text-disabled:       var(--color-slate-300);      // Disabled labels
+  --text-inverse:        var(--color-white);          // Text on dark backgrounds (sidebar, tooltips)
+
+  --text-link:           var(--color-info-600);       // Hyperlinks
+  --text-link-hover:     var(--color-info-700);       // Hyperlink hover
+  --text-link-visited:   var(--color-info-800);       // Visited links
+
+  --text-brand:          var(--color-navy-700);       // Brand-colored headings or labels
+  --text-accent:         var(--color-gold-600);       // Gold accented text (premium badges, prices)
+
+  // Semantic text
+  --text-success:        var(--color-success-700);    // Profit %, positive values
+  --text-danger:         var(--color-danger-700);     // Loss %, negative values, errors
+  --text-warning:        var(--color-warning-700);    // Warning messages
+  --text-info:           var(--color-info-700);       // Informational text
+
+  // Sidebar text
+  --text-sidebar:        var(--color-slate-300);      // Sidebar default text
+  --text-sidebar-hover:  var(--color-white);          // Sidebar hover text
+  --text-sidebar-active: var(--color-gold-400);       // Sidebar active item text
+
+  // Tooltip & Badge
+  --text-tooltip:        var(--color-white);          // Tooltip text
+  --text-badge:          var(--color-slate-700);       // Default badge text
+  --text-placeholder:    var(--color-slate-400);      // Input placeholder
+
+
+  // ─── 7. BORDER COLORS ──────────────────────────────────────────────────
+  --border-default:      var(--color-slate-200);      // Cards, inputs, dividers
+  --border-subtle:       var(--color-slate-100);      // Very subtle separators
+  --border-strong:       var(--color-slate-300);      // Emphasized borders (tables, grouped items)
+  --border-focus:        var(--color-info-500);       // Focused input ring
+  --border-error:        var(--color-danger-500);     // Validation error border
+  --border-success:      var(--color-success-500);    // Validation success border
+  --border-warning:      var(--color-warning-500);    // Warning-state border
+  --border-brand:        var(--color-navy-600);       // Brand-colored borders
+  --border-gold:         var(--color-gold-500);       // Premium / accent borders
+  --border-sidebar:      var(--color-navy-700);       // Sidebar internal dividers
+
+
+  // ─── 8. INTERACTION STATES ─────────────────────────────────────────────
+  // Transparent overlays for hover/active/focus on any background
+  --state-hover:         rgba(15, 23, 42, 0.04);     // Subtle darkening on hover
+  --state-active:        rgba(15, 23, 42, 0.08);     // Pressed / active state
+  --state-focus-ring:    rgba(59, 130, 246, 0.35);   // Focus ring glow (info-500 based)
+  --state-selected:      rgba(59, 130, 246, 0.08);   // Selected row/item background
+  --state-disabled:      rgba(148, 163, 184, 0.20);  // Disabled element overlay
+
+  // Button-specific states
+  --btn-primary-bg:             var(--color-navy-700);
+  --btn-primary-bg-hover:       var(--color-navy-800);
+  --btn-primary-bg-active:      var(--color-navy-900);
+  --btn-primary-text:           var(--color-white);
+
+  --btn-secondary-bg:           var(--color-slate-100);
+  --btn-secondary-bg-hover:     var(--color-slate-200);
+  --btn-secondary-bg-active:    var(--color-slate-300);
+  --btn-secondary-text:         var(--color-slate-700);
+
+  --btn-accent-bg:              var(--color-gold-600);
+  --btn-accent-bg-hover:        var(--color-gold-700);
+  --btn-accent-bg-active:       var(--color-gold-800);
+  --btn-accent-text:            var(--color-white);
+
+  --btn-danger-bg:              var(--color-danger-600);
+  --btn-danger-bg-hover:        var(--color-danger-700);
+  --btn-danger-bg-active:       var(--color-danger-800);
+  --btn-danger-text:            var(--color-white);
+
+  --btn-ghost-bg:               transparent;
+  --btn-ghost-bg-hover:         var(--color-slate-100);
+  --btn-ghost-bg-active:        var(--color-slate-200);
+  --btn-ghost-text:             var(--color-slate-700);
+
+  --btn-disabled-bg:            var(--color-slate-100);
+  --btn-disabled-text:          var(--color-slate-400);
+
+
+  // ─── 9. CHART / DATA VISUALIZATION PALETTE ─────────────────────────────
+  // 15 categorical colors designed for pie charts, bar charts, and line charts.
+  // Optimized for: distinct hues, colorblind accessibility, and dark/light readability.
+
+  // Market category anchors
+  --chart-bist:          #2563eb;   // BIST — Blue
+  --chart-crypto:        #8b5cf6;   // Crypto — Violet
+  --chart-precious:      #d97706;   // Precious Metals — Amber/Gold
+
+  // Extended palette (sequential, visually distinct)
+  --chart-1:  #2563eb;   // Blue
+  --chart-2:  #dc2626;   // Red
+  --chart-3:  #16a34a;   // Green
+  --chart-4:  #d97706;   // Amber
+  --chart-5:  #8b5cf6;   // Violet
+  --chart-6:  #0891b2;   // Cyan
+  --chart-7:  #e11d48;   // Rose
+  --chart-8:  #4f46e5;   // Indigo
+  --chart-9:  #059669;   // Emerald
+  --chart-10: #ca8a04;   // Yellow
+  --chart-11: #9333ea;   // Purple
+  --chart-12: #0284c7;   // Sky
+  --chart-13: #c2410c;   // Orange
+  --chart-14: #0d9488;   // Teal
+  --chart-15: #6d28d9;   // Deep Violet
+
+  // P&L indicators (used in sparklines, mini-charts, delta badges)
+  --chart-profit:        var(--color-success-500);
+  --chart-loss:          var(--color-danger-500);
+  --chart-neutral:       var(--color-slate-400);
+  --chart-baseline:      var(--color-slate-200);    // Zero line, axis, grid
+
+  // Chart surfaces
+  --chart-bg:            var(--color-white);
+  --chart-grid:          var(--color-slate-100);
+  --chart-axis:          var(--color-slate-300);
+  --chart-label:         var(--color-slate-500);
+  --chart-tooltip-bg:    var(--color-navy-900);
+  --chart-tooltip-text:  var(--color-white);
+
+
+  // ─── 10. TYPOGRAPHY SCALE ───────────────────────────────────────────────
+  --font-family-sans:    'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-family-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  // Font sizes (rem based, 1rem = 16px)
+  --font-size-2xs:   0.625rem;    // 10px — micro labels, legal text
+  --font-size-xs:    0.75rem;     // 12px — captions, badges, timestamps
+  --font-size-sm:    0.875rem;    // 14px — secondary body text, table cells
+  --font-size-base:  1rem;        // 16px — primary body text
+  --font-size-md:    1.125rem;    // 18px — lead text, card titles
+  --font-size-lg:    1.25rem;     // 20px — section headings
+  --font-size-xl:    1.5rem;      // 24px — page sub-headings
+  --font-size-2xl:   1.875rem;    // 30px — page titles
+  --font-size-3xl:   2.25rem;     // 36px — hero text, dashboard KPI
+  --font-size-4xl:   3rem;        // 48px — large display numbers
+  --font-size-5xl:   3.75rem;     // 60px — extra large display
+
+  // Font weights
+  --font-weight-light:     300;
+  --font-weight-regular:   400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+
+  // Line heights
+  --leading-none:    1;
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose:   2;
+
+  // Letter spacing
+  --tracking-tighter: -0.05em;
+  --tracking-tight:   -0.025em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.025em;
+  --tracking-wider:    0.05em;
+  --tracking-widest:   0.1em;
+
+
+  // ─── 11. SPACING (8px grid with fine 2-4px additions) ──────────────────
+  --space-0:     0px;
+  --space-px:    1px;
+  --space-0-5:   2px;
+  --space-1:     4px;
+  --space-1-5:   6px;
+  --space-2:     8px;       // Base unit
+  --space-2-5:   10px;
+  --space-3:     12px;
+  --space-3-5:   14px;
+  --space-4:     16px;      // 2x base
+  --space-5:     20px;
+  --space-6:     24px;      // 3x base
+  --space-7:     28px;
+  --space-8:     32px;      // 4x base
+  --space-9:     36px;
+  --space-10:    40px;      // 5x base
+  --space-11:    44px;
+  --space-12:    48px;      // 6x base
+  --space-14:    56px;      // 7x base
+  --space-16:    64px;      // 8x base
+  --space-20:    80px;      // 10x base
+  --space-24:    96px;      // 12x base
+  --space-28:    112px;
+  --space-32:    128px;     // 16x base
+
+  // Semantic spacing aliases
+  --spacing-page-x:       var(--space-6);     // Horizontal page padding (mobile)
+  --spacing-page-x-lg:    var(--space-10);    // Horizontal page padding (desktop)
+  --spacing-card-padding:  var(--space-5);     // Internal card padding
+  --spacing-section-gap:   var(--space-8);     // Gap between page sections
+  --spacing-stack-sm:      var(--space-2);     // Tight vertical gap (label + input)
+  --spacing-stack-md:      var(--space-4);     // Normal vertical gap (between fields)
+  --spacing-stack-lg:      var(--space-6);     // Loose vertical gap (between groups)
+  --spacing-inline-sm:     var(--space-2);     // Tight horizontal gap (icon + text)
+  --spacing-inline-md:     var(--space-3);     // Normal horizontal gap
+  --spacing-inline-lg:     var(--space-4);     // Loose horizontal gap
+
+
+  // ─── 12. BORDER RADIUS ─────────────────────────────────────────────────
+  --radius-none:   0px;
+  --radius-xs:     2px;
+  --radius-sm:     4px;
+  --radius-md:     6px;
+  --radius-DEFAULT: 8px;
+  --radius-lg:     10px;
+  --radius-xl:     12px;
+  --radius-2xl:    16px;
+  --radius-3xl:    24px;
+  --radius-full:   9999px;   // Pill / circle
+
+
+  // ─── 13. SHADOWS & ELEVATION ───────────────────────────────────────────
+  --shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --shadow-2xl:   0 25px 50px -12px rgba(0, 0, 0, 0.20);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  --shadow-none:  none;
+
+  // Semantic shadow aliases
+  --shadow-card:         var(--shadow-sm);
+  --shadow-card-hover:   var(--shadow-md);
+  --shadow-dropdown:     var(--shadow-lg);
+  --shadow-modal:        var(--shadow-xl);
+  --shadow-sidebar:      var(--shadow-lg);
+  --shadow-toast:        var(--shadow-lg);
+  --shadow-input-focus:  0 0 0 3px var(--state-focus-ring);
+
+
+  // ─── 14. Z-INDEX ───────────────────────────────────────────────────────
+  --z-behind:      -1;
+  --z-default:      0;
+  --z-raised:       1;
+  --z-dropdown:    10;
+  --z-sticky:      20;
+  --z-sidebar:     30;
+  --z-overlay:     40;
+  --z-modal:       50;
+  --z-toast:       60;
+  --z-tooltip:     70;
+  --z-max:       9999;
+
+
+  // ─── 15. TRANSITIONS ──────────────────────────────────────────────────
+  --duration-instant:  50ms;
+  --duration-fast:    150ms;
+  --duration-normal:  250ms;
+  --duration-slow:    400ms;
+  --duration-slower:  600ms;
+
+  --ease-default:  cubic-bezier(0.4, 0, 0.2, 1);     // ease-in-out
+  --ease-in:       cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+  --ease-bounce:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring:   cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  --transition-colors:   color var(--duration-fast) var(--ease-default),
+                         background-color var(--duration-fast) var(--ease-default),
+                         border-color var(--duration-fast) var(--ease-default);
+  --transition-shadow:   box-shadow var(--duration-fast) var(--ease-default);
+  --transition-transform: transform var(--duration-normal) var(--ease-default);
+  --transition-all:      all var(--duration-normal) var(--ease-default);
+}
+
+
+// ============================================================================
+// DARK THEME
+// ============================================================================
+// Applied via [data-theme='dark'] attribute on <html> or <body>.
+// Only SEMANTIC tokens are overridden — raw color scales remain the same.
+// ============================================================================
+[data-theme='dark'] {
+
+  // ─── Surfaces ───────────────────────────────────────────────────────────
+  --bg-app:              #0b1120;                      // Deepest dark bg
+  --bg-surface:          #111827;                      // Cards, panels
+  --bg-surface-raised:   #1e293b;                      // Elevated cards, dropdowns
+  --bg-surface-overlay:  rgba(0, 0, 0, 0.65);          // Modal backdrop
+
+  --bg-sidebar:          #070d19;                      // Sidebar (darker than app bg)
+  --bg-sidebar-hover:    #111827;
+  --bg-sidebar-active:   #1e293b;
+  --bg-navbar:           #111827;
+  --bg-footer:           #0b1120;
+
+  --bg-input:            #1e293b;
+  --bg-input-disabled:   #111827;
+  --bg-input-focus:      #243548;
+
+  --bg-badge:            #1e293b;
+  --bg-tooltip:          #e2e8f0;                      // Light tooltip on dark bg
+  --bg-skeleton:         #1e293b;
+
+  // Semantic surface tints (dark-mode adapted — deeper, more muted)
+  --bg-success-subtle:   rgba(22, 163, 74, 0.12);
+  --bg-danger-subtle:    rgba(220, 38, 38, 0.12);
+  --bg-warning-subtle:   rgba(217, 119, 6, 0.12);
+  --bg-info-subtle:      rgba(37, 99, 235, 0.12);
+  --bg-gold-subtle:      rgba(184, 134, 11, 0.12);
+  --bg-navy-subtle:      rgba(72, 101, 129, 0.12);
+
+
+  // ─── Text ───────────────────────────────────────────────────────────────
+  --text-primary:        #f1f5f9;                      // slate-100
+  --text-secondary:      #94a3b8;                      // slate-400
+  --text-tertiary:       #64748b;                      // slate-500
+  --text-disabled:       #475569;                      // slate-600
+  --text-inverse:        #0f172a;                      // Dark text on light surfaces
+
+  --text-link:           #60a5fa;                      // info-400
+  --text-link-hover:     #93c5fd;                      // info-300
+  --text-link-visited:   #818cf8;                      // indigo-400
+
+  --text-brand:          #93c5fd;                      // Lighter navy for dark bg
+  --text-accent:         #fbbf24;                      // gold-400
+
+  --text-success:        #4ade80;                      // success-400
+  --text-danger:         #f87171;                      // danger-400
+  --text-warning:        #fbbf24;                      // warning-400
+  --text-info:           #60a5fa;                      // info-400
+
+  --text-sidebar:        #94a3b8;
+  --text-sidebar-hover:  #f1f5f9;
+  --text-sidebar-active: #fbbf24;
+
+  --text-tooltip:        #0f172a;
+  --text-badge:          #cbd5e1;
+  --text-placeholder:    #475569;
+
+
+  // ─── Borders ────────────────────────────────────────────────────────────
+  --border-default:      #1e293b;
+  --border-subtle:       #111827;
+  --border-strong:       #334155;
+  --border-focus:        #3b82f6;
+  --border-brand:        #486581;
+  --border-gold:         #b8860b;
+  --border-sidebar:      #1e293b;
+
+
+  // ─── Interaction States ─────────────────────────────────────────────────
+  --state-hover:         rgba(248, 250, 252, 0.05);
+  --state-active:        rgba(248, 250, 252, 0.10);
+  --state-focus-ring:    rgba(59, 130, 246, 0.40);
+  --state-selected:      rgba(59, 130, 246, 0.15);
+  --state-disabled:      rgba(71, 85, 105, 0.30);
+
+  // Buttons (dark mode)
+  --btn-primary-bg:           #486581;
+  --btn-primary-bg-hover:     #334e68;
+  --btn-primary-bg-active:    #243b53;
+  --btn-primary-text:         #f1f5f9;
+
+  --btn-secondary-bg:         #1e293b;
+  --btn-secondary-bg-hover:   #334155;
+  --btn-secondary-bg-active:  #475569;
+  --btn-secondary-text:       #e2e8f0;
+
+  --btn-accent-bg:            #b8860b;
+  --btn-accent-bg-hover:      #936b09;
+  --btn-accent-bg-active:     #78560e;
+  --btn-accent-text:          #ffffff;
+
+  --btn-danger-bg:            #b91c1c;
+  --btn-danger-bg-hover:      #991b1b;
+  --btn-danger-bg-active:     #7f1d1d;
+  --btn-danger-text:          #fee2e2;
+
+  --btn-ghost-bg:             transparent;
+  --btn-ghost-bg-hover:       #1e293b;
+  --btn-ghost-bg-active:      #334155;
+  --btn-ghost-text:           #e2e8f0;
+
+  --btn-disabled-bg:          #1e293b;
+  --btn-disabled-text:        #475569;
+
+
+  // ─── Charts (dark mode adjustments) ─────────────────────────────────────
+  --chart-bg:            #111827;
+  --chart-grid:          #1e293b;
+  --chart-axis:          #475569;
+  --chart-label:         #94a3b8;
+  --chart-baseline:      #334155;
+
+
+  // ─── Shadows (dark mode — subtler, uses opacity) ───────────────────────
+  --shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.20);
+  --shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.30), 0 1px 2px -1px rgba(0, 0, 0, 0.20);
+  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.20);
+  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.20);
+  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.40), 0 8px 10px -6px rgba(0, 0, 0, 0.20);
+  --shadow-2xl:   0 25px 50px -12px rgba(0, 0, 0, 0.55);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.20);
+}
+
+
+// ============================================================================
+// 18. GLOBAL RESET & BASE STYLES
+// ============================================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-app);
+  transition: background-color var(--duration-normal) var(--ease-default),
+              color var(--duration-normal) var(--ease-default);
+}
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+  transition: var(--transition-colors);
+
+  &:hover {
+    color: var(--text-link-hover);
+  }
+}
+
+::selection {
+  background-color: var(--color-navy-200);
+  color: var(--color-navy-900);
+}
+
+[data-theme='dark'] ::selection {
+  background-color: var(--color-navy-700);
+  color: var(--color-navy-100);
+}
+
+// Focus visible — keyboard-only focus ring
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+// Scrollbar styling (Webkit)
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-slate-300);
+  border-radius: var(--radius-full);
+
+  &:hover {
+    background: var(--color-slate-400);
+  }
+}
+
+[data-theme='dark'] {
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-slate-600);
+
+    &:hover {
+      background: var(--color-slate-500);
+    }
+  }
+}
+
+// Monospace text (prices, data tables, code)
+.font-mono {
+  font-family: var(--font-family-mono);
+}
+
+// Screen reader only utility
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

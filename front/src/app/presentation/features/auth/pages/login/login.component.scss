@@ -1,0 +1,314 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+// ── Sol Panel: Marka ─────────────────────────────────────────────────────
+.login-page__hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem 3rem;
+  background: linear-gradient(160deg, var(--color-navy-900) 0%, var(--color-navy-700) 100%);
+  color: var(--text-inverse);
+}
+
+.login-page__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.login-page__logo {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--color-gold-400);
+  color: var(--color-navy-900);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.login-page__brand-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.login-page__hero-content {
+  max-width: 28rem;
+}
+
+.login-page__title {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.4rem, 4vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+
+  &--accent {
+    color: var(--color-gold-300);
+  }
+}
+
+.login-page__subtitle {
+  margin: 0;
+  max-width: 24rem;
+  color: var(--color-slate-300);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.login-page__hero-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-slate-400);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.login-page__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-slate-500);
+}
+
+// ── Sag Panel: Form ──────────────────────────────────────────────────────
+.login-page__form-panel {
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: var(--bg-surface);
+}
+
+.login-page__form-wrapper {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-page__form-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.login-page__form-desc {
+  margin: 0 0 1.75rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.login-page__status {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-lg, 8px);
+  font-size: 0.9rem;
+
+  &--error {
+    border: 1px solid var(--border-error);
+    background: var(--bg-danger-subtle);
+    color: var(--text-danger);
+  }
+}
+
+// ── Form alanlari ────────────────────────────────────────────────────────
+.login-page__field {
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    height: 3rem;
+    padding: 0 0.9rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg, 8px);
+    background: var(--bg-surface-raised);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 150ms ease;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: var(--text-placeholder);
+    }
+
+    &:focus {
+      border-color: var(--color-gold-400);
+      box-shadow: 0 0 0 3px var(--state-focus-ring);
+    }
+  }
+}
+
+.login-page__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.login-page__remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    accent-color: var(--color-gold-400);
+  }
+}
+
+.login-page__forgot {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--color-gold-600);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.login-page__submit {
+  width: 100%;
+  height: 3rem;
+  border: 0;
+  border-radius: var(--radius-lg, 8px);
+  background: var(--color-navy-800);
+  color: #fff;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 150ms ease;
+
+  &:hover:not(:disabled) {
+    background: var(--color-navy-700);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+// ── Divider ──────────────────────────────────────────────────────────────
+.login-page__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-default);
+  }
+}
+
+// ── Sosyal giris ─────────────────────────────────────────────────────────
+.login-page__socials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-page__social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg, 8px);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: var(--color-slate-400);
+  }
+}
+
+// ── Footer ───────────────────────────────────────────────────────────────
+.login-page__footer {
+  margin: 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+
+  a {
+    color: var(--color-gold-600);
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ── Responsive ───────────────────────────────────────────────────────────
+@media (max-width: 900px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-page__hero {
+    padding: 2rem;
+    min-height: 40vh;
+  }
+
+  .login-page__title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page__hero {
+    padding: 1.5rem;
+    min-height: 32vh;
+  }
+
+  .login-page__form-panel {
+    padding: 1.5rem;
+  }
+}
