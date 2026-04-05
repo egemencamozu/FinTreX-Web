@@ -1,0 +1,118 @@
+<section class="manage-c">
+  <!-- Header Section -->
+  <header class="manage-c__header">
+    <div class="manage-c__header-content">
+      <h1 class="manage-c__title">Abonelik Planları</h1>
+      <p class="manage-c__subtitle">Sizin ve portföyünüz için en uygun FinTreX abonelik planını seçin.</p>
+    </div>
+
+  </header>
+
+  <!-- Main Content -->
+  <div class="manage-c__content">
+    @if (isLoading()) {
+      <div class="manage-c__loading">
+        <span class="manage-c__spinner"></span>
+        <p>Planlar yükleniyor...</p>
+      </div>
+    } @else {
+      
+      <!-- Current Plan Status Banner (if cancelled) -->
+      @if (currentSubscription() && currentSubscription()!.cancelledAtUtc) {
+        <div class="manage-c__alert manage-c__alert--warning">
+          <svg class="manage-c__alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <div class="manage-c__alert-content">
+            <h4 class="manage-c__alert-title">Aboneliğiniz İptal Edildi</h4>
+            <p class="manage-c__alert-desc">
+              Mevcut aboneliğiniz <strong>{{ currentSubscription()?.currentPeriodEndUtc | date:'dd MMMM yyyy' }}</strong> tarihine kadar devam edecek ve ardından ücretsiz plana düşürülecektir.
+            </p>
+          </div>
+        </div>
+      }
+
+      <!-- Plans Grid -->
+      <div class="manage-c__plans-grid">
+        @for (plan of plans(); track plan.id) {
+          <div 
+            class="manage-c__plan-card" 
+            [class.manage-c__plan-card--active]="isPlanActive(plan.id)"
+            [class.manage-c__plan-card--highlight]="plan.tier === tierEnum.Premium"
+            data-testid="plan-card">
+            
+            @if (plan.tier === tierEnum.Premium) {
+              <div class="manage-c__plan-popular">En Çok Tercih Edilen</div>
+            }
+
+            <div class="manage-c__plan-header">
+              <h2 class="manage-c__plan-name">{{ plan.displayName }}</h2>
+              <p class="manage-c__plan-desc">{{ plan.description }}</p>
+            </div>
+
+            <div class="manage-c__plan-price-wrap">
+              <span class="manage-c__plan-currency">₺</span>
+              <span class="manage-c__plan-price">{{ getPriceDisplay(plan) }}</span>
+              <span class="manage-c__plan-period">/ ay</span>
+            </div>
+
+            <!-- empty placeholder to maintain height -->
+            <p class="manage-c__plan-monthly-eq">&nbsp;</p>
+
+            <div class="manage-c__plan-features">
+              @for (feature of plan.features; track feature.name) {
+                <div class="manage-c__feature" [class.manage-c__feature--excluded]="feature.status === 'excluded'">
+                  @if (feature.status === 'included') {
+                    <svg class="manage-c__feature-icon manage-c__feature-icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  } @else {
+                    <svg class="manage-c__feature-icon manage-c__feature-icon--cross" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  }
+                  <span>{{ feature.name }}</span>
+                </div>
+              }
+              
+              @if (!plan.features || plan.features.length === 0) {
+                <div class="manage-c__feature">
+                  <svg class="manage-c__feature-icon manage-c__feature-icon--cross" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <span class="manage-c__feature--disabled">Özel özellik tanımlanmamış</span>
+                </div>
+              }
+            </div>
+
+            <div class="manage-c__plan-action">
+              @if (isPlanActive(plan.id)) {
+                <button class="manage-c__btn manage-c__btn--active" disabled>
+                  Mevcut Planınız
+                </button>
+                
+                @if (plan.tier !== tierEnum.Default && !currentSubscription()?.cancelledAtUtc) {
+                  <button 
+                    class="manage-c__btn-text manage-c__btn-text--danger" 
+                    type="button"
+                    (click)="cancelSubscription()"
+                    [disabled]="isProcessing()">
+                    Aboneliği İptal Et
+                  </button>
+                }
+              } @else {
+                <button 
+                  class="manage-c__btn" 
+                  [class.manage-c__btn--primary]="plan.tier === tierEnum.Premium"
+                  [class.manage-c__btn--outline]="plan.tier !== tierEnum.Premium"
+                  [disabled]="isProcessing()"
+                  (click)="upgradePlan(plan.id)">
+                  @if (isProcessing() && targetPlanId() === plan.id) {
+                    <span class="manage-c__spinner manage-c__spinner--sm"></span> Planda Seçiliyor...
+                  } @else {
+                    Planı Seç
+                  }
+                </button>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

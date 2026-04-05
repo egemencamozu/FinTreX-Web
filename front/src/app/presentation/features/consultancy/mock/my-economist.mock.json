@@ -1,0 +1,247 @@
+{
+  "economist": {
+    "id": "eco-001",
+    "firstName": "Mehmet",
+    "lastName": "Yıldırım",
+    "title": "Kıdemli Portföy Yöneticisi",
+    "specializations": ["BIST Hisseleri", "Kripto Varlıklar", "Makroekonomi"],
+    "bio": "15 yıllık sermaye piyasaları deneyimiyle BIST ve kripto varlık yönetimi konusunda uzmanlaşmış portföy danışmanı. CFA charterholder ve SPK lisanslı yatırım uzmanı.",
+    "avatarInitials": "MY",
+    "rating": 4.8,
+    "reviewCount": 134,
+    "yearsExperience": 15,
+    "clientCount": 48,
+    "successRate": 87,
+    "isOnline": true,
+    "lastSeen": null,
+    "responseTime": "~15 dk",
+    "languages": ["Türkçe", "İngilizce"],
+    "certifications": ["CFA", "SPK Lisansı", "FRM"],
+    "assignedSince": "2025-11-10T00:00:00",
+    "nextAvailableSlot": "2026-03-19T14:00:00",
+    "portfolioReturn": 18.4,
+    "recommendationFollowRate": 76
+  },
+
+  "chatPreview": {
+    "unreadCount": 2,
+    "messages": [
+      {
+        "id": "msg-1",
+        "from": "economist",
+        "text": "Merhaba! THYAO için hedef fiyat güncellememiz tamamlandı. Portföyünüzdeki ağırlığı %22'ye çıkarmanızı öneririm.",
+        "time": "2026-03-18T09:15:00",
+        "read": false
+      },
+      {
+        "id": "msg-2",
+        "from": "user",
+        "text": "Teşekkürler. BTC'deki son düşüş için görüşünüz nedir?",
+        "time": "2026-03-18T10:30:00",
+        "read": true
+      },
+      {
+        "id": "msg-3",
+        "from": "economist",
+        "text": "BTC için 62.000 USD destek seviyesi kritik. Bu destek kırılmadan alım yapmaktan kaçınmanızı öneriyorum. Haftalık raporumu ekledim.",
+        "time": "2026-03-18T11:45:00",
+        "read": false
+      }
+    ]
+  },
+
+  "sessions": {
+    "upcoming": [
+      {
+        "id": "ses-1",
+        "title": "Aylık Portföy Değerlendirme",
+        "type": "video",
+        "date": "2026-03-19T14:00:00",
+        "durationMin": 45,
+        "agenda": "Q1 performans değerlendirmesi, Q2 strateji",
+        "meetingLink": "#"
+      },
+      {
+        "id": "ses-2",
+        "title": "Kripto Piyasa Analizi",
+        "type": "phone",
+        "date": "2026-03-25T10:30:00",
+        "durationMin": 30,
+        "agenda": "Bitcoin halving öncesi strateji güncelleme",
+        "meetingLink": "#"
+      }
+    ],
+    "history": [
+      {
+        "id": "his-1",
+        "title": "Portföy Rebalancing",
+        "type": "video",
+        "date": "2026-02-18T14:00:00",
+        "durationMin": 60,
+        "notes": "BIST ağırlığı %55'ten %60'a çıkarıldı. Kripto pozisyonu korundu.",
+        "rating": 5
+      },
+      {
+        "id": "his-2",
+        "title": "Yıl Başı Strateji Toplantısı",
+        "type": "video",
+        "date": "2026-01-08T10:00:00",
+        "durationMin": 90,
+        "notes": "2026 yatırım planı oluşturuldu. Değerli maden ağırlığı artırıldı.",
+        "rating": 5
+      },
+      {
+        "id": "his-3",
+        "title": "Acil Piyasa Güncellemesi",
+        "type": "phone",
+        "date": "2025-12-15T15:30:00",
+        "durationMin": 20,
+        "notes": "FED toplantısı sonrası portföy aksiyon alındı.",
+        "rating": 4
+      }
+    ]
+  },
+
+  "reports": [
+    {
+      "id": "rep-1",
+      "title": "Haftalık Piyasa Raporu — 18 Mart 2026",
+      "type": "weekly",
+      "date": "2026-03-18T08:00:00",
+      "pages": 12,
+      "summary": "BIST 100 direnç seviyeleri ve kripto piyasası gelişmeleri",
+      "isNew": true
+    },
+    {
+      "id": "rep-2",
+      "title": "THYAO Teknik Analiz Raporu",
+      "type": "stock",
+      "date": "2026-03-15T09:30:00",
+      "pages": 8,
+      "summary": "Türk Hava Yolları için detaylı teknik ve temel analiz",
+      "isNew": false
+    },
+    {
+      "id": "rep-3",
+      "title": "Kripto Piyasası — Bitcoin Halving Analizi",
+      "type": "crypto",
+      "date": "2026-03-10T10:00:00",
+      "pages": 15,
+      "summary": "Bitcoin halving öncesi fiyat dinamikleri ve portföy stratejisi",
+      "isNew": false
+    },
+    {
+      "id": "rep-4",
+      "title": "Q1 2026 Portföy Performans Raporu",
+      "type": "monthly",
+      "date": "2026-03-01T08:00:00",
+      "pages": 22,
+      "summary": "Çeyreklik performans analizi ve Q2 önerileri",
+      "isNew": false
+    }
+  ],
+
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "type": "buy",
+      "symbol": "THYAO",
+      "name": "Türk Hava Yolları",
+      "category": "bist",
+      "action": "Ağırlık Artır",
+      "targetWeight": 22,
+      "currentWeight": 20.1,
+      "targetPrice": 290.00,
+      "date": "2026-03-18T09:15:00",
+      "status": "open",
+      "pnlPct": null
+    },
+    {
+      "id": "rec-2",
+      "type": "hold",
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "category": "crypto",
+      "action": "Bekle",
+      "targetWeight": null,
+      "currentWeight": 14.8,
+      "targetPrice": 72000,
+      "date": "2026-03-15T11:00:00",
+      "status": "open",
+      "pnlPct": null
+    },
+    {
+      "id": "rec-3",
+      "type": "sell",
+      "symbol": "SISE",
+      "name": "Şişe Cam",
+      "category": "bist",
+      "action": "Portföyden Çıkar",
+      "targetWeight": 0,
+      "currentWeight": 0,
+      "targetPrice": null,
+      "date": "2026-02-20T10:00:00",
+      "status": "completed",
+      "pnlPct": -3.98
+    },
+    {
+      "id": "rec-4",
+      "type": "buy",
+      "symbol": "GR ALTIN",
+      "name": "Gram Altın",
+      "category": "precious",
+      "action": "Ağırlık Artır",
+      "targetWeight": 10,
+      "currentWeight": 7,
+      "targetPrice": null,
+      "date": "2026-01-12T09:00:00",
+      "status": "completed",
+      "pnlPct": 5.39
+    }
+  ],
+
+  "performanceMetrics": {
+    "portfolioReturnSinceAssigned": 18.4,
+    "benchmarkReturn": 11.2,
+    "alpha": 7.2,
+    "maxDrawdown": -4.8,
+    "sharpeRatio": 1.62,
+    "recommendationsTotal": 24,
+    "recommendationsFollowed": 18,
+    "followRate": 75,
+    "winRate": 83
+  },
+
+  "chatUsage": {
+    "dailyLimit": 10,
+    "sentToday": 4,
+    "resetsAt": "2026-03-19T00:00:00"
+  },
+
+  "tasks": [
+    {
+      "id": "tsk-1",
+      "title": "THYAO Bilanço Analizi",
+      "description": "2025 yıl sonu bilançosunun beklentilere göre değerlendirilmesi ve hedef fiyat revizyonu.",
+      "status": "completed",
+      "createdAt": "2026-03-14T10:00:00",
+      "completedAt": "2026-03-15T09:30:00"
+    },
+    {
+      "id": "tsk-2",
+      "title": "Kripto Cüzdan Dağılımı",
+      "description": "Mevcut kripto portföyümün risk analizi ve yeni altcoin önerileri.",
+      "status": "in_progress",
+      "createdAt": "2026-03-17T15:00:00",
+      "completedAt": null
+    },
+    {
+      "id": "tsk-3",
+      "title": "Altın Fonu Seçimi",
+      "description": "TEFAS üzerinden alınabilecek en iyi performanslı 3 altın fonunun karşılaştırması.",
+      "status": "pending",
+      "createdAt": "2026-03-18T09:30:00",
+      "completedAt": null
+    }
+  ]
+}

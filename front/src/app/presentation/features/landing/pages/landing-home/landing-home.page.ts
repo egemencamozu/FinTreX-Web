@@ -10,5 +10,4 @@ import { PublicNavbar } from '../../components/public-navbar/public-navbar';
   templateUrl: './landing-home.page.html',
   styleUrl: './landing-home.page.scss',
 })
-export class LandingHomePage {
-}
+export class LandingHomePage {}

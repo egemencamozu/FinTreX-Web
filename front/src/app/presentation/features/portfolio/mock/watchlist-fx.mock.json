@@ -1,0 +1,62 @@
+[
+  {
+    "id": "fx-usdtry", "rank": 1,
+    "symbol": "USD/TRY", "name": "Amerikan Doları",
+    "price": 32.8540, "currency": "TRY",
+    "change": 0.1240, "changePercent": 0.38, "change1h": 0.04, "change7d": 0.92,
+    "high24h": 32.9200, "low24h": 32.7100,
+    "volume": 0, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [32.62, 32.68, 32.72, 32.70, 32.78, 32.84, 32.854],
+    "alertEnabled": true, "category": "fx"
+  },
+  {
+    "id": "fx-eurtry", "rank": 2,
+    "symbol": "EUR/TRY", "name": "Euro",
+    "price": 35.6020, "currency": "TRY",
+    "change": 0.2180, "changePercent": 0.62, "change1h": 0.09, "change7d": 1.58,
+    "high24h": 35.7400, "low24h": 35.3600,
+    "volume": 0, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [35.28, 35.35, 35.40, 35.38, 35.52, 35.58, 35.602],
+    "alertEnabled": false, "category": "fx"
+  },
+  {
+    "id": "fx-gbptry", "rank": 3,
+    "symbol": "GBP/TRY", "name": "İngiliz Sterlini",
+    "price": 41.8560, "currency": "TRY",
+    "change": -0.2840, "changePercent": -0.67, "change1h": -0.11, "change7d": -1.24,
+    "high24h": 42.2400, "low24h": 41.7200,
+    "volume": 0, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [42.24, 42.15, 42.05, 41.98, 41.92, 41.88, 41.856],
+    "alertEnabled": false, "category": "fx"
+  },
+  {
+    "id": "fx-eurusd", "rank": 4,
+    "symbol": "EUR/USD", "name": "Euro / Dolar",
+    "price": 1.08450, "currency": "USD",
+    "change": 0.00240, "changePercent": 0.22, "change1h": 0.03, "change7d": 0.48,
+    "high24h": 1.08720, "low24h": 1.08080,
+    "volume": 0, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [1.0808, 1.0815, 1.0822, 1.0820, 1.0832, 1.0840, 1.08450],
+    "alertEnabled": false, "category": "fx"
+  },
+  {
+    "id": "fx-jpytry", "rank": 5,
+    "symbol": "JPY/TRY", "name": "Japon Yeni",
+    "price": 0.2185, "currency": "TRY",
+    "change": -0.0042, "changePercent": -1.89, "change1h": -0.22, "change7d": -3.44,
+    "high24h": 0.2238, "low24h": 0.2178,
+    "volume": 0, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [0.225, 0.223, 0.222, 0.221, 0.220, 0.219, 0.2185],
+    "alertEnabled": false, "category": "fx"
+  }
+]

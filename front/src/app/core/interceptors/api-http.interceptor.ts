@@ -1,105 +1,127 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { EnvironmentConfigService } from '../services/environment-config.service';
 
 /**
- * HTTP Interceptor for adding API base URL and handling errors
- * Automatically prepends API_BASE_URL to API requests
- * Adds Authorization header if JWT token is available
+ * Central HTTP Interceptor — Single Responsibility per concern via private helpers:
+ *
+ * 1. **Base URL**  — prepends `API_BASE_URL` to relative paths
+ * 2. **Auth**      — attaches `Authorization: Bearer <token>` header
+ * 3. **Error**     — normalises HTTP errors, clears session on 401
  */
 @Injectable()
 export class ApiHttpInterceptor implements HttpInterceptor {
-  private apiBaseUrl: string;
-  private jwtTokenKey: string;
+  private readonly apiBaseUrl: string;
+  private readonly jwtTokenKey: string;
 
-  constructor(private envConfig: EnvironmentConfigService) {
+  /**
+   * Router is injected lazily via `Injector` to avoid a circular-dependency
+   * chain (Router → Guards → AuthService → HttpClient → Interceptor → Router).
+   */
+  constructor(
+    private readonly envConfig: EnvironmentConfigService,
+    private readonly injector: Injector,
+  ) {
     this.apiBaseUrl = this.envConfig.get('apiBaseUrl');
     this.jwtTokenKey = this.envConfig.get('jwtTokenStorageKey');
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Don't modify requests to external URLs (like Stripe, market data APIs)
-    if (this.isAbsoluteUrl(request.url)) {
-      return next.handle(request).pipe(catchError(this.handleError.bind(this)));
+    // Truly external URLs — skip base-url & auth enrichment
+    if (this.isAbsoluteUrl(request.url) && !this.isOwnApiUrl(request.url)) {
+      return next.handle(request).pipe(catchError((err) => this.handleError(err)));
     }
 
-    // Clone request and add API base URL if not already present
-    let modifiedRequest = request;
-    if (!request.url.startsWith('http')) {
-      modifiedRequest = request.clone({
-        url: `${this.apiBaseUrl}${request.url.startsWith('/') ? '' : '/'}${request.url}`
-      });
+    let enriched = this.prependBaseUrl(request);
+    enriched = this.attachBearerToken(enriched);
+    enriched = this.setDefaultHeaders(enriched);
+
+    return next.handle(enriched).pipe(catchError((err) => this.handleError(err)));
+  }
+
+  // ── Base URL ─────────────────────────────────────────────────────────
+
+  private prependBaseUrl(req: HttpRequest<unknown>): HttpRequest<unknown> {
+    if (req.url.startsWith('http')) {
+      return req;
     }
 
-    // Add JWT token if available
+    const separator = req.url.startsWith('/') ? '' : '/';
+    return req.clone({ url: `${this.apiBaseUrl}${separator}${req.url}` });
+  }
+
+  // ── Auth ──────────────────────────────────────────────────────────────
+
+  private attachBearerToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
     const token = this.getStoredToken();
-    if (token) {
-      modifiedRequest = modifiedRequest.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    if (!token) {
+      return req;
     }
 
-    // Add common headers
-    modifiedRequest = modifiedRequest.clone({
+    return req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  // ── Headers ───────────────────────────────────────────────────────────
+
+  private setDefaultHeaders(req: HttpRequest<unknown>): HttpRequest<unknown> {
+    return req.clone({
       setHeaders: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+        Accept: 'application/json',
+      },
     });
-
-    return next.handle(modifiedRequest).pipe(
-      catchError(this.handleError.bind(this))
-    );
   }
 
-  /**
-   * Check if URL is absolute (external)
-   */
-  private isAbsoluteUrl(url: string): boolean {
-    return /^https?:\/\//.test(url);
-  }
+  // ── Error handling ────────────────────────────────────────────────────
 
-  /**
-   * Handle HTTP errors
-   */
-  private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'An error occurred';
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let message = 'Beklenmeyen bir hata oluştu.';
 
     if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error: ${error.error.message}`;
+      // Client-side / network error
+      message = `Hata: ${error.error.message}`;
     } else {
-      errorMessage =
+      // Server-side error
+      message =
         (typeof error.error === 'string' && error.error) ||
         error.error?.message ||
         error.error?.Message ||
         error.message ||
-        `Error Code: ${error.status}`;
+        `Hata Kodu: ${error.status}`;
 
-      if (error.status === 401) {
-        this.clearStoredAuth();
-      } else if (error.status === 403) {
-        errorMessage = 'Access denied';
-      } else if (error.status === 404) {
-        errorMessage = 'Resource not found';
+      switch (error.status) {
+        case 401:
+          this.clearStoredAuth();
+          this.redirectToLogin();
+          break;
+        case 403:
+          message = 'Bu kaynağa erişim yetkiniz bulunmuyor.';
+          break;
+        case 404:
+          message = 'İstenen kaynak bulunamadı.';
+          break;
       }
     }
 
     if (this.envConfig.get('debug')) {
-      console.error(errorMessage);
+      console.error('[ApiHttpInterceptor]', message, error);
     }
 
-    return throwError(() => new Error(errorMessage));
+    return throwError(() => new Error(message));
   }
+
+  // ── Token helpers ─────────────────────────────────────────────────────
 
   private getStoredToken(): string | null {
     if (typeof localStorage !== 'undefined') {
@@ -117,14 +139,34 @@ export class ApiHttpInterceptor implements HttpInterceptor {
   }
 
   private clearStoredAuth(): void {
+    const userKey = `${this.jwtTokenKey}_user`;
+
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.jwtTokenKey);
-      localStorage.removeItem(`${this.jwtTokenKey}_user`);
+      localStorage.removeItem(userKey);
     }
 
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.removeItem(this.jwtTokenKey);
-      sessionStorage.removeItem(`${this.jwtTokenKey}_user`);
+      sessionStorage.removeItem(userKey);
     }
+  }
+
+  // ── Navigation ────────────────────────────────────────────────────────
+
+  private redirectToLogin(): void {
+    // Lazy-resolve Router to avoid circular DI
+    const router = this.injector.get(Router);
+    void router.navigate(['/auth/login']);
+  }
+
+  // ── Utility ───────────────────────────────────────────────────────────
+
+  private isAbsoluteUrl(url: string): boolean {
+    return /^https?:\/\//.test(url);
+  }
+
+  private isOwnApiUrl(url: string): boolean {
+    return url.startsWith(this.apiBaseUrl);
   }
 }

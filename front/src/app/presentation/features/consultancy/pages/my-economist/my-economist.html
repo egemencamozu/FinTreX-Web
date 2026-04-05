@@ -1,0 +1,160 @@
+<section class="mec-c">
+  <div class="mec-c__wrapper">
+    <div class="mec-c__container">
+
+      <!-- ── Error Banner ───────────────────────────────────────────────────── -->
+      @if (errorMessage()) {
+        <div class="mec-c__error-banner">
+          <span>{{ errorMessage() }}</span>
+          <button (click)="errorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <!-- ── Loading ────────────────────────────────────────────────────────── -->
+      @if (isLoading()) {
+        <div class="mec-c__loading">
+          <div class="mec-c__spinner"></div>
+          <p>Yükleniyor...</p>
+        </div>
+      }
+
+      <!-- ══════════════════════════════════════════════════════════════════════
+           STATE A — No Economist Assigned
+      ══════════════════════════════════════════════════════════════════════ -->
+      @else if (!hasEconomist()) {
+        <div class="mec-c__empty-state">
+          <div class="mec-c__empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h2 class="mec-c__empty-title">Henüz bir ekonomistiniz yok</h2>
+          <p class="mec-c__empty-desc">
+            Aşağıdaki ekonomistlerden birini seçerek finansal danışmanlık almaya başlayın.
+          </p>
+        </div>
+
+        <!-- Available Economists Grid -->
+        @if (available().length > 0) {
+          <div class="mec-c__section-header">
+            <h3>Ekonomistler</h3>
+            <span class="mec-c__badge">{{ available().length }} ekonomist</span>
+          </div>
+
+          <div class="mec-c__grid">
+            @for (economist of available(); track economist.id) {
+              <div class="mec-c__card">
+                <div class="mec-c__card-avatar">
+                  {{ getInitials(economist) }}
+                </div>
+                <div class="mec-c__card-info">
+                  <h4 class="mec-c__card-name">{{ economist.firstName }} {{ economist.lastName }}</h4>
+                  <p class="mec-c__card-email">{{ economist.email }}</p>
+                </div>
+                <button
+                  class="mec-c__card-btn"
+                  [disabled]="isAssigning()"
+                  (click)="assignEconomist(economist.id)">
+                  @if (isAssigning()) {
+                    <span class="mec-c__btn-spinner"></span>
+                  } @else {
+                    Seç
+                  }
+                </button>
+              </div>
+            }
+          </div>
+        } @else if (!isLoading()) {
+          <div class="mec-c__no-economists">
+            Şu an aktif ekonomist bulunmuyor.
+          </div>
+        }
+      }
+
+      <!-- ══════════════════════════════════════════════════════════════════════
+           STATE B — Economist Assigned
+      ══════════════════════════════════════════════════════════════════════ -->
+      @else {
+        <!-- Hero Card -->
+        <div class="mec-c__hero">
+          <div class="mec-c__profile">
+            <div class="mec-c__avatar-wrap">
+              <div class="mec-c__avatar">{{ avatarInitials() }}</div>
+            </div>
+            <div class="mec-c__identity">
+              <h1 class="mec-c__name">{{ myAssignment()?.economistName }}</h1>
+              <p class="mec-c__meta">Atanma Tarihi: {{ assignedSinceLabel() }}</p>
+              @if (myAssignment()?.notes) {
+                <p class="mec-c__notes">"{{ myAssignment()?.notes }}"</p>
+              }
+            </div>
+          </div>
+
+          <div class="mec-c__hero-actions">
+            <button class="mec-c__remove-btn" (click)="removeEconomist()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14H6L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+                <path d="M9 6V4h6v2"/>
+              </svg>
+              Ekonomisti Kaldır
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mec-c__tabs">
+          @for (tab of tabs; track tab.id) {
+            <button
+              class="mec-c__tab"
+              [class.mec-c__tab--active]="activeTab() === tab.id"
+              (click)="setTab(tab.id)">
+              {{ tab.label }}
+            </button>
+          }
+        </div>
+
+        <!-- Tab: Overview -->
+        @if (activeTab() === 'overview') {
+          <div class="mec-c__panel">
+            <div class="mec-c__info-grid">
+              <div class="mec-c__info-card">
+                <span class="mec-c__info-label">Ekonomist ID</span>
+                <span class="mec-c__info-value mec-c__info-value--mono">{{ myAssignment()?.economistId }}</span>
+              </div>
+              <div class="mec-c__info-card">
+                <span class="mec-c__info-label">Atanma Tarihi</span>
+                <span class="mec-c__info-value">{{ assignedSinceLabel() }}</span>
+              </div>
+              <div class="mec-c__info-card">
+                <span class="mec-c__info-label">Durum</span>
+                <span class="mec-c__info-value">
+                  <span class="mec-c__status-chip mec-c__status-chip--online">Aktif</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Tab: Tasks -->
+        @if (activeTab() === 'tasks') {
+          <div class="mec-c__panel mec-c__panel--coming-soon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <p>Taleplerinizi görmek için <strong>Talepler</strong> sayfasını kullanın.</p>
+          </div>
+        }
+      }
+
+    </div>
+  </div>
+</section>

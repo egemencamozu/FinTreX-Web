@@ -1,8 +1,18 @@
-export interface Asset {
-  id: string;
+import { AssetType } from '../enums/asset-type.enum';
+
+export interface PortfolioAsset {
+  id: number;
+  portfolioId: number;
   symbol: string;
-  name: string;
-  market: 'BIST' | 'CRYPTO' | 'PRECIOUS_METAL';
+  assetName: string;
+  assetType: AssetType;
   quantity: number;
-  currentPrice?: number;
+  averageCost: number;
+  currency: string;
+  currentValue?: number;
+  currentValueUpdatedAtUtc?: string;
+  acquiredAtUtc: string;
+  notes?: string;
+  createdAtUtc: string;
+  updatedAtUtc?: string;
 }

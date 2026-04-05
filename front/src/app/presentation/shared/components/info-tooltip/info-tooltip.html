@@ -1,0 +1,38 @@
+<span class="it-wrapper" #wrapper>
+  <span class="it-trigger">ⓘ</span>
+
+  @if (visible()) {
+    <div
+      class="it-panel"
+      [class.it-panel--top]="effectivePosition() === 'top'"
+      [class.it-panel--bottom]="effectivePosition() === 'bottom'"
+      [class.it-panel--left]="effectivePosition() === 'left'"
+      [class.it-panel--right]="effectivePosition() === 'right'"
+      [style.top]="panelCoords().top"
+      [style.bottom]="panelCoords().bottom"
+      [style.left]="panelCoords().left"
+      [style.right]="panelCoords().right"
+      [style.transform]="panelCoords().transform"
+      [style.--arrow-offset]="panelCoords().arrowOffset"
+      role="tooltip"
+    >
+      @if (heading) {
+        <p class="it-panel__heading">{{ heading }}</p>
+      }
+
+      @if (items.length) {
+        <ul class="it-panel__list">
+          @for (item of items; track item.text) {
+            <li>{{ item.text }}</li>
+          }
+        </ul>
+      }
+
+      @if (learnMoreUrl) {
+        <a class="it-panel__link" [href]="learnMoreUrl" target="_blank" rel="noopener">
+          Learn more
+        </a>
+      }
+    </div>
+  }
+</span>

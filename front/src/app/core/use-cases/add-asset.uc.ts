@@ -1,3 +1,5 @@
 export class AddAssetUseCase {
-  execute(): void { /* TODO */ }
+  execute(): void {
+    /* TODO */
+  }
 }

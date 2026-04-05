@@ -1,0 +1,98 @@
+[
+  {
+    "id": "bist-thyao", "rank": 1,
+    "symbol": "THYAO", "name": "Türk Hava Yolları",
+    "price": 248.50, "currency": "TRY",
+    "change": 4.80, "changePercent": 1.97, "change1h": 0.34, "change7d": 5.82,
+    "high24h": 251.00, "low24h": 242.00,
+    "volume": 28500000, "marketCap": 218120000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [232, 238, 241, 237, 244, 246, 248.5],
+    "alertEnabled": true, "category": "bist"
+  },
+  {
+    "id": "bist-garan", "rank": 2,
+    "symbol": "GARAN", "name": "Garanti BBVA",
+    "price": 162.40, "currency": "TRY",
+    "change": -1.60, "changePercent": -0.98, "change1h": -0.22, "change7d": -2.14,
+    "high24h": 165.00, "low24h": 161.20,
+    "volume": 42300000, "marketCap": 136482000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [165, 164, 163, 164, 163, 162.8, 162.4],
+    "alertEnabled": false, "category": "bist"
+  },
+  {
+    "id": "bist-akbnk", "rank": 3,
+    "symbol": "AKBNK", "name": "Akbank",
+    "price": 87.30, "currency": "TRY",
+    "change": 2.10, "changePercent": 2.47, "change1h": 0.58, "change7d": 4.12,
+    "high24h": 88.50, "low24h": 84.80,
+    "volume": 35600000, "marketCap": 87300000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [83, 84.5, 85, 86, 85.5, 87, 87.3],
+    "alertEnabled": true, "category": "bist"
+  },
+  {
+    "id": "bist-eregl", "rank": 4,
+    "symbol": "EREGL", "name": "Ereğli Demir Çelik",
+    "price": 45.80, "currency": "TRY",
+    "change": -1.40, "changePercent": -2.96, "change1h": -0.65, "change7d": -6.33,
+    "high24h": 47.60, "low24h": 45.40,
+    "volume": 18900000, "marketCap": 64120000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [48.2, 47.5, 47, 46.5, 46, 45.9, 45.8],
+    "alertEnabled": false, "category": "bist"
+  },
+  {
+    "id": "bist-bimas", "rank": 5,
+    "symbol": "BIMAS", "name": "BİM Birleşik Mağazalar",
+    "price": 392.00, "currency": "TRY",
+    "change": 5.50, "changePercent": 1.42, "change1h": 0.18, "change7d": 3.24,
+    "high24h": 395.00, "low24h": 385.00,
+    "volume": 9800000, "marketCap": 275680000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [380, 383, 385, 389, 387, 391, 392],
+    "alertEnabled": false, "category": "bist"
+  },
+  {
+    "id": "bist-kchol", "rank": 6,
+    "symbol": "KCHOL", "name": "Koç Holding",
+    "price": 198.50, "currency": "TRY",
+    "change": 3.10, "changePercent": 1.59, "change1h": 0.27, "change7d": 2.88,
+    "high24h": 200.00, "low24h": 194.80,
+    "volume": 12400000, "marketCap": 239440000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [193, 195, 196, 197, 196.5, 198, 198.5],
+    "alertEnabled": true, "category": "bist"
+  },
+  {
+    "id": "bist-sise", "rank": 7,
+    "symbol": "SISE", "name": "Şişe Cam",
+    "price": 38.60, "currency": "TRY",
+    "change": -1.60, "changePercent": -3.98, "change1h": -0.77, "change7d": -8.15,
+    "high24h": 40.50, "low24h": 38.20,
+    "volume": 22100000, "marketCap": 57900000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [41.2, 40.5, 40, 39.5, 39, 38.8, 38.6],
+    "alertEnabled": false, "category": "bist"
+  },
+  {
+    "id": "bist-tuprs", "rank": 8,
+    "symbol": "TUPRS", "name": "Tüpraş",
+    "price": 485.00, "currency": "TRY",
+    "change": 12.50, "changePercent": 2.65, "change1h": 0.42, "change7d": 6.94,
+    "high24h": 488.00, "low24h": 471.00,
+    "volume": 7300000, "marketCap": 339500000000,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [465, 470, 472, 476, 479, 482, 485],
+    "alertEnabled": false, "category": "bist"
+  }
+]

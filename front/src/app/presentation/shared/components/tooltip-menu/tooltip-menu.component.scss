@@ -1,0 +1,129 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.tooltip-menu {
+  position: relative;
+}
+
+.tooltip-menu__trigger {
+  display: contents;
+}
+
+// ── Panel ────────────────────────────────────────────────────────────────────
+.tooltip-menu__panel {
+  position: absolute;
+  z-index: var(--z-tooltip, 50);
+  min-width: var(--tooltip-menu-min-width, 200px);
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-lg, 0 10px 30px rgba(0, 0, 0, 0.25));
+  padding: var(--space-2, 8px) 0;
+  animation: tooltipFadeIn var(--duration-fast, 150ms) var(--ease-out, ease-out);
+  pointer-events: auto;
+
+  // Görünmez köprü: icon ile panel arasındaki boşluğu kapatır
+  // böylece mouse geçerken tooltip kapanmaz
+  &::before {
+    content: '';
+    position: absolute;
+  }
+
+  // ── Positions ──
+  &--right {
+    left: calc(100% + 16px);
+    top: 0;
+
+    &::before {
+      left: -20px;
+      top: 0;
+      width: 24px;
+      height: 100%;
+    }
+  }
+
+  &--left {
+    right: calc(100% + 8px);
+    top: 0;
+
+    &::before {
+      right: -12px;
+      top: 0;
+      width: 16px;
+      height: 100%;
+    }
+  }
+
+  &--top {
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    animation: tooltipFadeInVertical var(--duration-fast, 150ms) var(--ease-out, ease-out);
+
+    &::before {
+      bottom: -12px;
+      left: 0;
+      width: 100%;
+      height: 16px;
+    }
+  }
+
+  &--bottom {
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    animation: tooltipFadeInVertical var(--duration-fast, 150ms) var(--ease-out, ease-out);
+
+    &::before {
+      top: -12px;
+      left: 0;
+      width: 100%;
+      height: 16px;
+    }
+  }
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+.tooltip-menu__header {
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-inverse);
+  border-bottom: 1px solid var(--border-sidebar-subtle, rgba(255, 255, 255, 0.1));
+  margin-bottom: var(--space-1, 4px);
+}
+
+// ── Body ─────────────────────────────────────────────────────────────────────
+.tooltip-menu__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+  padding: 0 var(--space-2, 8px);
+}
+
+// ── Animations ──────────────────────────────────────────────────────────────
+// right/left pozisyonları için (translateX çakışması yok)
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// top/bottom pozisyonları için (translateX(-50%) korunmalı)
+@keyframes tooltipFadeInVertical {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

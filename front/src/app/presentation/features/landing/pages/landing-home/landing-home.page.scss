@@ -148,7 +148,11 @@
   border: 1px solid var(--border-default);
   border-radius: 1.75rem;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-surface) 94%, transparent), var(--bg-surface)),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-surface) 94%, transparent),
+      var(--bg-surface)
+    ),
     var(--bg-surface);
   box-shadow: 0 24px 60px color-mix(in srgb, var(--color-navy-900) 10%, transparent);
 }

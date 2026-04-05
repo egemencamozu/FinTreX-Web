@@ -8,7 +8,7 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
  * Provides structured logging with environment-aware configuration
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LoggerService {
   private logLevel: LogLevel;
@@ -18,7 +18,7 @@ export class LoggerService {
     debug: 0,
     info: 1,
     warn: 2,
-    error: 3
+    error: 3,
   };
 
   constructor(private envConfig: EnvironmentConfigService) {

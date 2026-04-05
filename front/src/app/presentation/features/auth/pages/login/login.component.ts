@@ -28,7 +28,10 @@ export class LoginComponent {
     }
 
     this.loginForm = this.fb.group({
-      email: [this.route.snapshot.queryParamMap.get('email') ?? '', [Validators.required, Validators.email]],
+      email: [
+        this.route.snapshot.queryParamMap.get('email') ?? '',
+        [Validators.required, Validators.email],
+      ],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false],
     });
@@ -59,7 +62,12 @@ export class LoginComponent {
       });
   }
 
+  protected isFieldInvalid(fieldName: string): boolean {
+    const control = this.loginForm.get(fieldName);
+    return !!control && control.invalid && control.touched;
+  }
+
   protected onForgotPasswordClick(): void {
-    // TODO: Forgot password route hazir oldugunda baglanacak.
+    void this.router.navigate(['/auth/forgot-password']);
   }
 }

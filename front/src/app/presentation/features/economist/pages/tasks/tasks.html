@@ -1,0 +1,201 @@
+<div class="tasks-container">
+  <!-- Error Banner -->
+  <div *ngIf="errorMessage()" class="tasks-error-banner">
+    <span>{{ errorMessage() }}</span>
+    <button (click)="errorMessage() && errorMessage.set(null)">✕</button>
+  </div>
+
+  <!-- Header -->
+  <div class="tasks-header">
+    <div class="tasks-title-section">
+      <h1>Görevler</h1>
+      <p class="tasks-subtitle">Müşterilerinizden atanan görevleri yönetin</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="tasks-loading">
+    <div class="tasks-spinner"></div>
+    <p>Görevler yükleniyor...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading() && tasks().length === 0" class="tasks-empty">
+    <div class="tasks-empty-icon">📋</div>
+    <h3>Görev Yok</h3>
+    <p>Şu anda atanmış göreviniz bulunmamaktadır.</p>
+  </div>
+
+  <!-- Tasks Content -->
+  <div *ngIf="!isLoading() && tasks().length > 0" class="tasks-content">
+    <!-- Stats Cards -->
+    <div class="tasks-stats">
+      <div class="stats-card">
+        <div class="stat-value">{{ taskStats().total }}</div>
+        <div class="stat-label">Toplam Görev</div>
+      </div>
+      <div class="stats-card">
+        <div class="stat-value">{{ taskStats().pending }}</div>
+        <div class="stat-label">Beklemede</div>
+      </div>
+      <div class="stats-card">
+        <div class="stat-value">{{ taskStats().inProgress }}</div>
+        <div class="stat-label">Devam Ediyor</div>
+      </div>
+      <div class="stats-card">
+        <div class="stat-value">{{ taskStats().completed }}</div>
+        <div class="stat-label">Tamamlandı</div>
+      </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="tasks-filters">
+      <button
+        (click)="filterStatus.set('all')"
+        [class.active]="filterStatus() === 'all'"
+        class="filter-btn"
+      >
+        Tümü
+      </button>
+      <button
+        (click)="filterStatus.set(ConsultancyTaskStatus.Pending)"
+        [class.active]="filterStatus() === ConsultancyTaskStatus.Pending"
+        class="filter-btn"
+      >
+        Beklemede
+      </button>
+      <button
+        (click)="filterStatus.set(ConsultancyTaskStatus.InProgress)"
+        [class.active]="filterStatus() === ConsultancyTaskStatus.InProgress"
+        class="filter-btn"
+      >
+        Devam Ediyor
+      </button>
+      <button
+        (click)="filterStatus.set(ConsultancyTaskStatus.Completed)"
+        [class.active]="filterStatus() === ConsultancyTaskStatus.Completed"
+        class="filter-btn"
+      >
+        Tamamlandı
+      </button>
+    </div>
+
+    <!-- Tasks List -->
+    <div class="tasks-list">
+      <div
+        *ngFor="let task of filteredTasks()"
+        class="task-card"
+        (click)="selectTask(task)"
+        [class.selected]="selectedTask()?.id === task.id"
+      >
+        <div class="task-card-header">
+          <div class="task-card-title-section">
+            <h3 class="task-title">{{ task.title }}</h3>
+            <p class="task-category">{{ task.category }}</p>
+          </div>
+          <div class="task-card-badges">
+            <span [class]="getPriorityClass(task.priority)" class="badge priority-badge">
+              {{ getPriorityDisplay(task.priority) }}
+            </span>
+            <span [class]="getStatusClass(task.status)" class="badge status-badge">
+              {{ getStatusDisplay(task.status) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="task-card-body">
+          <p class="task-description">{{ task.description }}</p>
+
+          <!-- Task Details -->
+          <div class="task-details">
+            <div class="detail-item">
+              <span class="detail-label">Müşteri:</span>
+              <span class="detail-value">{{ task.userName }}</span>
+            </div>
+            <div class="detail-item" *ngIf="task.deadline">
+              <span class="detail-label">Tarih:</span>
+              <span class="detail-value">{{ task.deadline | date: 'dd.MM.yyyy' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Oluşturma:</span>
+              <span class="detail-value">{{ task.createdAtUtc | date: 'dd.MM.yyyy, HH:mm' }}</span>
+            </div>
+          </div>
+
+          <!-- PAA Report - Show only if selected -->
+          <div class="paa-section" *ngIf="selectedTask()?.id === task.id" (click)="$event.stopPropagation()">
+            <div class="paa-header">
+              <span class="paa-icon">🤖</span>
+              <span class="paa-title">PAA — Yapay Zeka Ön Analizi</span>
+              <span class="paa-badge" *ngIf="task.preAnalysisReport?.isSuccessful">Analiz Hazır</span>
+            </div>
+
+            <!-- Report available and successful -->
+            <ng-container *ngIf="task.preAnalysisReport">
+              <div *ngIf="task.preAnalysisReport.isSuccessful" class="paa-report">
+                <div class="paa-risk-row">
+                  <span class="paa-risk-label">Risk Seviyesi:</span>
+                  <span class="paa-risk-val paa-risk-val--{{ task.preAnalysisReport.riskLevel?.toLowerCase() }}">
+                    {{ task.preAnalysisReport.riskLevel }}
+                  </span>
+                </div>
+                <p class="paa-summary">{{ task.preAnalysisReport.summary }}</p>
+                <div class="paa-detail-row">
+                  <strong>📊 Piyasa Görünümü</strong>
+                  <p>{{ task.preAnalysisReport.marketOutlook }}</p>
+                </div>
+                <div class="paa-detail-row">
+                  <strong>🔍 Önemli Bulgular</strong>
+                  <p>{{ task.preAnalysisReport.keyFindings }}</p>
+                </div>
+                <p class="paa-disclaimer">Bu rapor CrewAI tarafınca oluşturulan objektif bir özettir. Yatırım tavsiyesi değildir.</p>
+              </div>
+              <div *ngIf="!task.preAnalysisReport.isSuccessful" class="paa-error">
+                ⚠️ {{ task.preAnalysisReport.errorMessage || 'Analiz oluşturulurken bir hata oluştu.' }}
+              </div>
+            </ng-container>
+
+            <!-- No report yet -->
+            <div *ngIf="!task.preAnalysisReport" class="paa-pending">
+              <ng-container *ngIf="isGeneratingAnalysis(); else noReportTpl">
+                <div class="paa-spinner"></div>
+                <span>Analiz oluşturuluyor...</span>
+              </ng-container>
+              <ng-template #noReportTpl>
+                <span>Ön analiz henüz oluşturulmadı.</span>
+                <button class="action-btn btn-primary" style="flex:0; padding: 6px 16px;" (click)="generateAnalysis(task.id); $event.stopPropagation()">
+                  Analiz Oluştur
+                </button>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- Action Buttons - Show only if selected -->
+          <div class="task-actions" *ngIf="selectedTask()?.id === task.id">
+            <button
+              *ngIf="task.status === ConsultancyTaskStatus.Pending"
+              (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.InProgress); $event.stopPropagation()"
+              class="action-btn btn-primary"
+            >
+              Başla
+            </button>
+            <button
+              *ngIf="task.status === ConsultancyTaskStatus.InProgress"
+              (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.Completed); $event.stopPropagation()"
+              class="action-btn btn-success"
+            >
+              Tamamla
+            </button>
+            <button
+              *ngIf="task.status !== ConsultancyTaskStatus.Completed"
+              (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.Pending); $event.stopPropagation()"
+              class="action-btn btn-secondary"
+            >
+              Sıfırla
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 export enum SubscriptionTier {
-  DEFAULT = 'DEFAULT',
-  PREMIUM = 'PREMIUM',
-  ULTRA = 'ULTRA',
+  Default = 'Default',
+  Premium = 'Premium',
+  Ultra = 'Ultra',
 }

@@ -1,19 +1,31 @@
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection
+  provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   provideHttpClient,
   HTTP_INTERCEPTORS,
   withInterceptorsFromDi,
+  withFetch,
 } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { ApiHttpInterceptor } from './core/interceptors/api-http.interceptor';
 import { EnvironmentConfigService } from './core/services/environment-config.service';
+import { UserManagementRepository } from './core/interfaces/user-management.repository';
+import { UserManagementApiRepository } from './data/repositories/user-management-api.repository';
+import { ConsultancyTaskRepository } from './core/interfaces/consultancy-task.repository';
+import { ConsultancyTaskApiRepository } from './data/repositories/consultancy-task-api.repository';
+import { EconomistRepository } from './core/interfaces/economist.repository';
+import { EconomistApiRepository } from './data/repositories/economist-api.repository';
+import { SubscriptionRepository } from './core/interfaces/subscription.repository';
+import { SubscriptionApiRepository } from './data/repositories/subscription-api.repository';
+import { PortfolioRepository } from './core/interfaces/portfolio.repository';
+import { PortfolioApiRepository } from './data/repositories/portfolio-api.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,16 +33,25 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    provideCharts(withDefaultRegisterables()),
+
 
     // Register HTTP Interceptor
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ApiHttpInterceptor,
-      multi: true
+      multi: true,
     },
 
     // Provide EnvironmentConfigService
-    EnvironmentConfigService
-  ]
+    EnvironmentConfigService,
+
+    // Bind core abstractions to data layer implementations
+    { provide: UserManagementRepository, useClass: UserManagementApiRepository },
+    { provide: ConsultancyTaskRepository, useClass: ConsultancyTaskApiRepository },
+    { provide: EconomistRepository, useClass: EconomistApiRepository },
+    { provide: SubscriptionRepository, useClass: SubscriptionApiRepository },
+    { provide: PortfolioRepository, useClass: PortfolioApiRepository },
+  ],
 };

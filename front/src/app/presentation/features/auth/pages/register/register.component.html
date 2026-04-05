@@ -1,132 +1,250 @@
-<div class="register-page">
-  <!-- Sol Panel — Marka & Slogan -->
-  <aside class="register-page__hero">
-    <a class="register-page__brand" routerLink="/">
-      <span class="register-page__logo">F</span>
-      <span class="register-page__brand-name">FinTreX</span>
-    </a>
-
-    <div class="register-page__hero-content">
-      <h1 class="register-page__title">
-        Hemen<br />
-        <span class="register-page__title--accent">ucretsiz</span><br />
-        baslayin.
-      </h1>
-      <p class="register-page__subtitle">
-        Hesabinizi olusturun, portfoyunuzu takip edin,
-        uzman ekonomistlerden danismanlik alin.
+<div class="register-c">
+  <div class="register-c__form-card">
+    <div class="register-c__form-header">
+      <span class="register-c__form-avatar"><i class="fa-solid fa-user-plus"></i></span>
+      <h2 class="register-c__form-title">Hesabını Oluştur</h2>
+      <p class="register-c__form-desc">
+        Temel bilgilerini gir, rolünü seç ve FinTreX deneyimine başla.
       </p>
     </div>
 
-    <div class="register-page__hero-footer">
-      <span>BIST</span>
-      <span class="register-page__dot"></span>
-      <span>Kripto</span>
-      <span class="register-page__dot"></span>
-      <span>Degerli Madenler</span>
-    </div>
-  </aside>
+    @if (errorMessage) {
+      <div class="register-c__alert register-c__alert--error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
 
-  <!-- Sag Panel — Form -->
-  <main class="register-page__form-panel">
-    <div class="register-page__form-wrapper">
-      <h2 class="register-page__form-title">Kayit Ol</h2>
-      <p class="register-page__form-desc">
-        Yeni hesap olusturarak hemen baslayin.
-      </p>
+    @if (successMessage) {
+      <div class="register-c__alert register-c__alert--success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
 
-      @if (errorMessage) {
-        <p class="register-page__status register-page__status--error">{{ errorMessage }}</p>
-      }
-
-      @if (successMessage) {
-        <p class="register-page__status register-page__status--success">{{ successMessage }}</p>
-      }
-
-      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-        <div class="register-page__name-row">
-          <div class="register-page__field">
-            <label for="firstName">Ad</label>
+    <form class="register-c__form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="register-c__field-grid">
+        <div class="register-c__field">
+          <label class="register-c__label" for="firstName"
+            ><i class="fa-solid fa-user"></i> Ad</label
+          >
+          <div class="register-c__input-group">
+            <i class="fa-solid fa-user register-c__input-icon"></i>
             <input
+              class="register-c__input"
+              [class.register-c__input--invalid]="isFieldInvalid('firstName')"
               id="firstName"
               type="text"
               formControlName="firstName"
-              placeholder="Adiniz"
+              placeholder="Adınız"
+              autocomplete="given-name"
             />
           </div>
-          <div class="register-page__field">
-            <label for="lastName">Soyad</label>
+          @if (isFieldInvalid('firstName')) {
+            <span class="register-c__field-error">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              @if (registerForm.get('firstName')?.hasError('required')) {
+                Ad zorunludur.
+              } @else if (registerForm.get('firstName')?.hasError('minlength')) {
+                Ad en az 2 karakter olmalıdır.
+              }
+            </span>
+          }
+        </div>
+
+        <div class="register-c__field">
+          <label class="register-c__label" for="lastName"
+            ><i class="fa-solid fa-user-tag"></i> Soyad</label
+          >
+          <div class="register-c__input-group">
+            <i class="fa-solid fa-user-tag register-c__input-icon"></i>
             <input
+              class="register-c__input"
+              [class.register-c__input--invalid]="isFieldInvalid('lastName')"
               id="lastName"
               type="text"
               formControlName="lastName"
-              placeholder="Soyadiniz"
+              placeholder="Soyadınız"
+              autocomplete="family-name"
             />
           </div>
+          @if (isFieldInvalid('lastName')) {
+            <span class="register-c__field-error">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              @if (registerForm.get('lastName')?.hasError('required')) {
+                Soyad zorunludur.
+              } @else if (registerForm.get('lastName')?.hasError('minlength')) {
+                Soyad en az 2 karakter olmalıdır.
+              }
+            </span>
+          }
         </div>
+      </div>
 
-        <div class="register-page__field">
-          <label for="regEmail">Email</label>
+      <div class="register-c__field">
+        <label class="register-c__label" for="regEmail"
+          ><i class="fa-solid fa-envelope"></i> Email Adresi</label
+        >
+        <div class="register-c__input-group">
+          <i class="fa-solid fa-at register-c__input-icon"></i>
           <input
+            class="register-c__input"
+            [class.register-c__input--invalid]="isFieldInvalid('email')"
             id="regEmail"
             type="email"
             formControlName="email"
             placeholder="ornek&#64;fintrex.com"
+            autocomplete="email"
           />
         </div>
+        @if (isFieldInvalid('email')) {
+          <span class="register-c__field-error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            @if (registerForm.get('email')?.hasError('required')) {
+              Email adresi zorunludur.
+            } @else if (registerForm.get('email')?.hasError('email')) {
+              Geçerli bir email adresi giriniz.
+            }
+          </span>
+        }
+      </div>
 
-        <div class="register-page__field">
-          <label for="regPassword">Sifre</label>
+      <div class="register-c__field">
+        <label class="register-c__label" for="phoneNumber"
+          ><i class="fa-solid fa-phone"></i> Telefon (Opsiyonel)</label
+        >
+        <div class="register-c__input-group">
+          <i class="fa-solid fa-phone register-c__input-icon"></i>
           <input
-            id="regPassword"
-            type="password"
-            formControlName="password"
-            placeholder="En az 6 karakter"
+            class="register-c__input"
+            id="phoneNumber"
+            type="tel"
+            formControlName="phoneNumber"
+            placeholder="05xx xxx xx xx"
+            autocomplete="tel"
           />
         </div>
+      </div>
 
-        <div class="register-page__field">
-          <label for="confirmPassword">Sifre Tekrar</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            formControlName="confirmPassword"
-            placeholder="Sifrenizi tekrar girin"
-          />
-          @if (registerForm.hasError('passwordsMismatch') && registerForm.get('confirmPassword')?.touched) {
-            <span class="register-page__error">Sifreler eslesmiyor.</span>
+      <div class="register-c__field-grid">
+        <div class="register-c__field">
+          <label class="register-c__label" for="regPassword"
+            ><i class="fa-solid fa-lock"></i> Şifre</label
+          >
+          <div class="register-c__input-group">
+            <i class="fa-solid fa-key register-c__input-icon"></i>
+            <input
+              class="register-c__input"
+              [class.register-c__input--invalid]="isFieldInvalid('password')"
+              id="regPassword"
+              type="password"
+              formControlName="password"
+              placeholder="En az 6 karakter"
+              autocomplete="new-password"
+            />
+          </div>
+          @if (isFieldInvalid('password')) {
+            <span class="register-c__field-error">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              @if (registerForm.get('password')?.hasError('required')) {
+                Şifre zorunludur.
+              } @else if (registerForm.get('password')?.hasError('minlength')) {
+                Şifre en az 6 karakter olmalıdır.
+              }
+            </span>
           }
         </div>
 
-        <fieldset class="register-page__roles">
-          <legend>Hesap Turu</legend>
-          <div class="register-page__role-options">
-            <label class="register-page__role" [class.register-page__role--active]="registerForm.get('role')?.value === UserRole.USER">
-              <input type="radio" formControlName="role" [value]="UserRole.USER" />
-              <span class="register-page__role-icon">👤</span>
-              <span class="register-page__role-label">Bireysel Yatirimci</span>
-            </label>
-            <label class="register-page__role" [class.register-page__role--active]="registerForm.get('role')?.value === UserRole.ECONOMIST">
-              <input type="radio" formControlName="role" [value]="UserRole.ECONOMIST" />
-              <span class="register-page__role-icon">📊</span>
-              <span class="register-page__role-label">Ekonomist</span>
-            </label>
+        <div class="register-c__field">
+          <label class="register-c__label" for="confirmPassword"
+            ><i class="fa-solid fa-shield-halved"></i> Şifre Tekrar</label
+          >
+          <div class="register-c__input-group">
+            <i class="fa-solid fa-key register-c__input-icon"></i>
+            <input
+              class="register-c__input"
+              [class.register-c__input--invalid]="
+                isFieldInvalid('confirmPassword') ||
+                (registerForm.hasError('passwordsMismatch') &&
+                  registerForm.get('confirmPassword')?.touched)
+              "
+              id="confirmPassword"
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="Tekrar girin"
+              autocomplete="new-password"
+            />
           </div>
-        </fieldset>
+          @if (
+            registerForm.hasError('passwordsMismatch') &&
+            registerForm.get('confirmPassword')?.touched
+          ) {
+            <span class="register-c__field-error"
+              ><i class="fa-solid fa-triangle-exclamation"></i> Şifreler eşleşmiyor.</span
+            >
+          } @else if (isFieldInvalid('confirmPassword')) {
+            <span class="register-c__field-error"
+              ><i class="fa-solid fa-triangle-exclamation"></i> Şifre tekrarı zorunludur.</span
+            >
+          }
+        </div>
+      </div>
 
-        <button
-          class="register-page__submit"
-          type="submit"
-          [disabled]="registerForm.invalid || isSubmitting"
-        >
-          {{ isSubmitting ? 'Hesap Olusturuluyor...' : 'Hesap Olustur' }}
-        </button>
-      </form>
+      <fieldset class="register-c__role-group">
+        <legend class="register-c__label"><i class="fa-solid fa-id-badge"></i> Hesap Türü</legend>
+        <div class="register-c__role-grid">
+          <label
+            class="register-c__role-card"
+            [class.register-c__role-card--active]="
+              registerForm.get('role')?.value === UserRole.USER
+            "
+          >
+            <input type="radio" formControlName="role" [value]="UserRole.USER" />
+            <span class="register-c__role-icon"><i class="fa-solid fa-user"></i></span>
+            <span class="register-c__role-content">
+              <span class="register-c__role-title">Bireysel Yatırımcı</span>
+              <span class="register-c__role-desc"
+                >Portföyünü takip et, kararlarını tek panelden yönet.</span
+              >
+            </span>
+          </label>
 
-      <p class="register-page__footer">
-        Zaten hesabiniz var mi?
-        <a routerLink="/auth/login">Giris Yap</a>
-      </p>
-    </div>
-  </main>
+          <label
+            class="register-c__role-card"
+            [class.register-c__role-card--active]="
+              registerForm.get('role')?.value === UserRole.ECONOMIST
+            "
+          >
+            <input type="radio" formControlName="role" [value]="UserRole.ECONOMIST" />
+            <span class="register-c__role-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span class="register-c__role-content">
+              <span class="register-c__role-title">Ekonomist</span>
+              <span class="register-c__role-desc"
+                >Müşteri taleplerini değerlendir, analiz ve rehberlik sun.</span
+              >
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <button
+        class="register-c__submit"
+        type="submit"
+        [disabled]="registerForm.invalid || isSubmitting"
+      >
+        @if (isSubmitting) {
+          <i class="fa-solid fa-spinner fa-spin"></i> Hesap Oluşturuluyor...
+        } @else {
+          <i class="fa-solid fa-user-plus"></i> Hesap Oluştur
+        }
+      </button>
+    </form>
+
+    <p class="register-c__switch">
+      Zaten hesabın var mı?
+      <a class="register-c__switch-link" routerLink="/auth/login"
+        ><i class="fa-solid fa-right-to-bracket"></i> Giriş Yap</a
+      >
+    </p>
+  </div>
 </div>

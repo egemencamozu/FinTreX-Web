@@ -9,5 +9,4 @@ import { PublicNavbar } from '../../components/public-navbar/public-navbar';
   templateUrl: './trial.html',
   styleUrl: './trial.scss',
 })
-export class Trial {
-}
+export class Trial {}

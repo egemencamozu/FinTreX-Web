@@ -1,0 +1,38 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  name: 'Default'
+
+variables:
+  buildConfiguration: 'Release'
+  projectPath: 'FinTreX/FinTreX.WebApi/FinTreX.WebApi.csproj'
+  publishDir: '$(Build.ArtifactStagingDirectory)/publish-webapi'
+
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET 8 SDK'
+    inputs:
+      packageType: sdk
+      version: 8.0.x
+
+  - script: dotnet restore $(projectPath)
+    displayName: 'Restore'
+
+  - script: dotnet build $(projectPath) --configuration $(buildConfiguration) --no-restore
+    displayName: 'Build'
+
+  - script: dotnet publish $(projectPath) --configuration $(buildConfiguration) --output $(publishDir) --no-build
+    displayName: 'Publish'
+
+  - task: AzureWebApp@1
+    displayName: 'Deploy to Azure App Service'
+    inputs:
+      azureSubscription: 'fintrex-azure-service-connection'
+      appType: 'webAppLinux'
+      appName: 'fintrex-api'
+      package: '$(publishDir)'

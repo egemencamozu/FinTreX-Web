@@ -1,0 +1,111 @@
+:host {
+  display: block;
+}
+
+.test-page-c {
+  &__wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-page-x, 24px);
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-section-gap, 32px);
+  }
+
+  &__shell {
+    display: grid;
+    gap: var(--spacing-section-gap, 32px);
+  }
+
+  // ── Hero Panel ──
+  &__hero-panel {
+    display: grid;
+    gap: var(--spacing-card-padding, 16px);
+  }
+
+  &__eyebrow {
+    margin: 0;
+    color: var(--text-brand, #6366f1);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+  }
+
+  &__description {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  // ── Content Panel ──
+  &__content-panel {
+    display: grid;
+    gap: var(--spacing-section-gap, 32px);
+  }
+
+  &__card {
+    background: var(--bg-surface-raised);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: var(--spacing-card-padding, 24px);
+    box-shadow: var(--shadow-card);
+    display: grid;
+    gap: 16px;
+    justify-items: center;
+  }
+
+  &__card-title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &__counter-value {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 3rem;
+    font-weight: 700;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  &__btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &--primary {
+      background: var(--btn-primary-bg);
+      color: #fff;
+    }
+
+    &--danger {
+      background: var(--btn-danger-bg);
+      color: #fff;
+    }
+  }
+}

@@ -1,0 +1,30 @@
+<section class="test-page-c">
+  <div class="test-page-c__wrapper">
+    <div class="test-page-c__container">
+      <div class="test-page-c__shell">
+        <section class="test-page-c__hero-panel">
+          <p class="test-page-c__eyebrow">Sandbox</p>
+          <h1 class="test-page-c__title">{{ title() }}</h1>
+          <p class="test-page-c__description">
+            Bu sayfa geliştirme ve test amaçlı kullanılmaktadır.
+          </p>
+        </section>
+
+        <section class="test-page-c__content-panel">
+          <div class="test-page-c__card">
+            <h2 class="test-page-c__card-title">Sayaç Testi</h2>
+            <p class="test-page-c__counter-value">{{ counter() }}</p>
+            <div class="test-page-c__actions">
+              <button class="test-page-c__btn test-page-c__btn--primary" (click)="increment()">
+                Artır
+              </button>
+              <button class="test-page-c__btn test-page-c__btn--danger" (click)="decrement()">
+                Azalt
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>

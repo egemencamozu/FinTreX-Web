@@ -1,0 +1,18 @@
+<div class="holdings-card">
+  <div class="holdings-card__header">
+    <h3 class="holdings-card__title">{{ heading() }}</h3>
+    <div class="holdings-card__controls">
+      <ng-content select="[cardControls]" />
+      <app-segmented-control
+        [options]="viewOptions()"
+        [value]="activeView()"
+        (valueChange)="setView($event)"
+      />
+    </div>
+  </div>
+  <div class="holdings-card__body">
+    @if (activeTpl(); as tpl) {
+      <ng-container [ngTemplateOutlet]="tpl" />
+    }
+  </div>
+</div>

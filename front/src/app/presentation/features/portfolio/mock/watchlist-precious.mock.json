@@ -1,0 +1,62 @@
+[
+  {
+    "id": "prec-xauusd", "rank": 1,
+    "symbol": "XAU/USD", "name": "Ons Altın",
+    "price": 2285.50, "currency": "USD",
+    "change": 18.40, "changePercent": 0.81, "change1h": 0.12, "change7d": 2.34,
+    "high24h": 2292.00, "low24h": 2264.00,
+    "volume": 185000, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [2245, 2255, 2263, 2258, 2272, 2280, 2285.5],
+    "alertEnabled": true, "category": "precious"
+  },
+  {
+    "id": "prec-graltin", "rank": 2,
+    "symbol": "GR ALTIN", "name": "Gram Altın",
+    "price": 2405.80, "currency": "TRY",
+    "change": 32.40, "changePercent": 1.37, "change1h": 0.24, "change7d": 4.18,
+    "high24h": 2418.00, "low24h": 2372.00,
+    "volume": 0, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [2365, 2375, 2385, 2390, 2395, 2400, 2405.8],
+    "alertEnabled": true, "category": "precious"
+  },
+  {
+    "id": "prec-xagusd", "rank": 3,
+    "symbol": "XAG/USD", "name": "Ons Gümüş",
+    "price": 26.85, "currency": "USD",
+    "change": -0.32, "changePercent": -1.18, "change1h": -0.08, "change7d": -2.65,
+    "high24h": 27.40, "low24h": 26.60,
+    "volume": 2450000, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [27.4, 27.2, 27.1, 27.0, 26.95, 26.9, 26.85],
+    "alertEnabled": false, "category": "precious"
+  },
+  {
+    "id": "prec-xptusd", "rank": 4,
+    "symbol": "XPT/USD", "name": "Platin",
+    "price": 1025.40, "currency": "USD",
+    "change": 8.20, "changePercent": 0.81, "change1h": 0.05, "change7d": 1.44,
+    "high24h": 1032.00, "low24h": 1012.00,
+    "volume": 48000, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [1008, 1012, 1015, 1018, 1020, 1023, 1025.4],
+    "alertEnabled": false, "category": "precious"
+  },
+  {
+    "id": "prec-xpdusd", "rank": 5,
+    "symbol": "XPD/USD", "name": "Paladyum",
+    "price": 1085.20, "currency": "USD",
+    "change": -14.80, "changePercent": -1.35, "change1h": -0.18, "change7d": -3.72,
+    "high24h": 1105.00, "low24h": 1080.00,
+    "volume": 22000, "marketCap": null,
+    "circulatingSupply": null, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [1108, 1102, 1098, 1095, 1092, 1088, 1085.2],
+    "alertEnabled": false, "category": "precious"
+  }
+]

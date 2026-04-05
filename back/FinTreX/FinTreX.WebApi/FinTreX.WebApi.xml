@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FinTreX.WebApi</name>
+    </assembly>
+    <members>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.AuthenticateAsync(FinTreX.Core.DTOs.Account.AuthenticationRequest)">
+            <summary>Authenticate with email + password → JWT + refresh token.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.RegisterAsync(FinTreX.Core.DTOs.Account.RegisterRequest)">
+            <summary>Register a new user account.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.RefreshTokenAsync(FinTreX.Core.DTOs.Account.RefreshTokenRequest)">
+            <summary>Exchange a refresh token for a new JWT + refresh token pair.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.RevokeTokenAsync(FinTreX.Core.DTOs.Account.RefreshTokenRequest)">
+            <summary>Revoke a refresh token (e.g. on logout).</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.ForgotPasswordAsync(FinTreX.Core.DTOs.Account.ForgotPasswordRequest)">
+            <summary>Request a password reset token.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.ResetPasswordAsync(FinTreX.Core.DTOs.Account.ResetPasswordRequest)">
+            <summary>Reset password using a valid reset token.</summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Controllers.BaseApiController">
+            <summary>
+            Base controller providing common utilities for authenticated API controllers.
+            All controllers that require authentication should inherit from this class.
+            </summary>
+        </member>
+        <member name="P:FinTreX.WebApi.Controllers.BaseApiController.AuthenticatedUserId">
+            <summary>
+            Returns the authenticated user's Identity ID (from JWT "uid" claim).
+            </summary>
+        </member>
+        <member name="P:FinTreX.WebApi.Controllers.BaseApiController.AuthenticatedUserEmail">
+            <summary>
+            Returns the authenticated user's email address.
+            </summary>
+        </member>
+        <member name="P:FinTreX.WebApi.Controllers.BaseApiController.AuthenticatedUserRoles">
+            <summary>
+            Returns the list of role names assigned to the authenticated user.
+            </summary>
+        </member>
+        <member name="P:FinTreX.WebApi.Controllers.BaseApiController.ClientIpAddress">
+            <summary>
+            Extracts the real client IP from the X-Forwarded-For header or the connection.
+            </summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.EconomistClientsController.GetAvailableEconomists">
+            <summary>Returns all users with the Economist role — used by clients when hiring an economist.</summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Controllers.v1.MeController">
+            <summary>
+            Authenticated-user controller — any logged-in user can access their own profile.
+            Protected by [Authorize] (no specific role required).
+            </summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.MeController.GetMyProfile">
+            <summary>
+            Returns the currently authenticated user's profile.
+            </summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Services.CurrentUserService">
+            <summary>
+            WebApi implementation of ICurrentUserService using HttpContextAccessor.
+            </summary>
+        </member>
+    </members>
+</doc>

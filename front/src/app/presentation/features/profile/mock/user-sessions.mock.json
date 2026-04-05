@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ses-001",
+    "device": "Chrome / Windows 11",
+    "location": "İstanbul, Türkiye",
+    "ip": "85.xxx.xxx.xxx",
+    "lastActive": "2026-03-18T06:15:00",
+    "isCurrent": true
+  },
+  {
+    "id": "ses-002",
+    "device": "Safari / iPhone 15",
+    "location": "Ankara, Türkiye",
+    "ip": "78.xxx.xxx.xxx",
+    "lastActive": "2026-03-17T14:22:00",
+    "isCurrent": false
+  },
+  {
+    "id": "ses-003",
+    "device": "Firefox / macOS Sequoia",
+    "location": "İzmir, Türkiye",
+    "ip": "93.xxx.xxx.xxx",
+    "lastActive": "2026-03-15T09:45:00",
+    "isCurrent": false
+  }
+]

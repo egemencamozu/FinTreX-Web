@@ -1,3 +1,5 @@
 export class AssignEconomistUseCase {
-  execute(): void { /* TODO */ }
+  execute(): void {
+    /* TODO */
+  }
 }

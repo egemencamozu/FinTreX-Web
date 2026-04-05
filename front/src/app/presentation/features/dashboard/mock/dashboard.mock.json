@@ -1,0 +1,145 @@
+{
+  "portfolio": {
+    "totalValueTry": 1234567.89,
+    "totalValueUsd": 38234.12,
+    "dailyChangeTry": 12345.67,
+    "dailyChangePct": 1.01,
+    "weeklyChangeTry": 45260,
+    "weeklyChangePct": 3.50,
+    "monthlyChangeTry": 98400,
+    "monthlyChangePct": 8.20,
+    "ytdChangeTry": 230000,
+    "ytdChangePct": 22.40,
+    "bist":    { "valueTry": 740741, "weight": 60, "dailyChangePct":  0.80 },
+    "crypto":  { "valueTry": 370370, "weight": 30, "dailyChangePct": -0.50 },
+    "precious":{ "valueTry": 86420,  "weight":  7, "dailyChangePct":  0.35 },
+    "cash":    { "valueTry": 37037,  "weight":  3, "dailyChangePct":  0.00 }
+  },
+
+  "performanceChart": {
+    "1g":  [1194000,1198000,1202000,1199000,1205000,1210000,1208000,1215000,1220000,1218000,1225000,1230000,1228000,1234567],
+    "1h":  [1150000,1162000,1171000,1158000,1180000,1175000,1190000,1185000,1198000,1210000,1205000,1218000,1226000,1234567],
+    "3a":  [1050000,1065000,1080000,1072000,1095000,1110000,1105000,1125000,1140000,1132000,1155000,1170000,1185000,1200000,1210000,1220000,1228000,1234567],
+    "1a":  [950000,975000,985000,1000000,1010000,1025000,1015000,1040000,1060000,1055000,1080000,1100000,1095000,1120000,1145000,1160000,1190000,1210000,1234567],
+    "1y":  [800000,820000,850000,840000,880000,900000,890000,930000,960000,950000,990000,1020000,1010000,1060000,1100000,1140000,1190000,1220000,1234567],
+    "ytd": [1010000,1025000,1040000,1035000,1060000,1080000,1075000,1100000,1120000,1115000,1145000,1165000,1185000,1200000,1215000,1225000,1234567],
+    "tumu":[600000,630000,660000,650000,700000,730000,720000,780000,820000,810000,870000,920000,910000,980000,1040000,1090000,1150000,1200000,1234567]
+  },
+
+  "holdings": [
+    {
+      "id": "bist-thyao", "symbol": "THYAO", "name": "Türk Hava Yolları",
+      "category": "bist",
+      "quantity": 1000, "avgCost": 218.50,
+      "currentPrice": 248.50, "currency": "TRY",
+      "currentValueTry": 248500,
+      "costBasisTry": 218500,
+      "unrealizedPnlTry": 30000, "unrealizedPnlPct": 13.73,
+      "dailyChangePct": 1.97,
+      "weight": 20.12,
+      "sparkline": [232,238,241,237,244,246,248.5]
+    },
+    {
+      "id": "bist-kchol", "symbol": "KCHOL", "name": "Koç Holding",
+      "category": "bist",
+      "quantity": 1500, "avgCost": 175.20,
+      "currentPrice": 198.50, "currency": "TRY",
+      "currentValueTry": 297750,
+      "costBasisTry": 262800,
+      "unrealizedPnlTry": 34950, "unrealizedPnlPct": 13.30,
+      "dailyChangePct": 1.59,
+      "weight": 24.11,
+      "sparkline": [193,195,196,197,196.5,198,198.5]
+    },
+    {
+      "id": "bist-akbnk", "symbol": "AKBNK", "name": "Akbank",
+      "category": "bist",
+      "quantity": 2000, "avgCost": 79.40,
+      "currentPrice": 87.30, "currency": "TRY",
+      "currentValueTry": 174600,
+      "costBasisTry": 158800,
+      "unrealizedPnlTry": 15800, "unrealizedPnlPct": 9.95,
+      "dailyChangePct": 2.47,
+      "weight": 14.14,
+      "sparkline": [83,84.5,85,86,85.5,87,87.3]
+    },
+    {
+      "id": "crypto-btc", "symbol": "BTC", "name": "Bitcoin",
+      "category": "crypto",
+      "quantity": 0.52, "avgCost": 58200,
+      "currentPrice": 64230, "currency": "USD",
+      "currentValueTry": 183012,
+      "costBasisTry": 165880,
+      "unrealizedPnlTry": 17132, "unrealizedPnlPct": 10.33,
+      "dailyChangePct": -2.40,
+      "weight": 14.82,
+      "sparkline": [61000,62000,63500,62800,63200,64000,64230]
+    },
+    {
+      "id": "crypto-eth", "symbol": "ETH", "name": "Ethereum",
+      "category": "crypto",
+      "quantity": 12, "avgCost": 2950,
+      "currentPrice": 3450, "currency": "USD",
+      "currentValueTry": 135756,
+      "costBasisTry": 116052,
+      "unrealizedPnlTry": 19704, "unrealizedPnlPct": 16.98,
+      "dailyChangePct": -0.50,
+      "weight": 10.99,
+      "sparkline": [3200,3280,3350,3300,3380,3420,3450]
+    },
+    {
+      "id": "precious-xau", "symbol": "GR ALTIN", "name": "Gram Altın",
+      "category": "precious",
+      "quantity": 100, "avgCost": 820,
+      "currentPrice": 864.20, "currency": "TRY",
+      "currentValueTry": 86420,
+      "costBasisTry": 82000,
+      "unrealizedPnlTry": 4420, "unrealizedPnlPct": 5.39,
+      "dailyChangePct": 0.35,
+      "weight": 7.00,
+      "sparkline": [840,845,850,848,855,860,864.2]
+    }
+  ],
+
+  "movers": {
+    "gainers": [
+      { "symbol": "THYAO", "name": "Türk Hava Yolları", "category": "bist", "price": 248.50, "currency": "TRY", "changePct": 1.97 },
+      { "symbol": "AKBNK", "name": "Akbank",            "category": "bist", "price": 87.30,  "currency": "TRY", "changePct": 2.47 },
+      { "symbol": "TUPRS", "name": "Tüpraş",            "category": "bist", "price": 485.00, "currency": "TRY", "changePct": 2.65 },
+      { "symbol": "BIMAS", "name": "BİM Mağazalar",     "category": "bist", "price": 392.00, "currency": "TRY", "changePct": 1.42 },
+      { "symbol": "SOL",   "name": "Solana",             "category": "crypto","price": 145.20,"currency": "USD", "changePct": 3.45 }
+    ],
+    "losers": [
+      { "symbol": "SISE",  "name": "Şişe Cam",          "category": "bist", "price": 38.60,  "currency": "TRY", "changePct": -3.98 },
+      { "symbol": "EREGL", "name": "Ereğli Demir",      "category": "bist", "price": 45.80,  "currency": "TRY", "changePct": -2.96 },
+      { "symbol": "GARAN", "name": "Garanti BBVA",      "category": "bist", "price": 162.40, "currency": "TRY", "changePct": -0.98 },
+      { "symbol": "BTC",   "name": "Bitcoin",            "category": "crypto","price": 64230, "currency": "USD", "changePct": -2.40 },
+      { "symbol": "ETH",   "name": "Ethereum",           "category": "crypto","price": 3450,  "currency": "USD", "changePct": -0.50 }
+    ]
+  },
+
+  "recentTransactions": [
+    { "id": "tx-1", "type": "buy",  "symbol": "THYAO",   "name": "Türk Hava Yolları", "category": "bist",   "quantity": 200,  "price": 242.50, "currency": "TRY", "totalTry": 48500,  "date": "2026-03-18T10:45:00" },
+    { "id": "tx-2", "type": "sell", "symbol": "BTC",     "name": "Bitcoin",            "category": "crypto", "quantity": 0.05, "price": 64100,  "currency": "USD", "totalTry": 10543,  "date": "2026-03-17T16:20:00" },
+    { "id": "tx-3", "type": "buy",  "symbol": "GR ALTIN","name": "Gram Altın",         "category": "precious","quantity": 20, "price": 852.00, "currency": "TRY", "totalTry": 17040,  "date": "2026-03-15T09:15:00" },
+    { "id": "tx-4", "type": "buy",  "symbol": "AKBNK",   "name": "Akbank",             "category": "bist",   "quantity": 500,  "price": 83.20,  "currency": "TRY", "totalTry": 41600,  "date": "2026-03-14T11:30:00" },
+    { "id": "tx-5", "type": "sell", "symbol": "ETH",     "name": "Ethereum",           "category": "crypto", "quantity": 2,    "price": 3380,   "currency": "USD", "totalTry": 22260,  "date": "2026-03-12T14:05:00" }
+  ],
+
+  "ticker": [
+    { "label": "BIST 100", "value": 9842,    "changePct":  0.47 },
+    { "label": "USD/TRY",  "value": 32.854,  "changePct": -0.10 },
+    { "label": "EUR/TRY",  "value": 35.602,  "changePct":  0.62 },
+    { "label": "GBP/TRY",  "value": 41.856,  "changePct": -0.67 },
+    { "label": "BTC",      "value": 64230,   "changePct": -2.40 },
+    { "label": "ETH",      "value": 3450,    "changePct": -0.50 },
+    { "label": "XAU/USD",  "value": 2312.40, "changePct":  0.28 },
+    { "label": "XAG/USD",  "value": 27.34,   "changePct":  0.15 }
+  ],
+
+  "alerts": [
+    { "id": "al-1", "type": "price",   "symbol": "THYAO", "message": "THYAO 250.00 TL hedefine ulaştı",        "time": "2 dk önce",  "read": false },
+    { "id": "al-2", "type": "news",    "symbol": "AKBNK", "message": "AKBNK: Yeni iş anlaşması bildirimi",     "time": "1 sa önce",  "read": false },
+    { "id": "al-3", "type": "report",  "symbol": null,    "message": "Haftalık portföy raporunuz hazır",         "time": "1 gün önce", "read": true }
+  ]
+}

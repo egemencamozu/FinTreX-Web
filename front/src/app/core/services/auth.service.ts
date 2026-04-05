@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
 import { SubscriptionTier } from '../enums/subscription-tier.enum';
 import { UserRole } from '../enums/user-role.enum';
 import { EnvironmentConfigService } from './environment-config.service';
+import { UserManagementRepository } from '../interfaces/user-management.repository';
+import { UserSummary } from '../models/user-summary.model';
 
 export interface LoginRequest {
   email: string;
@@ -14,6 +16,7 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber?: string;
   password: string;
   confirmPassword: string;
   role: UserRole;
@@ -25,9 +28,12 @@ interface AuthenticationResponse {
   firstName: string;
   lastName: string;
   email: string;
-  roles: string[];
+  phoneNumber?: string;
+  role: string;
   isVerified: boolean;
   jwToken: string;
+  refreshToken: string;
+  refreshTokenExpiration: string;
 }
 
 export interface AuthenticatedUser {
@@ -37,7 +43,7 @@ export interface AuthenticatedUser {
   lastName: string;
   userName: string;
   role: UserRole;
-  roles: UserRole[];
+  phoneNumber?: string;
   subscriptionTier: SubscriptionTier;
 }
 
@@ -48,6 +54,7 @@ export class AuthService {
   private readonly authApiUrl: string;
   private readonly tokenStorageKey: string;
   private readonly userStorageKey: string;
+  private readonly refreshTokenKey: string;
   private readonly currentUserSubject: BehaviorSubject<AuthenticatedUser | null>;
 
   readonly currentUser$: Observable<AuthenticatedUser | null>;
@@ -55,21 +62,23 @@ export class AuthService {
   constructor(
     private readonly http: HttpClient,
     private readonly envConfig: EnvironmentConfigService,
+    private readonly userManagementRepository: UserManagementRepository,
   ) {
     this.authApiUrl = this.envConfig.get('authApiUrl');
     this.tokenStorageKey = this.envConfig.get('jwtTokenStorageKey');
     this.userStorageKey = `${this.tokenStorageKey}_user`;
+    this.refreshTokenKey = `${this.tokenStorageKey}_refresh`;
     this.currentUserSubject = new BehaviorSubject<AuthenticatedUser | null>(this.readStoredUser());
     this.currentUser$ = this.currentUserSubject.asObservable();
   }
 
+  // ── Auth Operations ──────────────────────────────────────────────────
+
   login(request: LoginRequest, rememberMe: boolean): Observable<AuthenticatedUser> {
-    return this.http
-      .post<AuthenticationResponse>(`${this.authApiUrl}/authenticate`, request)
-      .pipe(
-        tap((response) => this.persistAuthentication(response, rememberMe)),
-        map(() => this.currentUserSubject.value as AuthenticatedUser),
-      );
+    return this.http.post<AuthenticationResponse>(`${this.authApiUrl}/authenticate`, request).pipe(
+      tap((response) => this.persistAuthentication(response, rememberMe)),
+      switchMap(() => this.syncCurrentUserProfile(rememberMe)),
+    );
   }
 
   register(request: RegisterRequest): Observable<string> {
@@ -79,9 +88,59 @@ export class AuthService {
   }
 
   logout(): void {
+    const refreshToken = this.readStoredValue(this.refreshTokenKey);
+    if (refreshToken) {
+      // Best-effort revoke — don't block logout on failure
+      this.http
+        .post(`${this.authApiUrl}/revoke-token`, { token: refreshToken })
+        .subscribe({ error: () => {} });
+    }
     this.clearStoredAuth();
     this.currentUserSubject.next(null);
   }
+
+  /**
+   * Exchange the stored refresh token for a new JWT + refresh token pair.
+   * Called by the interceptor when a 401 is received.
+   */
+  refreshToken(): Observable<AuthenticatedUser> {
+    const token = this.readStoredValue(this.refreshTokenKey);
+    if (!token) {
+      this.logout();
+      throw new Error('No refresh token available.');
+    }
+
+    const rememberMe = this.isRememberMeSession();
+
+    return this.http
+      .post<AuthenticationResponse>(`${this.authApiUrl}/refresh-token`, { token })
+      .pipe(
+        tap((response) => this.persistAuthentication(response, rememberMe)),
+        switchMap(() => this.syncCurrentUserProfile(rememberMe)),
+      );
+  }
+
+  // ── Password Operations ──────────────────────────────────────────────
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.authApiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(
+    email: string,
+    token: string,
+    password: string,
+    confirmPassword: string,
+  ): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.authApiUrl}/reset-password`, {
+      email,
+      token,
+      password,
+      confirmPassword,
+    });
+  }
+
+  // ── State Queries ────────────────────────────────────────────────────
 
   getCurrentUser(): AuthenticatedUser | null {
     return this.currentUserSubject.value;
@@ -89,44 +148,39 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     const token = this.getAccessToken();
-
     if (!token) {
       return false;
     }
-
     if (this.isTokenExpired(token)) {
-      this.logout();
+      // Don't logout immediately — let the interceptor try refresh first
       return false;
     }
-
     return true;
   }
 
   hasRole(role: UserRole): boolean {
-    return this.currentUserSubject.value?.roles.includes(role) ?? false;
+    return this.currentUserSubject.value?.role === role;
   }
 
   getRedirectUrl(): string {
     const currentUser = this.currentUserSubject.value;
-
     if (!currentUser) {
       throw new Error('Authenticated user context is missing.');
     }
 
-    if (this.hasRole(UserRole.ADMIN)) {
-      return '/app/admin/users';
-    }
-
-    if (this.hasRole(UserRole.ECONOMIST)) {
-      return '/app/economist';
-    }
-
-    if (this.hasRole(UserRole.USER)) {
-      return '/app/user';
-    }
+    if (this.hasRole(UserRole.ADMIN)) return '/app/admin/users';
+    if (this.hasRole(UserRole.ECONOMIST)) return '/app/economist';
+    if (this.hasRole(UserRole.USER)) return '/app/user';
 
     throw new Error(`Unsupported role '${currentUser.role}'.`);
   }
+
+  /** Check if a stored refresh token exists. */
+  hasRefreshToken(): boolean {
+    return !!this.readStoredValue(this.refreshTokenKey);
+  }
+
+  // ── Private Helpers ──────────────────────────────────────────────────
 
   private persistAuthentication(response: AuthenticationResponse, rememberMe: boolean): void {
     const user = this.mapAuthenticationResponse(response);
@@ -136,12 +190,15 @@ export class AuthService {
 
     storage?.setItem(this.tokenStorageKey, response.jwToken);
     storage?.setItem(this.userStorageKey, JSON.stringify(user));
+    if (response.refreshToken) {
+      storage?.setItem(this.refreshTokenKey, response.refreshToken);
+    }
 
     this.currentUserSubject.next(user);
   }
 
   private mapAuthenticationResponse(response: AuthenticationResponse): AuthenticatedUser {
-    const roles = this.normalizeRoles(response.roles);
+    const role = this.normalizeRole(response.role);
 
     return {
       id: response.id,
@@ -149,53 +206,68 @@ export class AuthService {
       firstName: response.firstName ?? '',
       lastName: response.lastName ?? '',
       userName: response.userName,
-      role: this.getPrimaryRole(roles),
-      roles,
-      subscriptionTier: SubscriptionTier.DEFAULT,
+      role,
+      phoneNumber: response.phoneNumber,
+      subscriptionTier: SubscriptionTier.Default,
     };
   }
 
-  private normalizeRoles(rawRoles: string[] | null | undefined): UserRole[] {
-    const normalizedRoles = new Set<UserRole>();
+  private mapUserSummaryResponse(response: UserSummary): AuthenticatedUser {
+    const role = this.normalizeRole(response.role);
 
-    for (const rawRole of rawRoles ?? []) {
-      switch ((rawRole ?? '').trim().toUpperCase()) {
-        case 'ADMIN':
-        case 'SUPERADMIN':
-          normalizedRoles.add(UserRole.ADMIN);
-          break;
-        case 'ECONOMIST':
-        case 'MODERATOR':
-          normalizedRoles.add(UserRole.ECONOMIST);
-          break;
-        case 'USER':
-        case 'BASIC':
-          normalizedRoles.add(UserRole.USER);
-          break;
-        case '':
-          throw new Error('Authentication response contains an empty role value.');
-        default:
-          throw new Error(`Authentication response contains an unsupported role '${rawRole}'.`);
-      }
-    }
-
-    if (normalizedRoles.size === 0) {
-      throw new Error('Authentication response does not contain any supported roles.');
-    }
-
-    return Array.from(normalizedRoles);
+    return {
+      id: response.id,
+      email: response.email,
+      firstName: response.firstName ?? '',
+      lastName: response.lastName ?? '',
+      userName: response.userName,
+      role,
+      phoneNumber: response.phoneNumber,
+      subscriptionTier: SubscriptionTier.Default,
+    };
   }
 
-  private getPrimaryRole(roles: UserRole[]): UserRole {
-    if (roles.includes(UserRole.ADMIN)) {
-      return UserRole.ADMIN;
+  private syncCurrentUserProfile(rememberMe: boolean): Observable<AuthenticatedUser> {
+    return this.userManagementRepository.getMyProfile().pipe(
+      map((profile) => {
+        const user = this.mapUserSummaryResponse(profile);
+        this.persistCurrentUser(user, rememberMe);
+        return user;
+      }),
+      catchError((error: Error) => {
+        this.clearStoredAuth();
+        this.currentUserSubject.next(null);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  private persistCurrentUser(user: AuthenticatedUser, rememberMe: boolean): void {
+    const storage = this.getWritableStorage(rememberMe);
+    if (!storage) {
+      return;
     }
 
-    if (roles.includes(UserRole.ECONOMIST)) {
-      return UserRole.ECONOMIST;
-    }
+    storage.setItem(this.userStorageKey, JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
 
-    return UserRole.USER;
+  private normalizeRole(rawRole: string | null | undefined): UserRole {
+    switch ((rawRole ?? '').trim().toUpperCase()) {
+      case 'ADMIN':
+      case 'SUPERADMIN':
+        return UserRole.ADMIN;
+      case 'ECONOMIST':
+      case 'MODERATOR':
+        return UserRole.ECONOMIST;
+      case 'USER':
+      case 'BASIC':
+        return UserRole.USER;
+      case '':
+        throw new Error('Authentication response contains an empty role value.');
+      default:
+        throw new Error(`Authentication response contains an unsupported role '${rawRole}'.`);
+    }
   }
 
   private readStoredUser(): AuthenticatedUser | null {
@@ -238,11 +310,13 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.tokenStorageKey);
       localStorage.removeItem(this.userStorageKey);
+      localStorage.removeItem(this.refreshTokenKey);
     }
 
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.removeItem(this.tokenStorageKey);
       sessionStorage.removeItem(this.userStorageKey);
+      sessionStorage.removeItem(this.refreshTokenKey);
     }
   }
 
@@ -250,26 +324,27 @@ export class AuthService {
     if (rememberMe && typeof localStorage !== 'undefined') {
       return localStorage;
     }
-
     if (typeof sessionStorage !== 'undefined') {
       return sessionStorage;
     }
-
     if (typeof localStorage !== 'undefined') {
       return localStorage;
     }
-
     return null;
+  }
+
+  private isRememberMeSession(): boolean {
+    return (
+      typeof localStorage !== 'undefined' && localStorage.getItem(this.tokenStorageKey) !== null
+    );
   }
 
   private isTokenExpired(token: string): boolean {
     const payload = this.decodeJwtPayload(token);
     const expiration = typeof payload?.['exp'] === 'number' ? payload['exp'] * 1000 : null;
-
     if (!expiration) {
       return false;
     }
-
     return Date.now() >= expiration;
   }
 
@@ -281,7 +356,9 @@ export class AuthService {
 
     try {
       const normalizedPayload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-      const decodedPayload = atob(normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '='));
+      const decodedPayload = atob(
+        normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '='),
+      );
       return JSON.parse(decodedPayload) as Record<string, unknown>;
     } catch {
       return null;

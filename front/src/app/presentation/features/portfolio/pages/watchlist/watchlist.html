@@ -1,0 +1,721 @@
+<section class="watchlist-c">
+  <div class="watchlist-c__wrapper">
+    <div class="watchlist-c__container">
+      <div class="watchlist-c__shell">
+
+        <!-- ══════════════════════════════════════════════════════════════
+             PAGE HEADER
+        ══════════════════════════════════════════════════════════════ -->
+        <div class="watchlist-c__page-header">
+          <div class="watchlist-c__page-header-left">
+            <div class="watchlist-c__page-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <div>
+              <h1 class="watchlist-c__page-title">İzleme Listem</h1>
+              <p class="watchlist-c__page-subtitle">Takip ettiğiniz varlıklar ve anlık piyasa hareketleri</p>
+            </div>
+          </div>
+          <div class="watchlist-c__page-header-actions">
+            <span class="watchlist-c__last-refresh">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+              {{ formatLastRefresh(lastRefresh()) }}
+            </span>
+            <button class="watchlist-c__btn watchlist-c__btn--secondary" type="button" (click)="refresh()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+              Yenile
+            </button>
+            <button class="watchlist-c__btn watchlist-c__btn--primary" type="button" (click)="openAddModal()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Varlık Ekle
+            </button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             MARKET OVERVIEW BAR
+        ══════════════════════════════════════════════════════════════ -->
+        <div class="watchlist-c__market-bar">
+
+          <!-- Total Market Cap -->
+          <div class="watchlist-c__market-chip">
+            <div class="watchlist-c__market-chip-header">
+              <span class="watchlist-c__market-chip-label">Toplam Piyasa Değeri</span>
+              <span class="watchlist-c__change-badge"
+                    [class.watchlist-c__change-badge--up]="marketMetrics().totalMarketCapChange24h >= 0"
+                    [class.watchlist-c__change-badge--down]="marketMetrics().totalMarketCapChange24h < 0">
+                {{ formatPercent(marketMetrics().totalMarketCapChange24h) }}
+              </span>
+            </div>
+            <div class="watchlist-c__market-chip-value">
+              ${{ formatMarketCap(marketMetrics().totalMarketCapUsd) }}
+            </div>
+            <svg class="watchlist-c__mini-chart watchlist-c__mini-chart--up"
+                 viewBox="0 0 60 20" width="60" height="20">
+              <polyline class="watchlist-c__mini-line"
+                        [attr.points]="getSparklinePoints(marketMetrics().marketCapSparkline, 60, 20)"/>
+            </svg>
+          </div>
+
+          <!-- 24h Volume -->
+          <div class="watchlist-c__market-chip">
+            <div class="watchlist-c__market-chip-header">
+              <span class="watchlist-c__market-chip-label">24s Hacim</span>
+              <span class="watchlist-c__change-badge"
+                    [class.watchlist-c__change-badge--up]="marketMetrics().volume24hChange24h >= 0"
+                    [class.watchlist-c__change-badge--down]="marketMetrics().volume24hChange24h < 0">
+                {{ formatPercent(marketMetrics().volume24hChange24h) }}
+              </span>
+            </div>
+            <div class="watchlist-c__market-chip-value">
+              ${{ formatMarketCap(marketMetrics().volume24hUsd) }}
+            </div>
+            <div class="watchlist-c__mini-bar-wrap">
+              <div class="watchlist-c__mini-bar" style="width: 72%"></div>
+            </div>
+          </div>
+
+          <!-- Fear & Greed -->
+          <div class="watchlist-c__market-chip watchlist-c__market-chip--fg">
+            <div class="watchlist-c__market-chip-header">
+              <span class="watchlist-c__market-chip-label">Korku &amp; Açgözlülük</span>
+            </div>
+            <div class="watchlist-c__fg-row">
+              <span class="watchlist-c__fg-value watchlist-c__fg-value--{{ fearGreedClass() }}">
+                {{ marketMetrics().fearGreedValue }}
+              </span>
+              <span class="watchlist-c__fg-label-text watchlist-c__fg-label-text--{{ fearGreedClass() }}">
+                {{ marketMetrics().fearGreedLabel }}
+              </span>
+            </div>
+            <div class="watchlist-c__fg-track">
+              <div class="watchlist-c__fg-thumb" [style.left.%]="marketMetrics().fearGreedValue"></div>
+            </div>
+            <div class="watchlist-c__fg-scale">
+              <span>Aşırı Korku</span><span>Nötr</span><span>Açgözlülük</span>
+            </div>
+          </div>
+
+          <!-- BTC Dominance -->
+          <div class="watchlist-c__market-chip">
+            <div class="watchlist-c__market-chip-header">
+              <span class="watchlist-c__market-chip-label">BTC Dominansı</span>
+              <span class="watchlist-c__change-badge"
+                    [class.watchlist-c__change-badge--up]="marketMetrics().btcDominanceChange24h >= 0"
+                    [class.watchlist-c__change-badge--down]="marketMetrics().btcDominanceChange24h < 0">
+                {{ formatPercent(marketMetrics().btcDominanceChange24h) }}
+              </span>
+            </div>
+            <div class="watchlist-c__market-chip-value">{{ marketMetrics().btcDominance }}%</div>
+            <div class="watchlist-c__dom-track">
+              <div class="watchlist-c__dom-fill watchlist-c__dom-fill--btc"
+                   [style.width.%]="marketMetrics().btcDominance"></div>
+              <div class="watchlist-c__dom-fill watchlist-c__dom-fill--alt"
+                   [style.width.%]="100 - marketMetrics().btcDominance"></div>
+            </div>
+            <div class="watchlist-c__dom-legend">
+              <span class="watchlist-c__dom-legend-item watchlist-c__dom-legend-item--btc">BTC</span>
+              <span class="watchlist-c__dom-legend-item watchlist-c__dom-legend-item--alt">Diğerleri</span>
+            </div>
+          </div>
+
+          <!-- BIST 100 -->
+          <div class="watchlist-c__market-chip">
+            <div class="watchlist-c__market-chip-header">
+              <span class="watchlist-c__market-chip-label">BIST 100</span>
+              <span class="watchlist-c__change-badge"
+                    [class.watchlist-c__change-badge--up]="marketMetrics().bist100Change24h >= 0"
+                    [class.watchlist-c__change-badge--down]="marketMetrics().bist100Change24h < 0">
+                {{ formatPercent(marketMetrics().bist100Change24h) }}
+              </span>
+            </div>
+            <div class="watchlist-c__market-chip-value">
+              {{ marketMetrics().bist100Value.toLocaleString('tr-TR') }}
+            </div>
+            <svg class="watchlist-c__mini-chart watchlist-c__mini-chart--up"
+                 viewBox="0 0 60 20" width="60" height="20">
+              <polyline class="watchlist-c__mini-line"
+                        [attr.points]="getSparklinePoints(marketMetrics().bist100Sparkline, 60, 20)"/>
+            </svg>
+          </div>
+
+          <!-- Altcoin Season -->
+          <div class="watchlist-c__market-chip">
+            <div class="watchlist-c__market-chip-header">
+              <span class="watchlist-c__market-chip-label">Altcoin Sezonu</span>
+            </div>
+            <div class="watchlist-c__market-chip-value">{{ marketMetrics().altcoinSeasonIndex }} / 100</div>
+            <div class="watchlist-c__alt-track">
+              <div class="watchlist-c__alt-fill"
+                   [style.width.%]="marketMetrics().altcoinSeasonIndex"></div>
+            </div>
+            <div class="watchlist-c__alt-legend">
+              <span>Bitcoin</span><span>Altcoin</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             STATS ROW
+        ══════════════════════════════════════════════════════════════ -->
+        <div class="watchlist-c__stats-row">
+
+          <div class="watchlist-c__stat-card">
+            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--navy">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <div class="watchlist-c__stat-body">
+              <span class="watchlist-c__stat-value">{{ totalCount() }}</span>
+              <span class="watchlist-c__stat-label">Toplam Takip</span>
+            </div>
+          </div>
+
+          <div class="watchlist-c__stat-card">
+            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--success">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+              </svg>
+            </div>
+            <div class="watchlist-c__stat-body">
+              <span class="watchlist-c__stat-value watchlist-c__stat-value--success">{{ gainersCount() }}</span>
+              <span class="watchlist-c__stat-label">Yükselen</span>
+            </div>
+          </div>
+
+          <div class="watchlist-c__stat-card">
+            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--danger">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/>
+              </svg>
+            </div>
+            <div class="watchlist-c__stat-body">
+              <span class="watchlist-c__stat-value watchlist-c__stat-value--danger">{{ losersCount() }}</span>
+              <span class="watchlist-c__stat-label">Düşen</span>
+            </div>
+          </div>
+
+          <div class="watchlist-c__stat-card">
+            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--gold">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+            <div class="watchlist-c__stat-body">
+              <span class="watchlist-c__stat-value watchlist-c__stat-value--gold">{{ alertsCount() }}</span>
+              <span class="watchlist-c__stat-label">Aktif Alarm</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             MAIN PANEL  (tabs + toolbar + table)
+        ══════════════════════════════════════════════════════════════ -->
+        <div class="watchlist-c__main-panel">
+
+          <!-- Tabs -->
+          <div class="watchlist-c__tabs" role="tablist">
+            @for (tab of tabs; track tab.id) {
+              <button
+                [class]="'watchlist-c__tab watchlist-c__tab--' + tab.colorClass + (activeTab() === tab.id ? ' watchlist-c__tab--active' : '')"
+                role="tab"
+                type="button"
+                (click)="setTab(tab.id)"
+              >
+                <span class="watchlist-c__tab-dot watchlist-c__tab-dot--{{ tab.colorClass }}"></span>
+                {{ tab.label }}
+                <span class="watchlist-c__tab-badge">{{ getCategoryCount(tab.id) }}</span>
+              </button>
+            }
+          </div>
+
+          <!-- Toolbar -->
+          <div class="watchlist-c__toolbar">
+            <div class="watchlist-c__search-wrap">
+              <svg class="watchlist-c__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                class="watchlist-c__search-input"
+                type="search"
+                placeholder="Sembol veya isim ara..."
+                [value]="searchQuery()"
+                (input)="searchQuery.set($any($event.target).value)"
+              />
+            </div>
+            <div class="watchlist-c__toolbar-right">
+              <span class="watchlist-c__result-count">{{ filteredItems().length }} varlık</span>
+            </div>
+          </div>
+
+          <!-- Table -->
+          @if (filteredItems().length > 0) {
+            <div class="watchlist-c__table-wrap">
+              <table class="watchlist-c__table" role="table">
+                <thead class="watchlist-c__thead">
+                  <tr>
+                    <th class="watchlist-c__th watchlist-c__th--rank watchlist-c__th--sortable"
+                        (click)="sortBy('rank')">#
+                      @if (isSortActive('rank')) {
+                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                      }
+                    </th>
+                    <th class="watchlist-c__th watchlist-c__th--symbol watchlist-c__th--sortable"
+                        (click)="sortBy('symbol')">Sembol / İsim
+                      @if (isSortActive('symbol')) {
+                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                      }
+                    </th>
+                    <th class="watchlist-c__th watchlist-c__th--price watchlist-c__th--sortable"
+                        (click)="sortBy('price')">Fiyat
+                      @if (isSortActive('price')) {
+                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                      }
+                    </th>
+                    <th class="watchlist-c__th watchlist-c__th--pct watchlist-c__th--hide-mobile watchlist-c__th--sortable"
+                        (click)="sortBy('change1h')">1s %
+                      @if (isSortActive('change1h')) {
+                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                      }
+                    </th>
+                    <th class="watchlist-c__th watchlist-c__th--pct watchlist-c__th--sortable"
+                        (click)="sortBy('changePercent')">24s %
+                      @if (isSortActive('changePercent')) {
+                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                      }
+                    </th>
+                    <th class="watchlist-c__th watchlist-c__th--pct watchlist-c__th--hide-mobile watchlist-c__th--sortable"
+                        (click)="sortBy('change7d')">7g %
+                      @if (isSortActive('change7d')) {
+                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                      }
+                    </th>
+                    <th class="watchlist-c__th watchlist-c__th--range watchlist-c__th--hide-tablet">24s Aralık</th>
+                    @if (showMarketCapColumn) {
+                      <th class="watchlist-c__th watchlist-c__th--cap watchlist-c__th--hide-tablet watchlist-c__th--sortable"
+                          (click)="sortBy('marketCap')">Piy. Değeri
+                        @if (isSortActive('marketCap')) {
+                          <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                        }
+                      </th>
+                    }
+                    <th class="watchlist-c__th watchlist-c__th--vol watchlist-c__th--hide-tablet watchlist-c__th--sortable"
+                        (click)="sortBy('volume')">24s Hacim
+                      @if (isSortActive('volume')) {
+                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
+                      }
+                    </th>
+                    @if (showSupplyColumn) {
+                      <th class="watchlist-c__th watchlist-c__th--supply watchlist-c__th--hide-tablet">Dolaşım Arzı</th>
+                    }
+                    <th class="watchlist-c__th watchlist-c__th--sparkline watchlist-c__th--hide-mobile">Son 7 Gün</th>
+                    <th class="watchlist-c__th watchlist-c__th--actions">İşlem</th>
+                  </tr>
+                </thead>
+                <tbody class="watchlist-c__tbody">
+                  @for (item of filteredItems(); track item.id) {
+                    <tr class="watchlist-c__row"
+                        [class.watchlist-c__row--gaining]="item.changePercent >= 0"
+                        [class.watchlist-c__row--losing]="item.changePercent < 0">
+
+                      <!-- Rank -->
+                      <td class="watchlist-c__td watchlist-c__td--rank">
+                        <span class="watchlist-c__rank">{{ item.rank }}</span>
+                      </td>
+
+                      <!-- Symbol / Name -->
+                      <td class="watchlist-c__td watchlist-c__td--symbol">
+                        <div class="watchlist-c__asset">
+                          <div class="watchlist-c__asset-icon watchlist-c__asset-icon--{{ item.category }}">
+                            {{ item.symbol.charAt(0) }}
+                          </div>
+                          <div class="watchlist-c__asset-info">
+                            <span class="watchlist-c__asset-symbol">{{ item.symbol }}</span>
+                            <span class="watchlist-c__asset-name">{{ item.name }}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <!-- Price -->
+                      <td class="watchlist-c__td watchlist-c__td--price">
+                        <div class="watchlist-c__price-group">
+                          <span class="watchlist-c__price">{{ formatPrice(item.price, item.currency) }}</span>
+                          <span class="watchlist-c__price-abs"
+                                [class.watchlist-c__price-abs--up]="item.change >= 0"
+                                [class.watchlist-c__price-abs--down]="item.change < 0">
+                            {{ formatChange(item.change, item.currency) }}
+                          </span>
+                        </div>
+                      </td>
+
+                      <!-- 1h % -->
+                      <td class="watchlist-c__td watchlist-c__td--pct watchlist-c__td--hide-mobile">
+                        <span class="watchlist-c__pct-pill"
+                              [class.watchlist-c__pct-pill--up]="item.change1h >= 0"
+                              [class.watchlist-c__pct-pill--down]="item.change1h < 0">
+                          {{ formatPercent(item.change1h) }}
+                        </span>
+                      </td>
+
+                      <!-- 24h % -->
+                      <td class="watchlist-c__td watchlist-c__td--pct">
+                        <span class="watchlist-c__pct-pill watchlist-c__pct-pill--lg"
+                              [class.watchlist-c__pct-pill--up]="item.changePercent >= 0"
+                              [class.watchlist-c__pct-pill--down]="item.changePercent < 0">
+                          {{ formatPercent(item.changePercent) }}
+                        </span>
+                      </td>
+
+                      <!-- 7d % -->
+                      <td class="watchlist-c__td watchlist-c__td--pct watchlist-c__td--hide-mobile">
+                        <span class="watchlist-c__pct-pill"
+                              [class.watchlist-c__pct-pill--up]="item.change7d >= 0"
+                              [class.watchlist-c__pct-pill--down]="item.change7d < 0">
+                          {{ formatPercent(item.change7d) }}
+                        </span>
+                      </td>
+
+                      <!-- 24h Range -->
+                      <td class="watchlist-c__td watchlist-c__td--range watchlist-c__td--hide-tablet">
+                        <div class="watchlist-c__range">
+                          <span class="watchlist-c__range-low">{{ formatPrice(item.low24h, '') }}</span>
+                          <div class="watchlist-c__range-track">
+                            <div class="watchlist-c__range-thumb"
+                                 [style.left.%]="getPriceRangePosition(item.price, item.low24h, item.high24h)">
+                            </div>
+                          </div>
+                          <span class="watchlist-c__range-high">{{ formatPrice(item.high24h, '') }}</span>
+                        </div>
+                      </td>
+
+                      <!-- Market Cap -->
+                      @if (showMarketCapColumn) {
+                        <td class="watchlist-c__td watchlist-c__td--cap watchlist-c__td--hide-tablet">
+                          <span class="watchlist-c__cap">{{ formatMarketCap(item.marketCap) }}</span>
+                        </td>
+                      }
+
+                      <!-- Volume -->
+                      <td class="watchlist-c__td watchlist-c__td--vol watchlist-c__td--hide-tablet">
+                        <span class="watchlist-c__vol">{{ formatVolume(item.volume) }}</span>
+                      </td>
+
+                      <!-- Circulating Supply -->
+                      @if (showSupplyColumn) {
+                        <td class="watchlist-c__td watchlist-c__td--supply watchlist-c__td--hide-tablet">
+                          <div class="watchlist-c__supply">
+                            <span class="watchlist-c__supply-value">
+                              {{ formatSupply(item.circulatingSupply) }} {{ item.symbol }}
+                            </span>
+                            @if (item.circulatingSupply !== null && item.totalSupply !== null) {
+                              <div class="watchlist-c__supply-track">
+                                <div class="watchlist-c__supply-fill"
+                                     [style.width.%]="(item.circulatingSupply / item.totalSupply) * 100">
+                                </div>
+                              </div>
+                            }
+                          </div>
+                        </td>
+                      }
+
+                      <!-- Sparkline -->
+                      <td class="watchlist-c__td watchlist-c__td--sparkline watchlist-c__td--hide-mobile">
+                        <svg
+                          class="watchlist-c__sparkline"
+                          viewBox="0 0 80 32"
+                          width="80"
+                          height="32"
+                          [class.watchlist-c__sparkline--up]="item.changePercent >= 0"
+                          [class.watchlist-c__sparkline--down]="item.changePercent < 0"
+                        >
+                          <polyline class="watchlist-c__sparkline-line"
+                                    [attr.points]="getSparklinePoints(item.sparkline)"/>
+                        </svg>
+                      </td>
+
+                      <!-- Actions -->
+                      <td class="watchlist-c__td watchlist-c__td--actions">
+                        <div class="watchlist-c__action-group">
+                          <button
+                            class="watchlist-c__action-btn"
+                            [class.watchlist-c__action-btn--alert-on]="item.alertEnabled"
+                            type="button"
+                            (click)="toggleAlert(item.id)"
+                            [title]="item.alertEnabled ? 'Alarm kapat' : 'Alarm kur'"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                          </button>
+                          <button
+                            class="watchlist-c__action-btn watchlist-c__action-btn--remove"
+                            type="button"
+                            (click)="removeItem(item.id)"
+                            title="İzlemeden çıkar"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+          } @else {
+            <div class="watchlist-c__empty">
+              <div class="watchlist-c__empty-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </div>
+              <p class="watchlist-c__empty-title">
+                @if (searchQuery()) { "{{ searchQuery() }}" için sonuç bulunamadı }
+                @else { Bu kategoride takip listesi boş }
+              </p>
+              <p class="watchlist-c__empty-desc">
+                @if (searchQuery()) { Farklı bir sembol veya isim aramayı deneyin. }
+                @else { Varlık Ekle butonu ile buraya hisse, maden veya kripto ekleyebilirsiniz. }
+              </p>
+              @if (!searchQuery()) {
+                <button class="watchlist-c__btn watchlist-c__btn--primary" type="button" (click)="openAddModal()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Varlık Ekle
+                </button>
+              }
+            </div>
+          }
+
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             WIDGETS ROW
+        ══════════════════════════════════════════════════════════════ -->
+        <div class="watchlist-c__widgets">
+
+          <!-- Top Gainers -->
+          <div class="watchlist-c__widget">
+            <div class="watchlist-c__widget-header">
+              <div class="watchlist-c__widget-title-group">
+                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--success"></div>
+                <h3 class="watchlist-c__widget-title">En Çok Yükselenler</h3>
+              </div>
+              <span class="watchlist-c__widget-badge watchlist-c__widget-badge--success">24s</span>
+            </div>
+            <div class="watchlist-c__widget-body">
+              @if (topGainers().length > 0) {
+                <ul class="watchlist-c__mover-list">
+                  @for (item of topGainers(); track item.id) {
+                    <li class="watchlist-c__mover-item">
+                      <span class="watchlist-c__mover-rank">{{ item.rank }}</span>
+                      <div class="watchlist-c__mover-icon watchlist-c__mover-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
+                      <div class="watchlist-c__mover-info">
+                        <span class="watchlist-c__mover-symbol">{{ item.symbol }}</span>
+                        <span class="watchlist-c__mover-cat">{{ getCategoryLabel(item.category) }}</span>
+                      </div>
+                      <div class="watchlist-c__mover-right">
+                        <span class="watchlist-c__mover-price">{{ formatPrice(item.price, item.currency) }}</span>
+                        <span class="watchlist-c__mover-pct watchlist-c__mover-pct--up">{{ formatPercent(item.changePercent) }}</span>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="watchlist-c__widget-empty">Yükselen varlık bulunamadı</p>
+              }
+            </div>
+          </div>
+
+          <!-- Top Losers -->
+          <div class="watchlist-c__widget">
+            <div class="watchlist-c__widget-header">
+              <div class="watchlist-c__widget-title-group">
+                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--danger"></div>
+                <h3 class="watchlist-c__widget-title">En Çok Düşenler</h3>
+              </div>
+              <span class="watchlist-c__widget-badge watchlist-c__widget-badge--danger">24s</span>
+            </div>
+            <div class="watchlist-c__widget-body">
+              @if (topLosers().length > 0) {
+                <ul class="watchlist-c__mover-list">
+                  @for (item of topLosers(); track item.id) {
+                    <li class="watchlist-c__mover-item">
+                      <span class="watchlist-c__mover-rank">{{ item.rank }}</span>
+                      <div class="watchlist-c__mover-icon watchlist-c__mover-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
+                      <div class="watchlist-c__mover-info">
+                        <span class="watchlist-c__mover-symbol">{{ item.symbol }}</span>
+                        <span class="watchlist-c__mover-cat">{{ getCategoryLabel(item.category) }}</span>
+                      </div>
+                      <div class="watchlist-c__mover-right">
+                        <span class="watchlist-c__mover-price">{{ formatPrice(item.price, item.currency) }}</span>
+                        <span class="watchlist-c__mover-pct watchlist-c__mover-pct--down">{{ formatPercent(item.changePercent) }}</span>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="watchlist-c__widget-empty">Düşen varlık bulunamadı</p>
+              }
+            </div>
+          </div>
+
+          <!-- Price Alerts -->
+          <div class="watchlist-c__widget">
+            <div class="watchlist-c__widget-header">
+              <div class="watchlist-c__widget-title-group">
+                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--gold"></div>
+                <h3 class="watchlist-c__widget-title">Fiyat Alarmları</h3>
+              </div>
+              <span class="watchlist-c__widget-badge watchlist-c__widget-badge--gold">{{ alertsCount() }} Aktif</span>
+            </div>
+            <div class="watchlist-c__widget-body">
+              @if (alertItems().length > 0) {
+                <ul class="watchlist-c__mover-list">
+                  @for (item of alertItems(); track item.id) {
+                    <li class="watchlist-c__mover-item">
+                      <div class="watchlist-c__mover-icon watchlist-c__mover-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
+                      <div class="watchlist-c__mover-info">
+                        <span class="watchlist-c__mover-symbol">{{ item.symbol }}</span>
+                        <span class="watchlist-c__mover-cat">{{ formatPrice(item.price, item.currency) }}</span>
+                      </div>
+                      <div class="watchlist-c__mover-right">
+                        <button class="watchlist-c__alert-chip" type="button" (click)="toggleAlert(item.id)" title="Alarmı kapat">
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+                          </svg>
+                          Aktif
+                        </button>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="watchlist-c__widget-empty">Aktif alarm yok</p>
+              }
+            </div>
+          </div>
+
+          <!-- Category Distribution -->
+          <div class="watchlist-c__widget">
+            <div class="watchlist-c__widget-header">
+              <div class="watchlist-c__widget-title-group">
+                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--navy"></div>
+                <h3 class="watchlist-c__widget-title">Kategori Dağılımı</h3>
+              </div>
+              <span class="watchlist-c__widget-badge">{{ totalCount() }} Toplam</span>
+            </div>
+            <div class="watchlist-c__widget-body">
+              <ul class="watchlist-c__dist-list">
+                @for (cat of categoryDistribution(); track cat.id) {
+                  <li class="watchlist-c__dist-item">
+                    <div class="watchlist-c__dist-header">
+                      <span class="watchlist-c__dist-dot watchlist-c__dist-dot--{{ cat.colorClass }}"></span>
+                      <span class="watchlist-c__dist-label">{{ cat.label }}</span>
+                      <span class="watchlist-c__dist-count">{{ cat.count }}</span>
+                      <span class="watchlist-c__dist-pct">{{ cat.pct }}%</span>
+                    </div>
+                    <div class="watchlist-c__dist-track">
+                      <div class="watchlist-c__dist-fill watchlist-c__dist-fill--{{ cat.colorClass }}"
+                           [style.width.%]="cat.pct"></div>
+                    </div>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     ADD ITEM MODAL
+══════════════════════════════════════════════════════════════════════ -->
+@if (showAddModal()) {
+  <div class="watchlist-c__modal-backdrop" (click)="onBackdropClick($event)" role="dialog" aria-modal="true" aria-label="Varlık Ekle">
+    <div class="watchlist-c__modal">
+      <div class="watchlist-c__modal-header">
+        <h2 class="watchlist-c__modal-title">İzleme Listesine Ekle</h2>
+        <button class="watchlist-c__modal-close" type="button" (click)="closeAddModal()" aria-label="Kapat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="watchlist-c__modal-tabs">
+        @for (tab of tabs; track tab.id) {
+          <button
+            [class]="'watchlist-c__modal-tab' + (modalActiveTab() === tab.id ? ' watchlist-c__modal-tab--active' : '')"
+            type="button"
+            (click)="modalActiveTab.set(tab.id)"
+          >{{ tab.label }}</button>
+        }
+      </div>
+      <div class="watchlist-c__modal-search-wrap">
+        <svg class="watchlist-c__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          class="watchlist-c__modal-search"
+          type="search"
+          placeholder="Sembol veya isim ara..."
+          [value]="modalSearch()"
+          (input)="modalSearch.set($any($event.target).value)"
+        />
+      </div>
+      <div class="watchlist-c__modal-list">
+        @if (addableCatalogItems().length > 0) {
+          @for (item of addableCatalogItems(); track item.id) {
+            <div class="watchlist-c__modal-item">
+              <div class="watchlist-c__asset-icon watchlist-c__asset-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
+              <div class="watchlist-c__modal-item-info">
+                <span class="watchlist-c__asset-symbol">{{ item.symbol }}</span>
+                <span class="watchlist-c__asset-name">{{ item.name }}</span>
+              </div>
+              <span class="watchlist-c__modal-item-price">{{ formatPrice(item.price, item.currency) }}</span>
+              <span class="watchlist-c__pct-pill"
+                    [class.watchlist-c__pct-pill--up]="item.changePercent >= 0"
+                    [class.watchlist-c__pct-pill--down]="item.changePercent < 0">
+                {{ formatPercent(item.changePercent) }}
+              </span>
+              <button class="watchlist-c__btn watchlist-c__btn--primary watchlist-c__btn--sm" type="button" (click)="addItem(item)">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Ekle
+              </button>
+            </div>
+          }
+        } @else {
+          <div class="watchlist-c__modal-empty">
+            <p>Bu kategorideki tüm varlıklar zaten listenizde.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,53 @@
+<article
+  class="kpi-card"
+  [class.kpi-card--clickable]="clickable"
+  [class.kpi-card--loading]="loading"
+  [class.kpi-card--up]="trend === 'up'"
+  [class.kpi-card--down]="trend === 'down'"
+  (click)="onCardClick()"
+>
+  <div class="kpi-card__header">
+    <span class="kpi-card__title">{{ label || title }}</span>
+    <div class="kpi-card__header-actions">
+      @if (tooltip) {
+        <app-info-tooltip
+          [heading]="tooltip.heading ?? ''"
+          [items]="tooltip.items ?? []"
+          [learnMoreUrl]="tooltip.learnMoreUrl ?? ''"
+          [position]="tooltip.position ?? 'bottom'"
+        />
+      }
+      <ng-content select="[kpiHeaderAddon]"></ng-content>
+    </div>
+  </div>
+
+  <div class="kpi-card__main">
+    @if (hasIcon) {
+      <div class="kpi-card__icon">
+        <ng-content select="[kpiIcon]"></ng-content>
+      </div>
+    }
+    <span class="kpi-card__value">{{ value }}</span>
+  </div>
+
+  <div class="kpi-card__stats">
+    @if (secondaryValue) {
+      <span class="kpi-card__secondary">{{ secondaryValue }}</span>
+    }
+    @if (changeValue !== null || changeText) {
+      <div class="kpi-card__badge">
+        @if (trend === 'up') { <span class="kpi-card__arrow">▲</span> }
+        @if (trend === 'down') { <span class="kpi-card__arrow">▼</span> }
+        {{ changeText ? changeText : changeLabel }}
+      </div>
+    }
+  </div>
+
+  @if (subtitle) {
+    <span class="kpi-card__subtitle">{{ subtitle }}</span>
+  }
+
+  <footer class="kpi-card__footer">
+    <ng-content select="[kpiFooter]"></ng-content>
+  </footer>
+</article>

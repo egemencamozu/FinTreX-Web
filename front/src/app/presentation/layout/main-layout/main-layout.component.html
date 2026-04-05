@@ -1,5 +1,4 @@
-<div class="layout" [class.layout--collapsed]="sidebarCollapsed()">
-  <!-- ═══ SIDEBAR ═══ -->
+﻿<div class="layout" [class.layout--collapsed]="sidebarCollapsed()">
   <aside class="sidebar">
     <div class="sidebar__header">
       <a class="sidebar__brand" routerLink="/app/dashboard">
@@ -11,20 +10,95 @@
     </div>
 
     <nav class="sidebar__nav" aria-label="Ana navigasyon">
-      @for (item of sidebarItems; track item.route) {
-        <a
-          class="sidebar__link"
-          [routerLink]="item.route"
-          routerLinkActive="sidebar__link--active"
-          [title]="item.label"
-        >
-          <span class="sidebar__icon" aria-hidden="true">{{ item.icon }}</span>
-          @if (!sidebarCollapsed()) {
-            <span class="sidebar__label">{{ item.label }}</span>
-          }
-        </a>
-      }
+      <div class="sidebar__nav-group">
+        @for (item of sidebarItems; track item.label) {
+          <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: item }">
+          </ng-container>
+        }
+      </div>
     </nav>
+
+    <ng-template #navItem let-item>
+      @if (item.children) {
+        <div
+          class="sidebar__accordion-group"
+          [class.sidebar__accordion-group--open]="openMenus()[item.label]"
+        >
+          @if (sidebarCollapsed()) {
+            <app-tooltip-menu [label]="item.label" position="right" [contentTpl]="collapsedMenu">
+              <button
+                type="button"
+                class="sidebar__link sidebar__accordion-toggle"
+                [class.sidebar__link--parent-active]="isAccordionActive(item)"
+              >
+                <span class="sidebar__icon" aria-hidden="true" [class]="item.icon"></span>
+              </button>
+            </app-tooltip-menu>
+            <ng-template #collapsedMenu>
+              @for (child of item.children; track child.route) {
+                <a
+                  class="tooltip-menu-item"
+                  [routerLink]="child.route"
+                  routerLinkActive="tooltip-menu-item--active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  <span class="tooltip-menu-item__label">{{ child.label }}</span>
+                </a>
+              }
+            </ng-template>
+          } @else {
+            <button
+              type="button"
+              class="sidebar__link sidebar__accordion-toggle"
+              [class.sidebar__link--parent-active]="isAccordionActive(item)"
+              (click)="toggleAccordion(item.label)"
+              [attr.aria-expanded]="openMenus()[item.label]"
+            >
+              <span class="sidebar__icon" aria-hidden="true" [class]="item.icon"></span>
+              <span class="sidebar__label">{{ item.label }}</span>
+              <span class="sidebar__chevron" aria-hidden="true">
+                <i class="fa-solid fa-chevron-down"></i>
+              </span>
+            </button>
+            <div class="sidebar__accordion-content" [class.is-open]="openMenus()[item.label]">
+              @for (child of item.children; track child.route) {
+                <a
+                  class="sidebar__link sidebar__link--child"
+                  [routerLink]="child.route"
+                  routerLinkActive="sidebar__link--active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  <span class="sidebar__label">{{ child.label }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        @if (sidebarCollapsed()) {
+          <app-tooltip-menu [label]="item.label" position="right">
+            <a
+              class="sidebar__link"
+              [routerLink]="item.route"
+              routerLinkActive="sidebar__link--active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              <span class="sidebar__icon" aria-hidden="true" [class]="item.icon"></span>
+            </a>
+          </app-tooltip-menu>
+        } @else {
+          <a
+            class="sidebar__link"
+            [routerLink]="item.route"
+            routerLinkActive="sidebar__link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <span class="sidebar__icon" aria-hidden="true" [class]="item.icon"></span>
+            <span class="sidebar__label">{{ item.label }}</span>
+          </a>
+        }
+      }
+    </ng-template>
 
     <div class="sidebar__footer">
       <button
@@ -32,39 +106,149 @@
         type="button"
         (click)="toggleSidebar()"
         [attr.aria-label]="sidebarCollapsed() ? 'Menüyü genişlet' : 'Menüyü daralt'"
-          title="Kenar cubugunu daralt veya genislet"
+        title="Kenar cubugunu daralt veya genislet"
       >
         <span class="sidebar__toggle-icon" aria-hidden="true">
-          {{ sidebarCollapsed() ? '▶' : '◀' }}
+          <i
+            class="fa-solid"
+            [class.fa-angles-right]="sidebarCollapsed()"
+            [class.fa-angles-left]="!sidebarCollapsed()"
+          ></i>
         </span>
-          <span class="sidebar__toggle-text">
-            {{ sidebarCollapsed() ? 'Menüyü genişlet' : 'Menüyü daralt' }}
-          </span>
+        @if (!sidebarCollapsed()) {
+          <span class="sidebar__toggle-label">Menüyü daralt</span>
+        }
       </button>
     </div>
   </aside>
 
-  <!-- ═══ MAIN AREA ═══ -->
   <div class="main-area">
     <header class="topbar">
-      <button
-        class="topbar__hamburger"
-        type="button"
-        (click)="toggleSidebar()"
-        aria-label="Menüyü aç/kapat"
-      >
-        ☰
-      </button>
+      <div class="topbar__start">
+        <button
+          class="topbar__hamburger"
+          type="button"
+          (click)="toggleSidebar()"
+          aria-label="Menüyü aç/kapat"
+        >
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
 
-      <div class="topbar__spacer"></div>
+        <nav class="topbar__tabs" aria-label="Hızlı erişim kısayolları">
+          @if (topbarBadges().length > 0) {
+            <div class="seg">
+              @for (badge of topbarBadges(); track badge.id; let last = $last) {
+                <a
+                  class="seg__item"
+                  [routerLink]="badge.route"
+                  routerLinkActive="seg__item--active"
+                  [routerLinkActiveOptions]="{ exact: badge.exact === true }"
+                >
+                  <i class="seg__icon" [class]="badge.icon" aria-hidden="true"></i>
+                  <span class="seg__label">{{ badge.label }}</span>
+                </a>
+                @if (!last) {
+                  <span class="seg__divider" aria-hidden="true"></span>
+                }
+              }
+            </div>
+          }
+
+          <app-tooltip-menu position="bottom" [contentTpl]="shortcutPickerTpl" (mouseenter)="initPendingShortcuts()">
+            <button
+              type="button"
+              class="topbar__add-btn"
+              aria-label="Kısayol ekle"
+            >
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            </button>
+          </app-tooltip-menu>
+
+          <ng-template #shortcutPickerTpl>
+            <div class="topbar__tooltip-list">
+              @for (group of topbarPoolGroups(); track group.label; let last = $last) {
+                @if (group.items.length > 1) {
+                  <div class="topbar__tooltip-group-label">
+                    <i [class]="group.icon" aria-hidden="true"></i>
+                    {{ group.label }}
+                  </div>
+                  <div class="topbar__tooltip-tree">
+                    @for (opt of group.items; track opt.id; let childLast = $last) {
+                      <button
+                        type="button"
+                        class="topbar__tooltip-item topbar__tooltip-item--child"
+                        [class.topbar__tooltip-item--selected]="isPendingSelected(opt.id)"
+                        [class.topbar__tooltip-item--last-child]="childLast"
+                        [disabled]="isPendingDisabled(opt.id)"
+                        (click)="togglePendingId(opt.id)"
+                      >
+                        <span class="topbar__tooltip-item-label">{{ opt.label }}</span>
+                        @if (isPendingSelected(opt.id)) {
+                          <span class="topbar__tooltip-item-check" aria-hidden="true">
+                            <i class="fa-solid fa-check"></i>
+                          </span>
+                        }
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  @for (opt of group.items; track opt.id) {
+                    <button
+                      type="button"
+                      class="topbar__tooltip-item"
+                      [class.topbar__tooltip-item--selected]="isPendingSelected(opt.id)"
+                      [disabled]="isPendingDisabled(opt.id)"
+                      (click)="togglePendingId(opt.id)"
+                    >
+                      <span class="topbar__tooltip-item-icon" aria-hidden="true">
+                        <i [class]="opt.icon"></i>
+                      </span>
+                      <span class="topbar__tooltip-item-label">{{ opt.label }}</span>
+                      @if (isPendingSelected(opt.id)) {
+                        <span class="topbar__tooltip-item-check" aria-hidden="true">
+                          <i class="fa-solid fa-check"></i>
+                        </span>
+                      }
+                    </button>
+                  }
+                }
+                @if (!last) {
+                  <div class="topbar__tooltip-sep" aria-hidden="true"></div>
+                }
+              }
+            </div>
+            <div class="topbar__tooltip-footer">
+              <button
+                type="button"
+                class="topbar__tooltip-apply"
+                [disabled]="!hasPendingChanges"
+                (click)="applyPendingShortcuts()"
+              >
+                Uygula
+              </button>
+            </div>
+          </ng-template>
+        </nav>
+      </div>
 
       <div class="topbar__actions">
-        <button class="topbar__icon-btn" type="button" aria-label="Tema değiştir">◐</button>
-        <button class="topbar__icon-btn" type="button" aria-label="Bildirimler">🔔</button>
-        <button class="topbar__icon-btn" type="button" aria-label="Cikis yap" (click)="logout()">
-          Cikis
+        <button class="topbar__icon-btn" type="button" aria-label="Tema değiştir" title="Tema">
+          <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
         </button>
-        <button class="topbar__avatar" type="button" aria-label="Kullanıcı menüsü">
+        <button class="topbar__icon-btn" type="button" aria-label="Bildirimler" title="Bildirimler">
+          <i class="fa-solid fa-bell" aria-hidden="true"></i>
+        </button>
+        <button
+          class="topbar__logout"
+          type="button"
+          aria-label="Çıkış yap"
+          title="Çıkış"
+          (click)="logout()"
+        >
+          <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+          <span class="topbar__logout-text">Çıkış</span>
+        </button>
+        <button class="topbar__avatar" type="button" aria-label="Profil ve hesap">
           <span class="topbar__avatar-placeholder">{{ avatarInitial }}</span>
         </button>
       </div>

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "crypto-btc", "rank": 1,
+    "symbol": "BTC", "name": "Bitcoin",
+    "price": 68250.00, "currency": "USD",
+    "change": 1850.00, "changePercent": 2.79, "change1h": 0.31, "change7d": 6.09,
+    "high24h": 69400.00, "low24h": 65800.00,
+    "volume": 38500000000, "marketCap": 1342000000000,
+    "circulatingSupply": 19680000, "totalSupply": 21000000,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [64500, 65800, 66500, 65900, 67200, 68000, 68250],
+    "alertEnabled": true, "category": "crypto"
+  },
+  {
+    "id": "crypto-eth", "rank": 2,
+    "symbol": "ETH", "name": "Ethereum",
+    "price": 3540.00, "currency": "USD",
+    "change": 85.00, "changePercent": 2.46, "change1h": 0.18, "change7d": 4.82,
+    "high24h": 3590.00, "low24h": 3410.00,
+    "volume": 18200000000, "marketCap": 425000000000,
+    "circulatingSupply": 120230000, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [3380, 3420, 3460, 3445, 3495, 3525, 3540],
+    "alertEnabled": true, "category": "crypto"
+  },
+  {
+    "id": "crypto-bnb", "rank": 4,
+    "symbol": "BNB", "name": "BNB",
+    "price": 385.00, "currency": "USD",
+    "change": -8.50, "changePercent": -2.16, "change1h": -0.44, "change7d": -3.82,
+    "high24h": 398.00, "low24h": 382.00,
+    "volume": 1850000000, "marketCap": 56200000000,
+    "circulatingSupply": 145887575, "totalSupply": 145887575,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [398, 395, 392, 390, 388, 386, 385],
+    "alertEnabled": false, "category": "crypto"
+  },
+  {
+    "id": "crypto-sol", "rank": 5,
+    "symbol": "SOL", "name": "Solana",
+    "price": 145.80, "currency": "USD",
+    "change": 5.20, "changePercent": 3.70, "change1h": 0.62, "change7d": 9.04,
+    "high24h": 148.00, "low24h": 138.50,
+    "volume": 4200000000, "marketCap": 66800000000,
+    "circulatingSupply": 458000000, "totalSupply": null,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [136, 138.5, 140, 142, 143.5, 145, 145.8],
+    "alertEnabled": false, "category": "crypto"
+  },
+  {
+    "id": "crypto-avax", "rank": 11,
+    "symbol": "AVAX", "name": "Avalanche",
+    "price": 32.40, "currency": "USD",
+    "change": -1.80, "changePercent": -5.26, "change1h": -0.75, "change7d": -11.37,
+    "high24h": 34.80, "low24h": 31.90,
+    "volume": 820000000, "marketCap": 13400000000,
+    "circulatingSupply": 413500000, "totalSupply": 720000000,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [36.2, 35.5, 34.8, 34.0, 33.5, 33.0, 32.4],
+    "alertEnabled": false, "category": "crypto"
+  },
+  {
+    "id": "crypto-xrp", "rank": 6,
+    "symbol": "XRP", "name": "XRP",
+    "price": 0.5840, "currency": "USD",
+    "change": 0.0185, "changePercent": 3.27, "change1h": 0.48, "change7d": 6.23,
+    "high24h": 0.5920, "low24h": 0.5580,
+    "volume": 2100000000, "marketCap": 32100000000,
+    "circulatingSupply": 54985000000, "totalSupply": 99988000000,
+    "lastUpdated": "2026-03-18T15:30:00",
+    "sparkline": [0.552, 0.558, 0.562, 0.565, 0.572, 0.580, 0.584],
+    "alertEnabled": false, "category": "crypto"
+  }
+]

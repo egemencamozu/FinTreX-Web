@@ -1,0 +1,74 @@
+<div class="sub-c">
+  <!-- Header Section -->
+  <header class="sub-header">
+    <div class="header-content">
+      <h1>Daha Fazlasını Keşfedin</h1>
+      <p>FinTreX ile yatırımlarınızı bir üst seviyeye taşıyacak abonelik planlarımızı inceleyin.</p>
+    </div>
+    
+    <div class="active-status" *ngIf="mySubscription() as sub">
+      <div class="status-badge" [attr.data-status]="sub.status">
+        <i class="fas fa-check-circle"></i>
+        <span>Mevcut Planınız: <strong>{{ sub.subscriptionPlan.displayName }}</strong></span>
+      </div>
+      <p class="expiry" *ngIf="sub.currentPeriodEndUtc">
+        Yenileme Tarihi: {{ sub.currentPeriodEndUtc | date:'longDate' }}
+      </p>
+    </div>
+  </header>
+
+  <!-- Plans Grid -->
+  <div class="plans-grid" [class.loading]="isLoading()">
+    <div class="plan-card glass-panel animate-pop" 
+         *ngFor="let plan of plans()" 
+         [class.active]="plan.id === activePlanId()"
+         [attr.data-tier]="plan.tier">
+      
+      <div class="plan-badge" *ngIf="plan.id === activePlanId()">AKTİF PLAN</div>
+
+      <div class="plan-header">
+        <div class="tier-icon">
+          <i [class]="plan.tier === 'Premium' ? 'fas fa-crown' : (plan.tier === 'Ultra' ? 'fas fa-rocket' : 'fas fa-seedling')"></i>
+        </div>
+        <h2 class="plan-name">{{ plan.displayName }}</h2>
+        <p class="plan-desc">{{ plan.description }}</p>
+      </div>
+
+      <div class="plan-price">
+        <span class="currency">₺</span>
+        <span class="amount">{{ plan.monthlyPriceTRY }}</span>
+        <span class="period">/ay</span>
+      </div>
+
+      <ul class="plan-features">
+        <li *ngFor="let feature of plan.features" [class.excluded]="feature.status === 'excluded'">
+          <i class="fas" [class.fa-check]="feature.status === 'included'" [class.fa-times]="feature.status === 'excluded'"></i>
+          <span>{{ feature.name }}</span>
+        </li>
+        <li>
+          <i class="fas fa-user-tie"></i>
+          <span>{{ plan.maxEconomists }} Maks. Ekonomist</span>
+        </li>
+      </ul>
+
+      <div class="plan-actions">
+        <button class="btn-sub" 
+                [disabled]="plan.id === activePlanId() || isLoading()"
+                (click)="upgrade(plan.id)">
+          {{ plan.id === activePlanId() ? 'Şu Anki Planınız' : (plan.monthlyPriceTRY > 0 ? 'Hemen Yükselt' : 'Ücretsiz Başla') }}
+          <i class="fas fa-arrow-right" *ngIf="plan.id !== activePlanId()"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Help -->
+  <footer class="sub-footer" *ngIf="mySubscription()">
+    <p>Aboneliğinizi iptal etmek mi istiyorsunuz? <button class="btn-link" (click)="cancelSub()">Üyeliği Sonlandır</button></p>
+  </footer>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+  </div>
+</div>

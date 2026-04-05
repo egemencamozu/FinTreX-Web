@@ -1,0 +1,81 @@
+<div class="customers-container">
+  <!-- Error Banner -->
+  <div *ngIf="errorMessage()" class="customers-error-banner">
+    <span>{{ errorMessage() }}</span>
+    <button (click)="errorMessage.set(null)">✕</button>
+  </div>
+
+  <!-- Header -->
+  <div class="customers-header">
+    <div class="customers-title-section">
+      <h1>Müşterilerim</h1>
+      <p class="customers-subtitle">Size atanan tüm müşterilerinizi yönetin</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="customers-loading">
+    <div class="customers-spinner"></div>
+    <p>Müşteriler yükleniyor...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading() && customers().length === 0" class="customers-empty">
+    <div class="customers-empty-icon">👥</div>
+    <h3>Müşteri Yok</h3>
+    <p>Şu anda atanmış müşteriniz bulunmamaktadır.</p>
+  </div>
+
+  <!-- Customers Content -->
+  <div *ngIf="!isLoading() && customers().length > 0" class="customers-content">
+    <!-- Search Bar -->
+    <div class="customers-search">
+      <input
+        type="text"
+        placeholder="Müşteri adına göre ara..."
+        (input)="searchTerm.set($event.target.value)"
+        class="search-input"
+      />
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <!-- Customers Grid -->
+    <div class="customers-grid">
+      <div
+        *ngFor="let customer of filteredCustomers()"
+        class="customer-card"
+      >
+        <!-- Avatar -->
+        <div class="customer-avatar">
+          {{ getInitials(customer.clientName) }}
+        </div>
+
+        <!-- Customer Info -->
+        <div class="customer-info">
+          <h3 class="customer-name">{{ customer.clientName }}</h3>
+          <p class="customer-meta">
+            <span class="assigned-badge">Atandı</span>
+            <span class="assigned-date">{{ customer.assignedAtUtc | date: 'dd.MM.yyyy' }}</span>
+          </p>
+
+          <!-- Status -->
+          <div class="customer-status">
+            <span [class.status-active]="customer.isActive" [class.status-inactive]="!customer.isActive" class="status-indicator">
+              {{ customer.isActive ? 'Aktif' : 'İnaktif' }}
+            </span>
+          </div>
+
+          <!-- Notes -->
+          <p *ngIf="customer.notes" class="customer-notes">
+            <strong>Not:</strong> {{ customer.notes }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="filteredCustomers().length === 0" class="customers-no-results">
+      <p>Arama kriterlerine uygun müşteri bulunamadı.</p>
+    </div>
+  </div>
+</div>

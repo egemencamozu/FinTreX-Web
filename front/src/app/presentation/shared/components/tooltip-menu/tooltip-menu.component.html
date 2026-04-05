@@ -1,0 +1,25 @@
+<div class="tooltip-menu">
+  <div class="tooltip-menu__trigger">
+    <ng-content></ng-content>
+  </div>
+
+  @if (visible() && !disabled) {
+    <div
+      class="tooltip-menu__panel"
+      [class.tooltip-menu__panel--right]="position === 'right'"
+      [class.tooltip-menu__panel--left]="position === 'left'"
+      [class.tooltip-menu__panel--top]="position === 'top'"
+      [class.tooltip-menu__panel--bottom]="position === 'bottom'"
+      role="tooltip"
+    >
+      @if (label) {
+        <div class="tooltip-menu__header">{{ label }}</div>
+      }
+      @if (contentTpl) {
+        <div class="tooltip-menu__body">
+          <ng-container [ngTemplateOutlet]="contentTpl"></ng-container>
+        </div>
+      }
+    </div>
+  }
+</div>

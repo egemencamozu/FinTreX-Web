@@ -213,9 +213,10 @@ $breakpoint-ultra:    1536px;
   --text-info:           var(--color-info-700);       // Informational text
 
   // Sidebar text
-  --text-sidebar:        var(--color-slate-300);      // Sidebar default text
+  --text-sidebar:        var(--color-slate-100);      // Sidebar default text
   --text-sidebar-hover:  var(--color-white);          // Sidebar hover text
   --text-sidebar-active: var(--color-gold-400);       // Sidebar active item text
+  --text-sidebar-muted:  var(--color-slate-400);      // Sidebar secondary text/icons
 
   // Tooltip & Badge
   --text-tooltip:        var(--color-white);          // Tooltip text
@@ -520,9 +521,10 @@ $breakpoint-ultra:    1536px;
   --text-warning:        #fbbf24;                      // warning-400
   --text-info:           #60a5fa;                      // info-400
 
-  --text-sidebar:        #94a3b8;
-  --text-sidebar-hover:  #f1f5f9;
+  --text-sidebar:        #e2e8f0;
+  --text-sidebar-hover:  #f8fafc;
   --text-sidebar-active: #fbbf24;
+  --text-sidebar-muted:  #94a3b8;
 
   --text-tooltip:        #0f172a;
   --text-badge:          #cbd5e1;

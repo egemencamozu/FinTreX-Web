@@ -1,0 +1,99 @@
+<section class="auth-c">
+  <div class="auth-c__wrapper">
+    <div class="auth-c__container">
+      <div class="auth-c__shell">
+        <!-- Sol Panel — Marka & Ozellikler (paylasilir) -->
+        <aside class="auth-c__hero">
+          <div class="auth-c__hero-inner">
+            <!-- Brand -->
+            <a class="auth-c__brand" routerLink="/">
+              <span class="auth-c__logo"><i class="fa-solid fa-chart-line"></i></span>
+              <span class="auth-c__brand-name">FinTreX</span>
+            </a>
+
+            <!-- Ana icerik -->
+            <div class="auth-c__hero-body">
+              <span class="auth-c__eyebrow">
+                <i class="fa-solid fa-shield-halved"></i> Guvenli Yatirim Platformu
+              </span>
+              <h1 class="auth-c__headline">
+                Finansal geleceginizi<br />
+                <span class="auth-c__headline-accent">guvende tutun.</span>
+              </h1>
+              <p class="auth-c__lead">
+                Portfoy takibi, canli piyasa analizi ve uzman ekonomist danismanligi &mdash; hepsi
+                tek platformda bulusuyor.
+              </p>
+
+              <!-- Ozellik kartlari -->
+              <div class="auth-c__features">
+                <div class="auth-c__feature">
+                  <span class="auth-c__feature-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                  </span>
+                  <div class="auth-c__feature-text">
+                    <strong>Portfoy Yonetimi</strong>
+                    <span>Varliklarinizi tek panelden izleyin</span>
+                  </div>
+                </div>
+                <div class="auth-c__feature">
+                  <span class="auth-c__feature-icon">
+                    <i class="fa-solid fa-chart-pie"></i>
+                  </span>
+                  <div class="auth-c__feature-text">
+                    <strong>Canli Analiz</strong>
+                    <span>Anlik piyasa verileriyle karar verin</span>
+                  </div>
+                </div>
+                <div class="auth-c__feature">
+                  <span class="auth-c__feature-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                  </span>
+                  <div class="auth-c__feature-text">
+                    <strong>Uzman Danismanlik</strong>
+                    <span>Ekonomistlerle birebir gorusun</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metrikler -->
+            <div class="auth-c__hero-bottom">
+              <div class="auth-c__hero-metrics">
+                <div class="auth-c__metric">
+                  <span class="auth-c__metric-value"> <i class="fa-solid fa-users"></i> 10K+ </span>
+                  <span class="auth-c__metric-label">Aktif Kullanici</span>
+                </div>
+                <div class="auth-c__metric">
+                  <span class="auth-c__metric-value">
+                    <i class="fa-solid fa-coins"></i> &#x20BA;2.4M
+                  </span>
+                  <span class="auth-c__metric-label">Yonetilen Portfoy</span>
+                </div>
+                <div class="auth-c__metric">
+                  <span class="auth-c__metric-value">
+                    <i class="fa-solid fa-server"></i> %99.9
+                  </span>
+                  <span class="auth-c__metric-label">Uptime</span>
+                </div>
+              </div>
+
+              <div class="auth-c__hero-footer">
+                <span><i class="fa-solid fa-building-columns"></i> BIST</span>
+                <span class="auth-c__dot"></span>
+                <span><i class="fa-brands fa-bitcoin"></i> Kripto</span>
+                <span class="auth-c__dot"></span>
+                <span><i class="fa-solid fa-gem"></i> Degerli Madenler</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Sag Panel — Degisen icerik (login / register) -->
+        <main class="auth-c__form-panel">
+          <router-outlet />
+        </main>
+      </div>
+    </div>
+  </div>
+</section>

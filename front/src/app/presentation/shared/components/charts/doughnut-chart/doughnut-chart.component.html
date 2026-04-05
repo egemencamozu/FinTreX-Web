@@ -1,0 +1,15 @@
+<div class="doughnut" data-testid="doughnut-chart">
+  <div #chart class="doughnut__canvas" [style.height.px]="height()"></div>
+
+  @if (legendItems().length) {
+    <ul class="doughnut__legend">
+      @for (item of legendItems(); track item.label) {
+        <li class="doughnut__legend-item">
+          <span class="doughnut__dot" [style.background-color]="item.color"></span>
+          <span class="doughnut__name">{{ item.label }}</span>
+          <span class="doughnut__pct">{{ item.pct | number: '1.1-1' }}%</span>
+        </li>
+      }
+    </ul>
+  }
+</div>

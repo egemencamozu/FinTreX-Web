@@ -1,9 +1,12 @@
-import { Asset } from './asset.model';
+import { PortfolioAsset } from './asset.model';
 
 export interface Portfolio {
-  id: string;
-  userId: string;
+  id: number;
   name: string;
-  assets: Asset[];
-  createdAt: Date;
+  description?: string;
+  parentPortfolioId?: number;
+  assets: PortfolioAsset[];
+  subPortfolios: Portfolio[];
+  totalValue: number;
+  createdAtUtc: string;
 }

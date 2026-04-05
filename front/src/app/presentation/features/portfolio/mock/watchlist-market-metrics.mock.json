@@ -1,0 +1,15 @@
+{
+  "totalMarketCapUsd": 2480000000000,
+  "totalMarketCapChange24h": 1.24,
+  "volume24hUsd": 118500000000,
+  "volume24hChange24h": -8.52,
+  "fearGreedValue": 44,
+  "fearGreedLabel": "Nötr",
+  "btcDominance": 52.8,
+  "btcDominanceChange24h": 0.31,
+  "bist100Value": 9842,
+  "bist100Change24h": 0.47,
+  "altcoinSeasonIndex": 53,
+  "marketCapSparkline": [2310, 2350, 2400, 2380, 2420, 2450, 2480],
+  "bist100Sparkline": [9650, 9700, 9720, 9780, 9810, 9830, 9842]
+}

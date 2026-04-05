@@ -1,0 +1,389 @@
+.pf-c {
+  min-height: 100%;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+
+  // Header Styles
+  .pf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+
+    h1 {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pf-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .pf-selector-wrapper {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+
+      .pf-select {
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        font-weight: 500;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        outline: none;
+
+        &:focus {
+          border-color: var(--color-primary);
+        }
+
+        option {
+          background: #1a1a1a;
+          color: white;
+        }
+      }
+    }
+  }
+
+  // Loading & Empty States
+  .loading-state,
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-12);
+    text-align: center;
+    color: var(--text-secondary);
+
+    i {
+      font-size: 3rem;
+      margin-bottom: var(--space-4);
+      opacity: 0.5;
+    }
+
+    h3 {
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+  }
+
+  // Assets Card & Table
+  .assets-card {
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-6);
+
+      h2 {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .badge {
+        padding: var(--space-1) var(--space-3);
+        background: var(--color-primary-alpha);
+        color: var(--color-primary);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+      }
+    }
+
+    .assets-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th {
+        text-align: left;
+        padding: var(--space-4);
+        font-size: var(--font-size-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      td {
+        padding: var(--space-4);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .asset-row {
+        transition: background 0.2s;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.02);
+        }
+      }
+
+      .asset-info {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+
+        .asset-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-lg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.05);
+          font-size: 1.2rem;
+          color: var(--color-primary);
+
+          &[data-type="Crypto"] {
+            color: #f7931a;
+            background: rgba(247, 147, 26, 0.1);
+          }
+
+          &[data-type="Stock"] {
+            color: #26a69a;
+            background: rgba(38, 166, 154, 0.1);
+          }
+
+          &[data-type="PreciousMetal"] {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+          }
+        }
+
+        .asset-names {
+          display: flex;
+          flex-direction: column;
+
+          .symbol {
+            font-weight: 600;
+            color: var(--text-primary);
+          }
+
+          .name {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+          }
+        }
+      }
+
+      .weight {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+    }
+  }
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+
+  .modal-content {
+    width: 100%;
+    max-width: 500px;
+    padding: var(--space-8);
+    border-radius: var(--radius-2xl);
+
+    h2 {
+      margin-bottom: var(--space-6);
+      font-size: var(--font-size-xl);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+
+      .form-group:first-child,
+      .form-group:nth-child(2) {
+        grid-column: span 2;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+
+      label {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+      }
+
+      .form-input {
+        padding: var(--space-3) var(--space-4);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        color: white;
+        outline: none;
+        transition: border-color 0.2s;
+
+        &:focus {
+          border-color: var(--color-primary);
+        }
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+  }
+}
+
+// Animations
+.animate-pop {
+  animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Table Utils
+.text-right {
+  text-align: right;
+}
+
+.empty-table {
+  padding: var(--space-12) !important;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+// Button Styles for Row Actions (Universal Premium Design)
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  i {
+    font-size: 16px;
+    color: inherit;
+    transition: transform 0.2s ease;
+  }
+
+  // Edit Button Specifics (Indigo/Primary)
+  &:not(.btn-danger-text) {
+    color: #4f46e5; // Vivid Indigo
+    background: rgba(79, 70, 229, 0.08);
+    border-color: rgba(79, 70, 229, 0.15);
+
+    &:hover {
+      background: #4f46e5;
+      color: white;
+      border-color: #4f46e5;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+  }
+
+  // Danger/Delete Button Specifics (Red)
+  &.btn-danger-text {
+    color: #ef4444; // Vivid Red
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.15);
+
+    &:hover {
+      background: #ef4444;
+      color: white;
+      border-color: #ef4444;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    
+    i {
+      transform: scale(1.1);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    filter: brightness(0.9);
+  }
+}
+
+// Dark theme adjustments (if detected via body class)
+body.dark-theme .btn-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  
+  &:not(.btn-danger-text) {
+    color: #818cf8;
+    background: rgba(129, 140, 248, 0.1);
+    &:hover { background: #6366f1; color: white; }
+  }
+
+  &.btn-danger-text {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    &:hover { background: #ef4444; color: white; }
+  }
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}

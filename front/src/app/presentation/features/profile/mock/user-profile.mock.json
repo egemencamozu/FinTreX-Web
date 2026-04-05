@@ -1,0 +1,19 @@
+{
+  "id": "USR-00123",
+  "name": "Ahmet",
+  "surname": "Yılmaz",
+  "email": "ahmet.yilmaz@example.com",
+  "phone": "+90 532 123 45 67",
+  "role": "USER",
+  "subscriptionTier": "PREMIUM",
+  "avatarUrl": null,
+  "createdAt": "2024-06-15T08:30:00",
+  "lastLogin": "2026-03-18T06:15:00",
+  "notifications": {
+    "emailPortfolioAlerts": true,
+    "emailPriceAlerts": true,
+    "emailMarketing": false,
+    "smsPortfolioAlerts": false,
+    "pushNotifications": true
+  }
+}

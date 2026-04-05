@@ -24,7 +24,7 @@ export interface PricingComparisonRow {
 
 export const PRICING_PLANS: PricingPlan[] = [
   {
-    tier: SubscriptionTier.DEFAULT,
+    tier: SubscriptionTier.Default,
     name: 'Default',
     tagline: 'Baslangic seviyesi portfoy takibi',
     priceLabel: '0 TL',
@@ -37,7 +37,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     highlights: ['1 portfoy', 'Temel performans ozeti', 'Topluluk duyurulari'],
   },
   {
-    tier: SubscriptionTier.PREMIUM,
+    tier: SubscriptionTier.Premium,
     name: 'Premium',
     tagline: 'Aktif yatirimci icin dengeli paket',
     priceLabel: '449 TL',
@@ -50,7 +50,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     highlights: ['5 portfoy', 'Gelismis dagilim analizi', 'Haftalik ekonomist mesaji'],
   },
   {
-    tier: SubscriptionTier.ULTRA,
+    tier: SubscriptionTier.Ultra,
     name: 'Ultra',
     tagline: 'Danismanlik ve premium karar destegi',
     priceLabel: '1.290 TL',
@@ -60,7 +60,11 @@ export const PRICING_PLANS: PricingPlan[] = [
     ctaLabel: 'Ultra Incele',
     ctaRoute: '/trial',
     highlighted: false,
-    highlights: ['Sinirsiza yakin kullanim', 'Oncelikli danismanlik', 'Yonetici tanimli ozel avantajlar'],
+    highlights: [
+      'Sinirsiza yakin kullanim',
+      'Oncelikli danismanlik',
+      'Yonetici tanimli ozel avantajlar',
+    ],
   },
 ];
 
@@ -70,9 +74,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Portfoy sayisi',
     description: 'Ayni anda yonetilebilen aktif portfoy adedi.',
     values: {
-      [SubscriptionTier.DEFAULT]: '1 portfoy',
-      [SubscriptionTier.PREMIUM]: '5 portfoy',
-      [SubscriptionTier.ULTRA]: 'Sinirsiz',
+      [SubscriptionTier.Default]: '1 portfoy',
+      [SubscriptionTier.Premium]: '5 portfoy',
+      [SubscriptionTier.Ultra]: 'Sinirsiz',
     },
   },
   {
@@ -80,9 +84,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Varlik ekleme limiti',
     description: 'Portfoy icerisindeki toplam aktif varlik adedi.',
     values: {
-      [SubscriptionTier.DEFAULT]: '25 varlik',
-      [SubscriptionTier.PREMIUM]: '250 varlik',
-      [SubscriptionTier.ULTRA]: 'Sinirsiz',
+      [SubscriptionTier.Default]: '25 varlik',
+      [SubscriptionTier.Premium]: '250 varlik',
+      [SubscriptionTier.Ultra]: 'Sinirsiz',
     },
   },
   {
@@ -90,9 +94,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Piyasa veri akis hizi',
     description: 'Fiyat ve ozet veri yenilenme sikligi.',
     values: {
-      [SubscriptionTier.DEFAULT]: 'Gecikmeli veri',
-      [SubscriptionTier.PREMIUM]: 'Canliya yakin veri',
-      [SubscriptionTier.ULTRA]: 'Oncelikli canli veri',
+      [SubscriptionTier.Default]: 'Gecikmeli veri',
+      [SubscriptionTier.Premium]: 'Canliya yakin veri',
+      [SubscriptionTier.Ultra]: 'Oncelikli canli veri',
     },
   },
   {
@@ -100,9 +104,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Performans raporlari',
     description: 'Getiri ve dagilim raporlarina erisim.',
     values: {
-      [SubscriptionTier.DEFAULT]: true,
-      [SubscriptionTier.PREMIUM]: true,
-      [SubscriptionTier.ULTRA]: true,
+      [SubscriptionTier.Default]: true,
+      [SubscriptionTier.Premium]: true,
+      [SubscriptionTier.Ultra]: true,
     },
   },
   {
@@ -110,9 +114,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Gelismis risk analizi',
     description: 'Risk dagilimi, yogunlasma ve senaryo bakisi.',
     values: {
-      [SubscriptionTier.DEFAULT]: false,
-      [SubscriptionTier.PREMIUM]: true,
-      [SubscriptionTier.ULTRA]: true,
+      [SubscriptionTier.Default]: false,
+      [SubscriptionTier.Premium]: true,
+      [SubscriptionTier.Ultra]: true,
     },
   },
   {
@@ -120,9 +124,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Ekonomist ile etkilesim',
     description: 'Paket bazli mesajlasma ve geri bildirim kapsami.',
     values: {
-      [SubscriptionTier.DEFAULT]: 'Genel duyurular',
-      [SubscriptionTier.PREMIUM]: 'Haftalik mesajlasma',
-      [SubscriptionTier.ULTRA]: 'Oncelikli mesajlasma',
+      [SubscriptionTier.Default]: 'Genel duyurular',
+      [SubscriptionTier.Premium]: 'Haftalik mesajlasma',
+      [SubscriptionTier.Ultra]: 'Oncelikli mesajlasma',
     },
   },
   {
@@ -130,9 +134,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Danismanlik gorusmeleri',
     description: 'Plan dahilindeki birebir gorusme hakki.',
     values: {
-      [SubscriptionTier.DEFAULT]: false,
-      [SubscriptionTier.PREMIUM]: 'Ayda 1 gorusme',
-      [SubscriptionTier.ULTRA]: 'Ayda 4 gorusme',
+      [SubscriptionTier.Default]: false,
+      [SubscriptionTier.Premium]: 'Ayda 1 gorusme',
+      [SubscriptionTier.Ultra]: 'Ayda 4 gorusme',
     },
   },
   {
@@ -140,9 +144,9 @@ export const PRICING_COMPARISON_ROWS: PricingComparisonRow[] = [
     label: 'Admin tanimli plan guncellemesi',
     description: 'Merkezi katalog guncellendiginde plana bagli haklarin yenilenmesi.',
     values: {
-      [SubscriptionTier.DEFAULT]: true,
-      [SubscriptionTier.PREMIUM]: true,
-      [SubscriptionTier.ULTRA]: true,
+      [SubscriptionTier.Default]: true,
+      [SubscriptionTier.Premium]: true,
+      [SubscriptionTier.Ultra]: true,
     },
   },
 ];

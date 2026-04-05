@@ -41,6 +41,7 @@ export class RegisterComponent {
         firstName: ['', [Validators.required, Validators.minLength(2)]],
         lastName: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
+        phoneNumber: [''],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]],
         role: [UserRole.USER, [Validators.required]],
@@ -65,11 +66,11 @@ export class RegisterComponent {
     this.successMessage = '';
     this.isSubmitting = true;
 
-    const { firstName, lastName, email, password, confirmPassword, role } =
+    const { firstName, lastName, email, phoneNumber, password, confirmPassword, role } =
       this.registerForm.getRawValue();
 
     this.authService
-      .register({ firstName, lastName, email, password, confirmPassword, role })
+      .register({ firstName, lastName, email, phoneNumber, password, confirmPassword, role })
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: (message) => {
@@ -81,8 +82,13 @@ export class RegisterComponent {
           }, 1200);
         },
         error: (error: Error) => {
-          this.errorMessage = error.message || 'Kayit olurken bir hata olustu.';
+          this.errorMessage = error.message || 'Kayıt olurken bir hata oluştu.';
         },
       });
+  }
+
+  protected isFieldInvalid(fieldName: string): boolean {
+    const control = this.registerForm.get(fieldName);
+    return !!control && control.invalid && control.touched;
   }
 }

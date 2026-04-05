@@ -1,0 +1,114 @@
+{
+  "task_id": 1,
+  "task_title": "Portföyün Genel Değerlendirmesi",
+  "task_description": "Mevcut yatırım portföyümün genel durumunu ve risk profilini değerlendirmenizi istiyorum. Özellikle çeşitlendirme durumunu ve konsantrasyon risklerini öğrenmek istiyorum.",
+  "task_category": "PortfolioAnalysis",
+  "user_portfolios": [
+    {
+      "portfolio_id": 1,
+      "name": "Ana Portföy",
+      "description": "Uzun vadeli yatırım portföyü",
+      "assets": [
+        {
+          "symbol": "THYAO",
+          "asset_name": "Türk Hava Yolları A.Ş.",
+          "asset_type": "BIST",
+          "quantity": 500,
+          "average_cost": 280.50,
+          "currency": "TRY",
+          "current_value": 315.20,
+          "notes": "2023 yılında satın alınan hisse"
+        },
+        {
+          "symbol": "KCHOL",
+          "asset_name": "Koç Holding A.Ş.",
+          "asset_type": "BIST",
+          "quantity": 250,
+          "average_cost": 450.00,
+          "currency": "TRY",
+          "current_value": 480.75,
+          "notes": null
+        },
+        {
+          "symbol": "GARAN",
+          "asset_name": "Garanti Bankası A.Ş.",
+          "asset_type": "BIST",
+          "quantity": 1000,
+          "average_cost": 15.50,
+          "currency": "TRY",
+          "current_value": 16.80,
+          "notes": "Haftalık temettü alan hisse"
+        },
+        {
+          "symbol": "SISE",
+          "asset_name": "Şişecam A.Ş.",
+          "asset_type": "BIST",
+          "quantity": 800,
+          "average_cost": 22.30,
+          "currency": "TRY",
+          "current_value": 24.10,
+          "notes": null
+        },
+        {
+          "symbol": "BTC",
+          "asset_name": "Bitcoin",
+          "asset_type": "Crypto",
+          "quantity": 0.25,
+          "average_cost": 45000,
+          "currency": "USD",
+          "current_value": 68500,
+          "notes": "Kripto para yatırımı"
+        },
+        {
+          "symbol": "ETH",
+          "asset_name": "Ethereum",
+          "asset_type": "Crypto",
+          "quantity": 1.5,
+          "average_cost": 2500,
+          "currency": "USD",
+          "current_value": 3800,
+          "notes": "İkinci kripto para yatırımı"
+        },
+        {
+          "symbol": "XAU",
+          "asset_name": "Altın (Gram)",
+          "asset_type": "PreciousMetal",
+          "quantity": 100,
+          "average_cost": 850,
+          "currency": "USD",
+          "current_value": 2050,
+          "notes": "Fiziksel altın, kasada muhafaza"
+        }
+      ],
+      "sub_portfolios": []
+    },
+    {
+      "portfolio_id": 2,
+      "name": "Kısa Vadeli Yatırım Portföyü",
+      "description": "1-2 yıllık zaman ufuklu riskli yatırımlar",
+      "assets": [
+        {
+          "symbol": "AKBNK",
+          "asset_name": "Akbank T.A.Ş.",
+          "asset_type": "BIST",
+          "quantity": 500,
+          "average_cost": 35.20,
+          "currency": "TRY",
+          "current_value": 38.50,
+          "notes": null
+        },
+        {
+          "symbol": "ARCLK",
+          "asset_name": "Arçelik A.Ş.",
+          "asset_type": "BIST",
+          "quantity": 300,
+          "average_cost": 65.00,
+          "currency": "TRY",
+          "current_value": 70.25,
+          "notes": "Teknoloji sektörü pozisyonu"
+        }
+      ],
+      "sub_portfolios": []
+    }
+  ]
+}
