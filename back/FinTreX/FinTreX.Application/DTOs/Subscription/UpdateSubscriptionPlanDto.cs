@@ -26,7 +26,16 @@ namespace FinTreX.Core.DTOs.Subscription
         public bool HasPrioritySupport { get; set; }
 
         public bool IsActive { get; set; }
-        
+
+        [MaxLength(100)]
+        public string? StripeProductId { get; set; }
+
+        [MaxLength(100)]
+        public string? StripeMonthlyPriceId { get; set; }
+
+        [MaxLength(100)]
+        public string? StripeYearlyPriceId { get; set; }
+
         public List<PlanFeatureDto> Features { get; set; } = new();
     }
 }

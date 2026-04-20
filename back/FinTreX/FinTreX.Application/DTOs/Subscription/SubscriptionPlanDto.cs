@@ -15,6 +15,9 @@ namespace FinTreX.Core.DTOs.Subscription
         public bool CanChangeEconomist { get; set; }
         public bool HasPrioritySupport { get; set; }
         public bool IsActive { get; set; }
+        public string? StripeProductId { get; set; }
+        public string? StripeMonthlyPriceId { get; set; }
+        public string? StripeYearlyPriceId { get; set; }
         public List<PlanFeatureDto> Features { get; set; } = new();
     }
 }

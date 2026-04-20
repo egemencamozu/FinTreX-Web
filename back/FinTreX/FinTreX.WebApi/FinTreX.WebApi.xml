@@ -8,7 +8,13 @@
             <summary>Authenticate with email + password → JWT + refresh token.</summary>
         </member>
         <member name="M:FinTreX.WebApi.Controllers.AccountController.RegisterAsync(FinTreX.Core.DTOs.Account.RegisterRequest)">
-            <summary>Register a new user account.</summary>
+            <summary>Register a new user account. Triggers an OTP email and requires subsequent verification.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.VerifyEmailAsync(FinTreX.Core.DTOs.Account.VerifyEmailRequest)">
+            <summary>Verify the 6-digit email OTP and receive a JWT + refresh token.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.ResendVerificationCodeAsync(FinTreX.Core.DTOs.Account.ResendVerificationRequest)">
+            <summary>Resend the 6-digit email verification code (60-second cooldown).</summary>
         </member>
         <member name="M:FinTreX.WebApi.Controllers.AccountController.RefreshTokenAsync(FinTreX.Core.DTOs.Account.RefreshTokenRequest)">
             <summary>Exchange a refresh token for a new JWT + refresh token pair.</summary>
@@ -48,6 +54,42 @@
             Extracts the real client IP from the X-Forwarded-For header or the connection.
             </summary>
         </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.AiAssistantController.Chat(FinTreX.Core.DTOs.AiAssistant.AiChatRequestDto,System.Threading.CancellationToken)">
+            <summary>Send a message and get the AI assistant's reply.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.AiAssistantController.ChatStream(FinTreX.Core.DTOs.AiAssistant.AiChatRequestDto,System.Threading.CancellationToken)">
+            <summary>Stream the assistant's reply as SSE chunks.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.AiAssistantController.GetConversations">
+            <summary>List the user's AI conversations.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.AiAssistantController.GetConversation(System.Int32)">
+            <summary>Get a single conversation with messages.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.AiAssistantController.DeleteConversation(System.Int32)">
+            <summary>Soft-delete a conversation.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.ChatsController.GetMyConversations">
+            <summary>Get all conversations for the current user.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.ChatsController.GetConversation(System.Int32)">
+            <summary>Get a single conversation by ID.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.ChatsController.CreateConversation(FinTreX.Core.DTOs.Chat.CreateConversationRequest)">
+            <summary>Create a new conversation (User only).</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.ChatsController.DeleteConversation(System.Int32)">
+            <summary>Delete a conversation (soft-delete for current user).</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.ChatsController.UpdateTitle(System.Int32,FinTreX.Core.DTOs.Chat.UpdateConversationTitleRequest)">
+            <summary>Update conversation title.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.ChatsController.GetMessages(System.Int32,System.Nullable{System.Int64},System.Int32)">
+            <summary>Get messages with cursor-based pagination.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.ChatsController.GetUnreadCount">
+            <summary>Get total unread message count across all conversations.</summary>
+        </member>
         <member name="M:FinTreX.WebApi.Controllers.v1.EconomistClientsController.GetAvailableEconomists">
             <summary>Returns all users with the Economist role — used by clients when hiring an economist.</summary>
         </member>
@@ -60,6 +102,42 @@
         <member name="M:FinTreX.WebApi.Controllers.v1.MeController.GetMyProfile">
             <summary>
             Returns the currently authenticated user's profile.
+            </summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Hubs.ChatConnectionTracker">
+            <summary>
+            Thread-safe in-memory tracker for user connections. Supports multi-tab (multiple connections per user).
+            </summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Hubs.ChatHub.JoinConversation(System.Int32)">
+            <summary>Join a conversation room to receive real-time messages.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Hubs.ChatHub.LeaveConversation(System.Int32)">
+            <summary>Leave a conversation room.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Hubs.ChatHub.SendMessage(System.Int32,System.String)">
+            <summary>Send a text message to a conversation.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Hubs.ChatHub.EditMessage(System.Int64,System.String)">
+            <summary>Edit an existing message.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Hubs.ChatHub.DeleteMessage(System.Int64)">
+            <summary>Delete a message (soft-delete).</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Hubs.ChatHub.MarkAsRead(System.Int32,System.Int64)">
+            <summary>Mark messages up to a certain ID as read.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Hubs.ChatHub.NotifyTyping(System.Int32)">
+            <summary>Notify that the current user is typing in a conversation.</summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Hubs.IChatClient">
+            <summary>
+            Strongly-typed SignalR client interface for chat events.
+            </summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Hubs.MarketDataSubscriptionTracker">
+            <summary>
+            Tracks active SignalR subscriptions per connection and cache key.
             </summary>
         </member>
         <member name="T:FinTreX.WebApi.Services.CurrentUserService">

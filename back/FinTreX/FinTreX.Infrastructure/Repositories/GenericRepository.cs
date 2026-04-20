@@ -1,7 +1,9 @@
 using FinTreX.Core.Interfaces.Repositories;
 using FinTreX.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinTreX.Infrastructure.Repositories
@@ -37,8 +39,42 @@ namespace FinTreX.Infrastructure.Repositories
 
         public virtual async Task UpdateAsync(T entity)
         {
-            _dbContext.Entry(entity).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
+            var entry = _dbContext.Entry(entity);
+
+            if (entry.State == EntityState.Detached)
+            {
+                // Check if another instance with the same PK is already tracked
+                var tracked = _dbContext.Set<T>().Local.FirstOrDefault(e =>
+                {
+                    var eEntry = _dbContext.Entry(e);
+                    return entry.Metadata.FindPrimaryKey()!.Properties
+                        .All(p => Equals(
+                            eEntry.Property(p.Name).CurrentValue,
+                            entry.Property(p.Name).CurrentValue));
+                });
+
+                if (tracked != null)
+                {
+                    // Copy values into the already-tracked instance
+                    _dbContext.Entry(tracked).CurrentValues.SetValues(entity);
+                }
+                else
+                {
+                    _dbContext.Set<T>().Attach(entity);
+                    _dbContext.Entry(entity).State = EntityState.Modified;
+                }
+            }
+            else
+            {
+                entry.State = EntityState.Modified;
+            }
+
+            var affected = await _dbContext.SaveChangesAsync();
+            if (affected == 0)
+            {
+                throw new InvalidOperationException(
+                    $"Update failed: 0 rows affected for {typeof(T).Name}.");
+            }
         }
 
         public virtual async Task DeleteAsync(T entity)

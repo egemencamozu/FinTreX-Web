@@ -42,7 +42,7 @@ namespace FinTreX.Core.Entities
         public DateTime AcquiredAtUtc { get; set; }
 
         /// <summary>Optional user note for this asset.</summary>
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAtUtc { get; set; }

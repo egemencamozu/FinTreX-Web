@@ -1,0 +1,23 @@
+<div class="mk__asset">
+  @if (isGold) {
+    <div class="mk__avatar mk__avatar--gold">Au</div>
+  } @else {
+    <div class="mk__avatar" [style.background]="ui.getAvatarColor(resolvedAvatarKey)">
+      @if (showLogo) {
+        <img
+          class="mk__coin-logo"
+          [src]="ui.getCryptoLogoUrl(resolvedAvatarKey)"
+          [alt]="symbol"
+          (load)="ui.onCoinLogoLoad($event)"
+          (error)="ui.onCoinLogoError($event)"
+        />
+      }
+      {{ ui.getAvatarLetter(resolvedAvatarKey) }}
+    </div>
+  }
+
+  <div class="mk__asset-info">
+    <span class="mk__asset-sym">{{ symbol }}</span>
+    <span class="mk__asset-sub">{{ subLabel || '—' }}</span>
+  </div>
+</div>

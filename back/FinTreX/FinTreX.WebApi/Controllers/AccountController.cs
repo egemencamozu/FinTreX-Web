@@ -27,12 +27,29 @@ namespace FinTreX.WebApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>Register a new user account.</summary>
+        /// <summary>Register a new user account. Triggers an OTP email and requires subsequent verification.</summary>
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterRequest request)
         {
             var origin = Request.Headers["origin"];
             return Ok(await _accountService.RegisterAsync(request, origin));
+        }
+
+        /// <summary>Verify the 6-digit email OTP and receive a JWT + refresh token.</summary>
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmailAsync(VerifyEmailRequest request)
+        {
+            var response = await _accountService.VerifyEmailAsync(request, GenerateIPAddress());
+            SetRefreshTokenCookie(response.RefreshToken);
+            return Ok(response);
+        }
+
+        /// <summary>Resend the 6-digit email verification code (60-second cooldown).</summary>
+        [HttpPost("resend-verification-code")]
+        public async Task<IActionResult> ResendVerificationCodeAsync(ResendVerificationRequest request)
+        {
+            await _accountService.ResendVerificationCodeAsync(request);
+            return Ok(new { message = "Doğrulama kodu email adresine gönderildi." });
         }
 
         /// <summary>Exchange a refresh token for a new JWT + refresh token pair.</summary>

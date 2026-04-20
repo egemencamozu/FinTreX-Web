@@ -181,6 +181,25 @@ $topbar-height: 64px;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: var(--tracking-normal, 0);
+  flex: 1;
+}
+
+.nav-unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--radius-full, 999px);
+  background-color: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-left: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 // ── Accordion ─────────────────────────────────────────────────────────────────
@@ -357,8 +376,10 @@ $topbar-height: 64px;
   gap: var(--space-4, 16px);
   height: $topbar-height;
   padding: 0 var(--space-5, 20px);
-  background: var(--bg-navbar);
-  border-bottom: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-navbar) 85%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-default) 50%, transparent);
   overflow: visible;
 }
 
@@ -754,7 +775,8 @@ $topbar-height: 64px;
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-6, 24px);
+  padding: var(--space-4);
+  scrollbar-gutter: stable;
 }
 
 // ═══ TOOLTIP MENU ITEMS ══════════════════════════════════════════════════════

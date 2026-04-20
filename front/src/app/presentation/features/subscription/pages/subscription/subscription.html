@@ -9,7 +9,7 @@
     <div class="active-status" *ngIf="mySubscription() as sub">
       <div class="status-badge" [attr.data-status]="sub.status">
         <i class="fas fa-check-circle"></i>
-        <span>Mevcut Planınız: <strong>{{ sub.subscriptionPlan.displayName }}</strong></span>
+        <span>Mevcut Planınız: <strong>{{ sub.plan.displayName }}</strong></span>
       </div>
       <p class="expiry" *ngIf="sub.currentPeriodEndUtc">
         Yenileme Tarihi: {{ sub.currentPeriodEndUtc | date:'longDate' }}

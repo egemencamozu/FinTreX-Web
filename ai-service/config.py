@@ -26,3 +26,25 @@ def get_llm():
         temperature=0.3,
         api_key=OPENAI_API_KEY
     )
+
+# ===== LangGraph AI Assistant Config =====
+BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:5000")
+LANGGRAPH_MODEL_NAME = os.getenv("LANGGRAPH_MODEL_NAME", MODEL_NAME)
+GUARDRAIL_MAX_RETRY = int(os.getenv("GUARDRAIL_MAX_RETRY", "2"))
+BACKEND_API_TIMEOUT = float(os.getenv("BACKEND_API_TIMEOUT", "30.0"))
+MAX_CONVERSATION_HISTORY = int(os.getenv("MAX_CONVERSATION_HISTORY", "20"))
+
+def get_langgraph_llm(streaming: bool = False):
+    """LangChain/LangGraph için ChatOpenAI instance."""
+    from langchain_openai import ChatOpenAI
+    
+    # Explicitly set env for litellm
+    if OPENAI_API_KEY:
+        os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+        
+    return ChatOpenAI(
+        model=LANGGRAPH_MODEL_NAME.replace("openai/", ""),
+        temperature=0.3,
+        api_key=OPENAI_API_KEY,
+        streaming=streaming,
+    )

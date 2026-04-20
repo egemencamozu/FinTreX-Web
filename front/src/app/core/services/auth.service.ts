@@ -6,6 +6,9 @@ import { UserRole } from '../enums/user-role.enum';
 import { EnvironmentConfigService } from './environment-config.service';
 import { UserManagementRepository } from '../interfaces/user-management.repository';
 import { UserSummary } from '../models/user-summary.model';
+import { VerifyEmailRequest } from '../models/auth/verify-email-request.model';
+import { ResendVerificationRequest } from '../models/auth/resend-verification-request.model';
+import { RegisterResponse } from '../models/auth/register-response.model';
 
 export interface LoginRequest {
   email: string;
@@ -16,6 +19,7 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   email: string;
+  userName: string;
   phoneNumber?: string;
   password: string;
   confirmPassword: string;
@@ -81,10 +85,34 @@ export class AuthService {
     );
   }
 
-  register(request: RegisterRequest): Observable<string> {
-    return this.http.post(`${this.authApiUrl}/register`, request, {
-      responseType: 'text',
-    });
+  register(request: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.authApiUrl}/register`, request);
+  }
+
+  /**
+   * Submit the 6-digit email verification code. On success, backend returns
+   * a fully-authenticated response (JWT + refresh token). Session storage is
+   * used by default — caller passes rememberMe if applicable.
+   */
+  verifyEmail(
+    request: VerifyEmailRequest,
+    rememberMe = false,
+  ): Observable<AuthenticatedUser> {
+    return this.http
+      .post<AuthenticationResponse>(`${this.authApiUrl}/verify-email`, request)
+      .pipe(
+        tap((response) => this.persistAuthentication(response, rememberMe)),
+        switchMap(() => this.syncCurrentUserProfile(rememberMe)),
+      );
+  }
+
+  /** Request a new OTP code. Backend enforces a 60-second cooldown. */
+  resendVerificationCode(email: string): Observable<{ message: string }> {
+    const payload: ResendVerificationRequest = { email };
+    return this.http.post<{ message: string }>(
+      `${this.authApiUrl}/resend-verification-code`,
+      payload,
+    );
   }
 
   logout(): void {
@@ -144,6 +172,10 @@ export class AuthService {
 
   getCurrentUser(): AuthenticatedUser | null {
     return this.currentUserSubject.value;
+  }
+
+  getToken(): string | null {
+    return this.getAccessToken();
   }
 
   isAuthenticated(): boolean {

@@ -6,6 +6,7 @@ import { AdminSection } from '../../models/admin-section.model';
 import { SubscriptionPlan, UpdateSubscriptionPlanDto, PlanFeature } from '../../../../../core/models/subscription.model';
 import { SubscriptionRepository } from '../../../../../core/interfaces/subscription.repository';
 import { SubscriptionTier } from '../../../../../core/enums/subscription-tier.enum';
+import { AlertService } from '../../../../../core/services/alert.service';
 
 @Component({
   selector: 'app-admin-subscriptions',
@@ -16,8 +17,6 @@ import { SubscriptionTier } from '../../../../../core/enums/subscription-tier.en
 })
 export class AdminSubscriptionsPage implements OnInit {
   protected loading = false;
-  protected errorMessage: string | null = null;
-  protected successMessage: string | null = null;
   protected plans: SubscriptionPlan[] = [];
 
   protected editingPlanId: number | null = null;
@@ -30,12 +29,15 @@ export class AdminSubscriptionsPage implements OnInit {
   protected readonly sections: AdminSection[] = [
     {
       title: 'Abonelik Paketleri',
-      description: 'Hiyerarşik paket yapısı ile özellikleri tüm paketlere tek tıkla dağıtabilir, yeşil tik veya kırmızı X durumlarını yönetebilirsiniz.',
+      description: 'Hiyerarşik matris yapısı ile özellikleri tüm paketlere tek tıkla dağıtabilir, yeşil tik veya kırmızı X durumlarını yönetebilirsiniz.',
       highlight: 'Akıllı Matris Yönetimi',
     },
   ];
 
-  constructor(private readonly subscriptionRepo: SubscriptionRepository) {}
+  constructor(
+    private readonly subscriptionRepo: SubscriptionRepository,
+    private readonly alertService: AlertService
+  ) {}
 
   ngOnInit(): void {
     this.loadPlans();
@@ -43,7 +45,6 @@ export class AdminSubscriptionsPage implements OnInit {
 
   protected loadPlans(): void {
     this.loading = true;
-    this.errorMessage = null;
 
     this.subscriptionRepo.getAdminPlans().pipe(
       finalize(() => this.loading = false)
@@ -86,14 +87,12 @@ export class AdminSubscriptionsPage implements OnInit {
         this.editingPlanId = null;
       },
       error: (err: Error) => {
-        this.errorMessage = err.message || 'Paketler yüklenirken bir hata oluştu.';
+        this.alertService.error(err.message || 'Paketler yüklenirken bir hata oluştu.');
       }
     });
   }
 
   protected editPlan(plan: SubscriptionPlan): void {
-    this.successMessage = null;
-    this.errorMessage = null;
     this.editingPlanId = plan.id;
     
     // 1. Get the current global pool of unique feature names
@@ -257,7 +256,7 @@ export class AdminSubscriptionsPage implements OnInit {
 
   protected savePlan(planId: number): void {
     if (!this.editFormData.displayName || this.editFormData.monthlyPriceTRY === undefined) {
-      this.errorMessage = 'Lütfen gerekli tüm alanları doldurun.';
+      this.alertService.error('Lütfen gerekli tüm alanları doldurun.');
       return;
     }
 
@@ -272,18 +271,15 @@ export class AdminSubscriptionsPage implements OnInit {
     };
 
     this.loading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
-
     this.subscriptionRepo.updateAdminPlan(planId, cleanedData).pipe(
       finalize(() => this.loading = false)
     ).subscribe({
       next: () => {
-        this.successMessage = 'Paket ve özellik matrisi başarıyla güncellendi.';
+        this.alertService.success('Paket ve özellik matrisi başarıyla güncellendi.');
         this.loadPlans();
       },
       error: (err: Error) => {
-        this.errorMessage = err.message || 'Paket güncellenirken bir hata oluştu.';
+        this.alertService.error(err.message || 'Paket güncellenirken bir hata oluştu.');
       }
     });
   }

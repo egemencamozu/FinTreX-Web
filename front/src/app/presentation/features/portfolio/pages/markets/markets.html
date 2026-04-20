@@ -1,0 +1,460 @@
+<section class="mk">
+
+  <!-- Market Cards (Crypto view) -->
+  @if (activeView() === 'crypto') {
+  <div class="mk__market-cards">
+
+    <!-- Kart 1: Kripto Özeti -->
+    <app-holdings-card heading="Kripto Piyasası">
+      <app-info-tooltip cardTitleMeta heading="Kripto Piyasası"
+        [items]="[{text: 'Genel yükselen/düşen dağılımını ve BTC, ETH ile USD/TRY özetini gösterir.'}]"
+        position="bottom" />
+      <span class="mk__summary-count" cardControls>{{ cryptos().length }} parite</span>
+      <ng-template cardView="default">
+        <div class="mk__summary-body">
+          <div class="mk__summary-bar-wrap">
+            <div class="mk__summary-bar">
+              <div class="mk__summary-bar-fill" [style.width.%]="cryptoGainerRatio()"></div>
+            </div>
+            <div class="mk__summary-bar-labels">
+              <span class="mk__summary-up"><span class="mk__summary-dot mk__summary-dot--up"></span>{{ cryptoPositive()
+                }} yükselen</span>
+              <span class="mk__summary-down"><span class="mk__summary-dot mk__summary-dot--down"></span>{{
+                cryptoNegative() }} düşen</span>
+            </div>
+          </div>
+          <div class="mk__summary-stats">
+            @if (btcMarket()) {
+            <div class="mk__summary-stat">
+              <span class="mk__summary-stat-label">BTC</span>
+              <span class="mk__summary-stat-value">{{ btcMarket()!.priceUsdt | marketPrice: 'USD' }}</span>
+              <span class="mk__summary-stat-change" [class.mk__up]="btcMarket()!.changePercent24h > 0"
+                [class.mk__down]="btcMarket()!.changePercent24h < 0">{{ btcMarket()!.changePercent24h | marketChange
+                }}</span>
+            </div>
+            }
+            @if (ethMarket()) {
+            <div class="mk__summary-stat">
+              <span class="mk__summary-stat-label">ETH</span>
+              <span class="mk__summary-stat-value">{{ ethMarket()!.priceUsdt | marketPrice: 'USD' }}</span>
+              <span class="mk__summary-stat-change" [class.mk__up]="ethMarket()!.changePercent24h > 0"
+                [class.mk__down]="ethMarket()!.changePercent24h < 0">{{ ethMarket()!.changePercent24h | marketChange
+                }}</span>
+            </div>
+            }
+            @if (usdTry()) {
+            <div class="mk__summary-stat">
+              <span class="mk__summary-stat-label">USD/TRY</span>
+              <span class="mk__summary-stat-value">{{ usdTry()!.rate.toFixed(2) }}</span>
+            </div>
+            }
+          </div>
+        </div>
+      </ng-template>
+    </app-holdings-card>
+
+    <!-- Kart 2: En Yüksek Hacim -->
+    <app-holdings-card heading="En Yüksek Hacim">
+      <app-info-tooltip cardTitleMeta heading="En Yüksek Hacim"
+        [items]="[{text: 'Son 24 saatte işlem hacmi en yüksek kripto paraları listeler.'}]" position="bottom" />
+      <ng-template cardView="default">
+        <app-mover-list [items]="volumeListItems()" [centerValue]="false" />
+      </ng-template>
+    </app-holdings-card>
+
+    <!-- Kart 3: Yükselenler / Düşenler -->
+    <app-holdings-card heading="Piyasa Hareketleri" [viewOptions]="moverViewOptions" defaultView="gainers">
+      <app-info-tooltip cardTitleMeta heading="Piyasa Hareketleri"
+        [items]="[{text: 'Son 24 saatte en fazla değişim gösteren kripto paralar.'}]" position="bottom" />
+      <ng-template cardView="gainers">
+        <app-mover-list [items]="gainersListItems()" [centerValue]="false" />
+      </ng-template>
+      <ng-template cardView="losers">
+        <app-mover-list [items]="losersListItems()" [centerValue]="false" />
+      </ng-template>
+    </app-holdings-card>
+
+  </div>
+  }
+
+  <!-- BIST Market Cards -->
+  @if (activeView() === 'stocks') {
+  <div class="mk__market-cards mk__market-cards--stocks">
+
+    <!-- Kart 1: BIST Piyasası -->
+    <app-holdings-card heading="BIST Piyasası" [viewOptions]="bistSummaryViewOptions" defaultView="overview">
+      <app-info-tooltip cardTitleMeta heading="BIST Piyasası"
+        [items]="[{text: 'Genel yükselen/düşen dağılımı, BIST 100, USD/TRY ve sektör performansları.'}]"
+        position="bottom" />
+      <span class="mk__summary-count" cardControls>{{ stocks().length }} hisse</span>
+      <ng-template cardView="overview">
+        <div class="mk__summary-body">
+          <div class="mk__summary-bar-wrap">
+            <div class="mk__summary-bar">
+              <div class="mk__summary-bar-fill" [style.width.%]="stockGainerRatio()"></div>
+            </div>
+            <div class="mk__summary-bar-labels">
+              <span class="mk__summary-up"><span class="mk__summary-dot mk__summary-dot--up"></span>{{ stockGainers() }} yükselen</span>
+              <span class="mk__summary-down"><span class="mk__summary-dot mk__summary-dot--down"></span>{{ stockLosers() }} düşen</span>
+            </div>
+          </div>
+          <div class="mk__summary-stats">
+            @if (bist100()) {
+            <div class="mk__summary-stat">
+              <span class="mk__summary-stat-label">BIST 100</span>
+              <span class="mk__summary-stat-value">{{ bist100()!.price | compactNumber }}</span>
+              <span class="mk__summary-stat-change" [class.mk__up]="bist100()!.changePercent > 0"
+                [class.mk__down]="bist100()!.changePercent < 0">{{ bist100()!.changePercent | marketChange }}</span>
+            </div>
+            }
+            @if (usdTry()) {
+            <div class="mk__summary-stat">
+              <span class="mk__summary-stat-label">USD/TRY</span>
+              <span class="mk__summary-stat-value">{{ usdTry()!.rate.toFixed(2) }}</span>
+            </div>
+            }
+          </div>
+        </div>
+      </ng-template>
+      <ng-template cardView="sectors">
+        <div class="mk__sector-bars">
+          @for (item of sectorBars(); track item.sector; let i = $index) {
+          <div class="mk__sector-bar-row">
+            <div class="mk__sector-bar-label">
+              <span class="mk__sector-bar-rank">{{ i + 1 }}</span>
+              <span class="mk__sector-bar-name">{{ item.sector }}</span>
+            </div>
+            <div class="mk__sector-bar-track">
+              <div class="mk__sector-bar-fill"
+                [class.mk__sector-bar-fill--up]="item.avgChange > 0"
+                [class.mk__sector-bar-fill--down]="item.avgChange < 0"
+                [style.width.%]="item.barWidth">
+              </div>
+            </div>
+            <span class="mk__sector-bar-value"
+              [class.mk__up]="item.avgChange > 0"
+              [class.mk__down]="item.avgChange < 0">
+              {{ item.avgChange > 0 ? '+' : '' }}{{ item.avgChange.toFixed(2) }}%
+            </span>
+          </div>
+          }
+        </div>
+      </ng-template>
+    </app-holdings-card>
+
+    <!-- Kart 2: En Yüksek Hacim -->
+    <app-holdings-card heading="En Yüksek Hacim">
+      <app-info-tooltip cardTitleMeta heading="En Yüksek Hacim"
+        [items]="[{text: 'Günün en yüksek işlem hacmine sahip hisseleri listeler.'}]" position="bottom" />
+      <ng-template cardView="default">
+        <app-mover-list [items]="stockVolumeListItems()" [centerValue]="false" />
+      </ng-template>
+    </app-holdings-card>
+
+    <!-- Kart 3: Piyasa Hareketleri -->
+    <app-holdings-card heading="Piyasa Hareketleri" [viewOptions]="moverViewOptions" defaultView="gainers">
+      <app-info-tooltip cardTitleMeta heading="Piyasa Hareketleri"
+        [items]="[{text: 'Günün en fazla değişim gösteren hisseleri listeler.'}]" position="bottom" />
+      <ng-template cardView="gainers">
+        <app-mover-list [items]="stockGainersListItems()" [centerValue]="false" />
+      </ng-template>
+      <ng-template cardView="losers">
+        <app-mover-list [items]="stockLosersListItems()" [centerValue]="false" />
+      </ng-template>
+    </app-holdings-card>
+
+  </div>
+  }
+
+  <!-- KPI Cards (other tabs) -->
+  @if (activeView() !== 'crypto' && activeView() !== 'stocks') {
+  <div class="mk__kpis">
+    @if (activeView() === 'overview') {
+    @if (btcMarket()) {
+    <app-kpi-card label="Bitcoin" [value]="btcMarket()!.priceUsdt | marketPrice: 'USD'"
+      [changeValue]="btcMarket()!.changePercent24h" [subtitle]="'₺ ' + (btcMarket()!.priceTry | compactNumber)" />
+    }
+    @if (ethMarket()) {
+    <app-kpi-card label="Ethereum" [value]="ethMarket()!.priceUsdt | marketPrice: 'USD'"
+      [changeValue]="ethMarket()!.changePercent24h" [subtitle]="'₺ ' + (ethMarket()!.priceTry | compactNumber)" />
+    }
+    <app-kpi-card label="Yükselen Kripto" [value]="cryptoPositive().toString()"
+      [subtitle]="cryptos().length + ' pariteden'" />
+    @if (usdTry()) {
+    <app-kpi-card label="USD / TRY" [value]="usdTry()!.rate.toFixed(4)" />
+    }
+    }
+    @if (activeView() === 'indices') {
+    @if (bist100()) { <app-kpi-card label="BIST 100" [value]="bist100()!.price | compactNumber"
+      [changeValue]="bist100()!.changePercent" /> }
+    @if (strongestIndex()) { <app-kpi-card label="En Güçlü" [value]="strongestIndex()!.ticker.replace('.IS', '')"
+      [changeValue]="strongestIndex()!.changePercent" [subtitle]="strongestIndex()!.price | compactNumber" /> }
+    @if (weakestIndex()) { <app-kpi-card label="En Zayıf" [value]="weakestIndex()!.ticker.replace('.IS', '')"
+      [changeValue]="weakestIndex()!.changePercent" [subtitle]="weakestIndex()!.price | compactNumber" /> }
+    @if (usdTry()) { <app-kpi-card label="USD / TRY" [value]="usdTry()!.rate.toFixed(4)" /> }
+    }
+    @if (activeView() === 'gold') {
+    @if (goldSpot()) {
+    <app-kpi-card label="Gram Altın (TRY)" [value]="goldSpot()!.gramTry | marketPrice: 'TRY'"
+      [subtitle]="goldSpot()!.gramUsd | marketPrice: 'USD'" />
+    <app-kpi-card label="Ons Altın (USD)" [value]="goldSpot()!.ounceUsd | marketPrice: 'USD'"
+      [subtitle]="goldSpot()!.ounceTry | marketPrice: 'TRY'" />
+    }
+    @if (goldTypes()) {
+    <app-kpi-card label="Çeyrek Altın" [value]="goldTypes()!.ceyrekTry | marketPrice: 'TRY'" />
+    <app-kpi-card label="Tam Altın" [value]="goldTypes()!.tamTry | marketPrice: 'TRY'" />
+    }
+    }
+  </div>
+  }
+
+  <!-- Errors -->
+  @if (pageError()) {
+  <div class="mk__error"><i class="fa-solid fa-triangle-exclamation"></i> {{ pageError() }}</div>
+  }
+  @if (connectionError()) {
+  <div class="mk__error mk__error--warning"><i class="fa-solid fa-wifi"></i> {{ connectionError() }}</div>
+  }
+
+  <!-- Tabs -->
+  <div class="mk__tabs">
+    @for (tab of marketTabs; track tab.id) {
+    <button class="mk__tab" [class.mk__tab--active]="activeView() === tab.id" (click)="setActiveView(tab.id)">{{
+      tab.label }}</button>
+    }
+  </div>
+
+  <!-- Toolbar -->
+  @if (activeView() === 'crypto') {
+  <div class="mk__toolbar-cmc">
+    <div class="mk__cmc-left">
+      <app-network-filter-pills
+        [pills]="networkFilterPills()"
+        [activeId]="activeNetwork()"
+        (onSelect)="setActiveNetwork($event)"
+      />
+    </div>
+
+    <div class="mk__cmc-right">
+      <div class="mk__search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input class="mk__search" type="search" placeholder="Kripto ara..." [value]="cryptoSearch()"
+          (input)="cryptoSearch.set($any($event.target).value); cryptoPage.set(1)" />
+      </div>
+      <app-number-range-filter label="Piyasa Değeri" [presets]="marketCapFilterPresets" [value]="marketCapFilter()"
+        minPlaceholder="Min" maxPlaceholder="Max" (apply)="onMarketCapFilterApply($event)" />
+      <app-number-range-filter label="Hacim (24s)" [presets]="volumeFilterPresets" [value]="volumeFilter()"
+        minPlaceholder="Min" maxPlaceholder="Max" (apply)="onVolumeFilterApply($event)" />
+    </div>
+  </div>
+  } @else if (activeView() === 'stocks') {
+  <div class="mk__toolbar-cmc mk__toolbar-cmc--stocks">
+    <div class="mk__cmc-left">
+      <app-filter-overflow-pills
+        [pills]="stockSectorPills()"
+        [activeId]="activeStockSector()"
+        [visibleLimit]="4"
+        moreLabel="More"
+        searchPlaceholder="Sektör ara..."
+        [showMenuIcons]="false"
+        (selectionChange)="setActiveStockSector($event)"
+      />
+    </div>
+
+    <div class="mk__cmc-right">
+      <div class="mk__search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input class="mk__search" type="search" placeholder="Hisse ara..." [value]="stockSearch()"
+          (input)="stockSearch.set($any($event.target).value); stockPage.set(1)" />
+      </div>
+      <app-number-range-filter label="Hacim" [presets]="stockVolumeFilterPresets" [value]="stockVolumeFilter()"
+        minPlaceholder="Min" maxPlaceholder="Max" (apply)="onStockVolumeFilterApply($event)" />
+    </div>
+  </div>
+  } @else {
+  <div class="mk__toolbar">
+    @if (activeView() === 'indices') {
+    <div class="mk__search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input class="mk__search" type="search" placeholder="Endeks ara..." [value]="indexSearch()"
+        (input)="indexSearch.set($any($event.target).value)" />
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Body -->
+  <div class="mk__body">
+    @if (isLoading()) {
+    <div class="mk__empty">
+      <i class="fa-solid fa-circle-notch fa-spin fa-xl"></i>
+      <span>Yükleniyor...</span>
+    </div>
+    } @else {
+
+    <!-- Overview -->
+    @if (activeView() === 'overview') {
+    @if (overviewRows().length === 0) {
+    <div class="mk__empty"><span>Veri bulunamadı.</span></div>
+    } @else {
+    <div class="mk__list">
+      <div class="mk__list-header">
+        <span></span>
+        <span class="center">#</span>
+        <span>İsim</span>
+        <span class="right">Fiyat</span>
+        <span class="right">Değişim %</span>
+        <span class="right">Hacim</span>
+      </div>
+      @for (item of overviewRows(); track trackByOverviewSymbol($index, item); let i = $index) {
+      <div class="mk__list-row">
+        <div class="mk__cell mk__cell--star"></div>
+        <div class="mk__cell mk__cell--rank">{{ i + 1 }}</div>
+        <div class="mk__cell mk__cell--name">
+          <div class="mk__asset">
+            <div class="mk__avatar" [style.background]="ui.getAvatarColor(item.symbol)">
+              <img class="mk__coin-logo" [src]="ui.getCryptoLogoUrl(item.name)" [alt]="item.name"
+                (load)="ui.onCoinLogoLoad($event)" (error)="ui.onCoinLogoError($event)" />
+              {{ ui.getAvatarLetter(item.symbol) }}
+            </div>
+            <div class="mk__asset-info">
+              <span class="mk__asset-sym">{{ item.symbol.replace('.IS', '') }}</span>
+              <span class="mk__asset-sub">{{ item.name || '—' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mk__cell mk__cell--right mk__cell--mono">{{ item.price | marketPrice: item.currency }}</div>
+        <div class="mk__cell mk__cell--right">
+          <span class="mk__change" [ngClass]="ui.deltaClass(item.changePercent)">{{ item.changePercent | marketChange
+            }}</span>
+        </div>
+        <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">
+          {{ item.volume === null ? '—' : (item.volume | compactNumber) }}
+        </div>
+      </div>
+      }
+    </div>
+    }
+    }
+
+    <!-- BIST Stocks -->
+    @if (activeView() === 'stocks') {
+    @if (visibleStocks().length === 0) {
+    <div class="mk__empty"><span>Sonuç bulunamadı.</span></div>
+    } @else {
+    <app-market-bist-table [stocks]="pagedStocks()" [favorites]="favoriteCryptos()" [colSort]="stockColSort()"
+      (favoriteToggle)="toggleFavorite($event)" (sortChange)="onStockSortChange($event)" />
+    <app-paginator [page]="stockPage()" [total]="visibleStocks().length" [pageSize]="PAGE_SIZE"
+      (pageChange)="stockPage.set($event)" />
+    }
+    }
+
+    <!-- Crypto -->
+    @if (activeView() === 'crypto') {
+    @if (allVisibleCryptos().length === 0) {
+    <div class="mk__empty"><span>Sonuç bulunamadı.</span></div>
+    } @else {
+    <app-market-crypto-table [cryptos]="visibleCryptos()" [favorites]="favoriteCryptos()" [colSort]="cryptoColSort()"
+      (favoriteToggle)="toggleFavorite($event)" (sortChange)="onCryptoSortChange($event)" />
+    <app-paginator [page]="cryptoPage()" [total]="allVisibleCryptos().length" [pageSize]="PAGE_SIZE"
+      (pageChange)="cryptoPage.set($event)" />
+    }
+    }
+
+    <!-- Indices -->
+    @if (activeView() === 'indices') {
+    @if (visibleIndices().length === 0) {
+    <div class="mk__empty"><span>Sonuç bulunamadı.</span></div>
+    } @else {
+    <app-market-indices-table [indices]="visibleIndices()" [favorites]="favoriteCryptos()"
+      (favoriteToggle)="toggleFavorite($event)" />
+    }
+    }
+
+    <!-- Gold -->
+    @if (activeView() === 'gold') {
+    @if (!goldSpot() && !goldTypes()) {
+    <div class="mk__empty"><span>Altın verisi henüz mevcut değil.</span></div>
+    } @else {
+    <div class="mk__gold">
+
+      @if ((activeFilter() === 'all' || activeFilter() === 'spot') && goldSpot()) {
+      <div class="mk__gold-block">
+        <div class="mk__gold-label">Spot Altın</div>
+        <div class="mk__list mk__list--gold-spot">
+          <div class="mk__list-header">
+            <span></span>
+            <span>Birim</span>
+            <span class="right">USD</span>
+            <span class="right">TRY</span>
+          </div>
+          <div class="mk__list-row">
+            <div class="mk__cell mk__cell--star"></div>
+            <div class="mk__cell mk__cell--name">
+              <div class="mk__asset">
+                <div class="mk__avatar mk__avatar--gold">Au</div>
+                <div class="mk__asset-info">
+                  <span class="mk__asset-sym">XAU / ONS</span>
+                  <span class="mk__asset-sub">Ons Altın</span>
+                </div>
+              </div>
+            </div>
+            <div class="mk__cell mk__cell--right mk__cell--mono">{{ goldSpot()!.ounceUsd | marketPrice: 'USD' }}</div>
+            <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">{{ goldSpot()!.ounceTry | marketPrice:
+              'TRY' }}</div>
+          </div>
+          <div class="mk__list-row">
+            <div class="mk__cell mk__cell--star"></div>
+            <div class="mk__cell mk__cell--name">
+              <div class="mk__asset">
+                <div class="mk__avatar mk__avatar--gold">Au</div>
+                <div class="mk__asset-info">
+                  <span class="mk__asset-sym">XAU / GRAM</span>
+                  <span class="mk__asset-sub">Gram Altın</span>
+                </div>
+              </div>
+            </div>
+            <div class="mk__cell mk__cell--right mk__cell--mono">{{ goldSpot()!.gramUsd | marketPrice: 'USD' }}</div>
+            <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">{{ goldSpot()!.gramTry | marketPrice:
+              'TRY' }}</div>
+          </div>
+        </div>
+      </div>
+      }
+
+      @if ((activeFilter() === 'all' || activeFilter() === 'physical') && goldTypes()) {
+      <div class="mk__gold-block">
+        <div class="mk__gold-label">Fiziki Altın</div>
+        <div class="mk__list mk__list--gold-physical">
+          <div class="mk__list-header">
+            <span></span>
+            <span>Tür</span>
+            <span class="right">TRY</span>
+          </div>
+          @for (row of goldPhysicalRows(); track row.symbol) {
+          <div class="mk__list-row">
+            <div class="mk__cell mk__cell--star"></div>
+            <div class="mk__cell mk__cell--name">
+              <div class="mk__asset">
+                <div class="mk__avatar mk__avatar--gold">Au</div>
+                <div class="mk__asset-info">
+                  <span class="mk__asset-sym">{{ row.symbol }}</span>
+                  <span class="mk__asset-sub">{{ row.name }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="mk__cell mk__cell--right mk__cell--mono">{{ row.price | marketPrice: 'TRY' }}</div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+    </div>
+    }
+    }
+
+    }
+  </div>
+
+</section>

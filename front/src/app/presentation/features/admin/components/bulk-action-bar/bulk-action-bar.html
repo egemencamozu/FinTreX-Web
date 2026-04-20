@@ -1,0 +1,29 @@
+<div class="bulk-action-wrapper" [class.is-visible]="selectedCount > 0 && !isModalOpen()">
+  <div class="bulk-action-bar">
+    <div class="selection-info">
+      <span class="count-badge">{{ selectedCount }}</span>
+      <span class="selection-text">Kullanici Secildi</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="action-buttons">
+      <button type="button" class="btn-bulk btn-bulk--success" (click)="activate.emit()">
+        <i class="fa-solid fa-user-check"></i>
+        <span>Toplu Etkinlestir</span>
+      </button>
+
+      <button type="button" class="btn-bulk btn-bulk--danger" (click)="deactivate.emit()">
+        <i class="fa-solid fa-user-xmark"></i>
+        <span>Toplu Devre Disi Birak</span>
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <button type="button" class="btn-clear" (click)="clearSelection.emit()">
+      <i class="fa-solid fa-xmark"></i>
+      <span>Secimi Temizle</span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,99 @@
+.ai-chat-c {
+  height: calc(100vh - 64px);
+  background: var(--bg-body);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4); // Added padding for card-like container
+
+  &__wrapper {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    background: var(--bg-surface);
+    border-radius: var(--radius-xl); // Premium rounded corners
+    box-shadow: var(--shadow-lg); // Solid shadow for depth
+    border: 1px solid var(--border-default);
+  }
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    max-width: 100%; // Fill the wrapper
+  }
+
+  &__shell {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  &__sidebar {
+    height: 100%;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--bg-surface-raised) 50%, var(--bg-surface));
+    border-right: 1px solid var(--border-default);
+  }
+
+  &__main-content {
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-surface);
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--bg-surface-rgb), 0.7);
+    backdrop-filter: blur(10px); // More blur for premium feel
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    z-index: 10;
+    color: var(--text-secondary);
+
+    i {
+      font-size: 32px;
+      color: var(--btn-primary-bg);
+      filter: drop-shadow(0 0 8px color-mix(in srgb, var(--btn-primary-bg) 50%, transparent));
+    }
+
+    span {
+      font-weight: var(--font-weight-medium);
+      letter-spacing: 0.5px;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    padding: var(--space-2);
+    height: calc(100vh - 56px);
+  }
+
+  @media (max-width: 992px) {
+    &__shell {
+      grid-template-columns: 280px 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0;
+    
+    &__wrapper {
+      border-radius: 0;
+      border: none;
+    }
+
+    &__shell {
+      grid-template-columns: 1fr;
+    }
+
+    &__sidebar {
+      display: none;
+    }
+  }
+}

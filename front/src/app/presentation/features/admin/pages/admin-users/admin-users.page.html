@@ -1,126 +1,116 @@
-<section class="feature-page">
-  <header class="feature-page__header">
-    <p class="feature-page__eyebrow">Admin</p>
-    <h1>Kullanici yonetimi</h1>
-    <p class="feature-page__description">
-      Backend endpointleri ile entegre canli kullanici ve rol yonetimi.
-    </p>
-  </header>
+<div class="admin-page-layout">
+  <app-summary-cards
+    [stats]="stats()"
+    [isLoading]="statsLoading()"
+    [hasError]="statsError()"
+    [activeStatusFilter]="selectedStatus()"
+    (filterByStatus)="onFilterByStatus($event)"
+    (retry)="loadStats()"
+  ></app-summary-cards>
 
-  @if (errorMessage) {
-    <p class="feature-page__error">{{ errorMessage }}</p>
-  }
+  <section class="user-management-page">
+    <div class="action-bar-sticky">
+      <!-- ... existing action bar content ... -->
+      <div class="action-bar-content">
+        <div class="header-main">
+          <h1>Kullanici Yonetimi</h1>
+        </div>
 
-  @if (successMessage) {
-    <p class="feature-page__success">{{ successMessage }}</p>
-  }
-
-  <div class="feature-page__grid">
-    @for (section of sections; track section.title) {
-      <article class="feature-card">
-        <span class="feature-card__metric">{{ section.highlight }}</span>
-        <h2>{{ section.title }}</h2>
-        <p>{{ section.description }}</p>
-      </article>
-    }
-  </div>
-
-  <section class="users">
-    <header class="users__header">
-      <h2>Kullanicilar</h2>
-      @if (loading) {
-        <span>Yukleniyor...</span>
-      }
-    </header>
-
-    @if (!loading && users.length === 0) {
-      <p>Gosterilecek kullanici bulunamadi.</p>
-    }
-
-    <div class="users__list">
-      @for (user of users; track trackByUserId($index, user)) {
-        <article class="user-card">
-          <div class="user-card__identity">
-            <h3>{{ user.firstName }} {{ user.lastName }}</h3>
-            <p>{{ user.email }}</p>
-            <span class="user-card__username">@{{ user.userName }}</span>
-          </div>
-
-          <div class="user-card__roles">
-            <strong>Aktif Rol</strong>
-            <div class="chips">
-              <span class="role-badge">{{ user.role }}</span>
+        <div class="page-controls">
+          <!-- Search field -->
+          <div class="filter-field search-field">
+            <div class="input-wrapper">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Isim, e-posta veya rol ara..."
+                [ngModel]="searchQuery()"
+                (ngModelChange)="onSearchQueryChange($event)"
+              />
             </div>
           </div>
 
-          <div class="user-card__status">
-            <strong>Hesap Durumu</strong>
-            <div class="chips">
-              @if (user.isActive) {
-                <span class="status-badge status-badge--active">Active</span>
-              } @else {
-                <span class="status-badge status-badge--inactive">Deactive</span>
-                @if (user.deactivatedUntil) {
-                  <span class="status-text"
-                    >Bitis: {{ user.deactivatedUntil | date: 'dd.MM.yyyy HH:mm' }}</span
-                  >
-                }
+          <!-- Role select -->
+          <div class="filter-field">
+            <div class="custom-select-wrapper" (click)="toggleRoleSelect($event)">
+              <div class="custom-select-trigger" [class.is-open]="isRoleSelectOpen()">
+                <div class="trigger-content">
+                  <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+                  <span>{{ getSelectedRoleLabel() }}</span>
+                </div>
+                <i class="fa-solid fa-chevron-down chevron"></i>
+              </div>
+              
+              @if (isRoleSelectOpen()) {
+                <ul class="custom-select-options">
+                  @for (role of roleFilterOptions; track role) {
+                    <li class="custom-option" 
+                        [class.selected]="selectedRole() === role"
+                        (click)="selectRoleOption(role, $event)">
+                      <div class="option-content">
+                         <i class="fa-solid fa-check" [class.invisible]="selectedRole() !== role"></i>
+                         <span>{{ role === 'ALL' ? 'Tum Roller' : role }}</span>
+                      </div>
+                    </li>
+                  }
+                </ul>
               }
             </div>
           </div>
 
-          <div class="user-card__actions">
-            <strong>Hesap Islemleri</strong>
-
-            @if (isAdminUser(user)) {
-              <p class="status-text">Admin hesaplari guvenlik nedeniyle deactive edilemez.</p>
-            }
-
-            @if (user.isActive) {
-              <div class="actions">
-                <select
-                  class="duration-select"
-                  aria-label="Deactive suresi secimi"
-                  title="Deactive suresi secimi"
-                  [disabled]="actionBusyUserId === user.id || isAdminUser(user)"
-                  [value]="getSelectedDuration(user.id)"
-                  (change)="setSelectedDuration(user.id, $any($event.target).value)"
-                >
-                  @for (option of deactivationOptions; track option.key) {
-                    <option [value]="option.key">{{ option.label }}</option>
-                  }
-                </select>
-
-                <button
-                  type="button"
-                  class="save-button"
-                  [disabled]="actionBusyUserId === user.id || isAdminUser(user)"
-                  (click)="deactivateUser(user)"
-                >
-                  @if (actionBusyUserId === user.id) {
-                    Isleniyor...
-                  } @else {
-                    Deactive Et
-                  }
-                </button>
+          <!-- Status select -->
+          <div class="filter-field">
+            <div class="custom-select-wrapper" (click)="toggleStatusSelect($event)">
+              <div class="custom-select-trigger" [class.is-open]="isStatusSelectOpen()">
+                <div class="trigger-content">
+                   <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                   <span>{{ getSelectedStatusLabel() }}</span>
+                </div>
+                <i class="fa-solid fa-chevron-down chevron"></i>
               </div>
-            } @else {
-              <button
-                type="button"
-                class="save-button"
-                [disabled]="actionBusyUserId === user.id"
-                (click)="activateUser(user)"
-              >
-                @if (actionBusyUserId === user.id) {
-                  Isleniyor...
-                } @else {
-                  Active Et
-                }
-              </button>
-            }
+
+              @if (isStatusSelectOpen()) {
+                <ul class="custom-select-options">
+                  @for (status of statusFilterOptions; track status) {
+                    <li class="custom-option" 
+                        [class.selected]="selectedStatus() === status"
+                        (click)="selectStatusOption(status, $event)">
+                      <div class="option-content">
+                         <i class="fa-solid fa-check" [class.invisible]="selectedStatus() !== status"></i>
+                         <span>{{ status === 'ALL' ? 'Tum Durumlar' : status === 'ACTIVE' ? 'Aktif' : 'Deaktif' }}</span>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
           </div>
-        </article>
-      }
+        </div>
+      </div>
+    </div>
+
+
+    <div class="user-management-page__content card">
+      <app-user-table
+        [users]="visibleUsers()"
+        [isLoading]="isLoading()"
+        [busyUserId]="busyUserId()"
+        [selectedUserIds]="selectedUserIds()"
+        [sortState]="sortState()"
+        (deactivateUser)="onDeactivateUser($event)"
+        (activateUser)="onActivateUser($event)"
+        (sortChange)="onSortChange($event)"
+        (toggleSelection)="onToggleSelection($event)"
+        (toggleSelectAll)="onToggleSelectAll()"
+      ></app-user-table>
     </div>
   </section>
-</section>
+
+  <app-bulk-action-bar
+    [selectedCount]="selectedUserIds().size"
+    (activate)="onBulkActivate()"
+    (deactivate)="onBulkDeactivate()"
+    (clearSelection)="onClearSelection()"
+  ></app-bulk-action-bar>
+</div>

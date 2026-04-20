@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { UserRole } from '../../../core/enums/user-role.enum';
 import { AuthService, type AuthenticatedUser } from '../../../core/services/auth.service';
+import { ChatSignalRService } from '../../../core/services/chat-signalr.service';
 import { TooltipMenuComponent } from '../../shared/components/tooltip-menu/tooltip-menu.component';
 
 interface SidebarItem {
@@ -107,9 +108,10 @@ const SIDEBAR_MAP: Record<UserRole, SidebarItem[]> = {
         {
           label: 'Analiz Görevleri',
           icon: 'fa-solid fa-list-check',
-          route: '/app/consultancy/tasks',
+          route: '/app/consultancy/my-requests',
         },
         { label: 'Mesajlar', icon: 'fa-solid fa-envelope', route: '/app/chat' },
+        { label: 'AI Asistan', icon: 'fa-solid fa-robot', route: '/app/ai-assistant' },
       ],
     },
     {
@@ -145,7 +147,7 @@ const SIDEBAR_MAP: Record<UserRole, SidebarItem[]> = {
   ],
   [UserRole.ECONOMIST]: [
     { label: 'Müşterilerim', icon: 'fa-solid fa-users', route: '/app/economist/customers' },
-    { label: 'Görevlerim', icon: 'fa-solid fa-list-check', route: '/app/economist/tasks' },
+    { label: 'Görevlerim', icon: 'fa-solid fa-list-check', route: '/app/economist/assigned-tasks' },
     { label: 'Mesajlar', icon: 'fa-solid fa-envelope', route: '/app/chat' },
     { label: 'Notlarım', icon: 'fa-solid fa-note-sticky', route: '/app/economist/notes' },
     { label: 'Profil', icon: 'fa-solid fa-user', route: '/app/profile' },
@@ -153,11 +155,7 @@ const SIDEBAR_MAP: Record<UserRole, SidebarItem[]> = {
   ],
   [UserRole.ADMIN]: [
     { label: 'Kullanıcılar', icon: 'fa-solid fa-users', route: '/app/admin/users' },
-    { label: 'Ekonomistler', icon: 'fa-solid fa-user-tie', route: '/app/admin/economists' },
     { label: 'Paket Yönetimi', icon: 'fa-solid fa-crown', route: '/app/admin/subscriptions' },
-    { label: 'Başvurular', icon: 'fa-solid fa-file-signature', route: '/app/admin/applications' },
-    { label: 'Yapılandırma', icon: 'fa-solid fa-gear', route: '/app/admin/settings' },
-    { label: 'Denetim', icon: 'fa-solid fa-shield-halved', route: '/app/admin/audit' },
     { label: 'Test Sayfası', icon: 'fa-solid fa-flask', route: '/app/test' },
   ],
 };
@@ -173,6 +171,7 @@ export class MainLayoutComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+  protected readonly chatSignalR = inject(ChatSignalRService);
   protected readonly sidebarCollapsed = signal(false);
   /** Üst çubukta gösterilecek kısayol id’leri (havuz sırasına göre sıralanır). */
   private readonly shortcutIds = signal<string[]>([]);
@@ -225,7 +224,9 @@ export class MainLayoutComponent implements OnInit {
 
   protected readonly openMenus = signal<Record<string, boolean>>({});
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.chatSignalR.connect();
+    
     this.checkActiveAccordion(this.router.url);
 
     this.router.events

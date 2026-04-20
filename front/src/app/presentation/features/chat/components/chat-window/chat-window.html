@@ -1,0 +1,53 @@
+<div class="chat-window">
+  <app-chat-header 
+    [conversation]="conversation" 
+    (infoClicked)="true"
+  />
+
+  <div class="chat-window__messages" #scrollFrame (scroll)="onScroll($event)">
+    @if (hasMore()) {
+      <div class="chat-window__load-more">
+        <button class="chat-window__load-btn" (click)="loadMessages(nextCursor() || undefined)" [disabled]="isLoading()">
+          {{ isLoading() ? 'Yükleniyor...' : 'Daha eski mesajları yükle' }}
+        </button>
+      </div>
+    }
+
+    @for (msg of messages(); track msg.id; let i = $index) {
+      @if (showDateDivider(i, msg)) {
+        <div class="chat-window__date-divider">
+          <span>{{ formatDateDivider(msg.sentAtUtc) }}</span>
+        </div>
+      }
+
+      <app-message-bubble
+        [message]="msg"
+        [isMe]="msg.senderId === currentUserId"
+        (editRequested)="onEditMessage($event)"
+        (deleteRequested)="onDeleteMessage($event)"
+      />
+    }
+
+    @if (isTyping()) {
+      <div class="chat-window__typing-wrapper">
+        <div class="chat-window__typing">
+          <span class="typing-indicator">
+            <span></span><span></span><span></span>
+          </span>
+          <span class="typing-text">{{ typingUser() }} yazıyor...</span>
+        </div>
+      </div>
+    }
+
+    @if (showScrollFab()) {
+      <button class="chat-window__scroll-fab" (click)="forceScrollToBottom()">
+        <i class="fas fa-chevron-down"></i>
+      </button>
+    }
+  </div>
+
+  <app-chat-input 
+    (messageSent)="onSendMessage($event)"
+    (typing)="onTyping()"
+  />
+</div>

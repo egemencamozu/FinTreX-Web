@@ -52,6 +52,13 @@ export const routes: Routes = [
           import('./presentation/features/chat/chat.routes').then((m) => m.CHAT_ROUTES),
       },
       {
+        path: 'ai-assistant',
+        loadChildren: () =>
+          import('./presentation/features/ai-assistant/ai-assistant.routes').then(
+            (m) => m.AI_ASSISTANT_ROUTES
+          ),
+      },
+      {
         path: 'subscription',
         loadChildren: () =>
           import('./presentation/features/subscription/subscription.routes').then(

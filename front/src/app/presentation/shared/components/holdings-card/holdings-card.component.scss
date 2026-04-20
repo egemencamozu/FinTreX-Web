@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .holdings-card {
   display: flex;
   flex-direction: column;
@@ -7,6 +12,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-xs);
+  height: 100%;
 
   &__header {
     display: flex;
@@ -21,6 +27,13 @@
     color: var(--text-primary);
   }
 
+  &__title-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
   &__controls {
     display: flex;
     align-items: center;
@@ -28,6 +41,7 @@
   }
 
   &__body {
-    min-height: 240px;
+    flex: 1;
+    min-height: 0;
   }
 }

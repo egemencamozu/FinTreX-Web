@@ -21,7 +21,7 @@ export class CardViewDirective {
 })
 export class HoldingsCardComponent implements OnInit {
   readonly heading = input<string>('');
-  readonly viewOptions = input.required<SegmentedOption[]>();
+  readonly viewOptions = input<SegmentedOption[]>([]);
   readonly defaultView = input<string>('');
 
   readonly activeViewChange = output<string>();
@@ -35,7 +35,7 @@ export class HoldingsCardComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const initial = this.defaultView() || this.viewOptions()[0]?.id || '';
+    const initial = this.defaultView() || this.viewOptions()[0]?.id || 'default';
     this.activeView.set(initial);
   }
 

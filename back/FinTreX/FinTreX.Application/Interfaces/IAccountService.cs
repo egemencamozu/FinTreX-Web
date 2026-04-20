@@ -10,7 +10,13 @@ namespace FinTreX.Core.Interfaces
     public interface IAccountService
     {
         Task<AuthenticationResponse> AuthenticateAsync(AuthenticationRequest request, string ipAddress);
-        Task<string> RegisterAsync(RegisterRequest request, string origin);
+        Task<RegisterResponse> RegisterAsync(RegisterRequest request, string origin);
+
+        /// <summary>Verify the email OTP and, on success, issue an authenticated response (JWT + refresh token).</summary>
+        Task<AuthenticationResponse> VerifyEmailAsync(VerifyEmailRequest request, string ipAddress);
+
+        /// <summary>Resend the 6-digit email verification code (subject to cooldown).</summary>
+        Task ResendVerificationCodeAsync(ResendVerificationRequest request);
 
         /// <summary>Exchange a valid refresh token for a new JWT + refresh token pair.</summary>
         Task<AuthenticationResponse> RefreshTokenAsync(string token, string ipAddress);

@@ -1,0 +1,26 @@
+<div class="ai-chat-window-c">
+  @if (showEmptyState()) {
+    <app-ai-empty-state 
+      (startNewChat)="startChatRequested.emit()"
+    ></app-ai-empty-state>
+  } @else {
+    <div class="ai-chat-window-c__messages" #scrollContainer>
+      <div class="ai-chat-window-c__scroll-content">
+        @for (msg of messages(); track msg.id) {
+          <app-ai-message-bubble [message]="msg"></app-ai-message-bubble>
+        }
+
+        @if (isAITyping()) {
+          <app-ai-typing-indicator></app-ai-typing-indicator>
+        }
+      </div>
+    </div>
+
+    <div class="ai-chat-window-c__input">
+      <app-ai-chat-input
+        [disabled]="isAITyping()"
+        (messageSent)="messageSent.emit($event)"
+      ></app-ai-chat-input>
+    </div>
+  }
+</div>

@@ -1,0 +1,40 @@
+.chat-page {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  height: calc(100vh - 80px); // Adjusted for Navbar height (approx 80px)
+  overflow: hidden;
+  background: var(--bg-app);
+
+  &__sidebar {
+    border-right: 1px solid var(--border-default);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-surface);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    background: transparent;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .chat-page {
+    grid-template-columns: 1fr;
+    
+    &__sidebar {
+      // Logic for mobile sidebar (can be hidden/shown via state later)
+      display: none; 
+    }
+    
+    &.sidebar-active {
+      &__sidebar { display: flex; }
+      &__content { display: none; }
+    }
+  }
+}

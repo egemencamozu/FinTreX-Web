@@ -1,0 +1,40 @@
+<div class="conversation-list">
+  <div class="conversation-list__header">
+    <h3 class="conversation-list__title">Mesajlar</h3>
+    @if (canStartNewChat) {
+      <button class="conversation-list__new-btn" (click)="onNewChat()" title="Yeni Sohbet">
+        <i class="fas fa-plus"></i>
+      </button>
+    }
+  </div>
+
+  <div class="conversation-list__search">
+    <div class="conversation-list__search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Sohbetlerde ara..." [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+    </div>
+  </div>
+
+  <div class="conversation-list__items">
+    @if (isLoading) {
+      <div class="conversation-list__loading">
+        <div class="spinner"></div>
+        <p>Sohbetler yükleniyor...</p>
+      </div>
+    } @else if (filteredConversations.length === 0) {
+      <div class="conversation-list__empty">
+        <p>{{ searchTerm() ? 'Aramanızla eşleşen sohbet bulunamadı.' : 'Henüz bir sohbetiniz yok.' }}</p>
+      </div>
+    } @else {
+      @for (conv of filteredConversations; track conv.id) {
+        <app-conversation-item
+          [conversation]="conv"
+          [isActive]="conv.id === activeConversationId"
+          (click)="conversationSelected.emit(conv)"
+          (renameRequested)="renameRequested.emit($event)"
+          (deleteRequested)="deleteRequested.emit($event)"
+        />
+      }
+    }
+  </div>
+</div>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FinTreX.Infrastructure.Models
 {
@@ -14,8 +14,8 @@ namespace FinTreX.Infrastructure.Models
         public DateTime Created { get; set; }
         public string CreatedByIp { get; set; }
         public DateTime? Revoked { get; set; }
-        public string RevokedByIp { get; set; }
-        public string ReplacedByToken { get; set; }
+        public string? RevokedByIp { get; set; }
+        public string? ReplacedByToken { get; set; }
 
         /// <summary>Token is active if not expired and not revoked.</summary>
         public bool IsActive => !IsExpired && !IsRevoked;

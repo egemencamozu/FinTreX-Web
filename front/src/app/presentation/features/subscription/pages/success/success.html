@@ -1,0 +1,18 @@
+<section class="success-c">
+  <div class="success-c__wrapper">
+    @if (isVerifying()) {
+      <h1>Ödemeniz doğrulanıyor...</h1>
+      <p>Lütfen bekleyin.</p>
+    } @else if (errorMessage()) {
+      <h1>Bir sorun oluştu</h1>
+      <p>{{ errorMessage() }}</p>
+      <a routerLink="/app/subscription/manage" class="success-c__btn">Aboneliklere Dön</a>
+    } @else if (verified(); as sub) {
+      <h1>Ödemeniz alındı!</h1>
+      <p>
+        <strong>{{ sub.plan.displayName }}</strong> planınız aktif edildi.
+      </p>
+      <a routerLink="/app/subscription/manage" class="success-c__btn">Aboneliği Görüntüle</a>
+    }
+  </div>
+</section>

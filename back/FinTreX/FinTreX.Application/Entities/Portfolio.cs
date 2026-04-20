@@ -25,7 +25,7 @@ namespace FinTreX.Core.Entities
         /// <summary>Display name (e.g. "Ana Portföy", "Kripto Cüzdanı").</summary>
         public string Name { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAtUtc { get; set; }

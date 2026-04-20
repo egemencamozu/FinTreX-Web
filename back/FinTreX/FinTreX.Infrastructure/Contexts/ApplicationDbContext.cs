@@ -12,15 +12,22 @@ namespace FinTreX.Infrastructure.Contexts
         // ── Domain DbSets ────────────────────────────────────────────────────
         public DbSet<Portfolio> Portfolios { get; set; }
         public DbSet<PortfolioAsset> PortfolioAssets { get; set; }
+        public DbSet<DailyClose> DailyCloses { get; set; }
+        public DbSet<CryptoEnrichmentSnapshot> CryptoEnrichmentSnapshots { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
         public DbSet<EconomistClient> EconomistClients { get; set; }
         public DbSet<ConsultancyTask> ConsultancyTasks { get; set; }
         public DbSet<PreAnalysisReport> PreAnalysisReports { get; set; }
+        public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<AiConversation> AiConversations { get; set; }
+        public DbSet<AiChatMessage> AiChatMessages { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -72,6 +79,9 @@ namespace FinTreX.Infrastructure.Contexts
                 entity.ToTable("RefreshTokens");
                 entity.HasKey(t => t.Id);
                 entity.Property(t => t.Token).IsRequired().HasMaxLength(256);
+                entity.Property(t => t.CreatedByIp).IsRequired(false);
+                entity.Property(t => t.RevokedByIp).IsRequired(false);
+                entity.Property(t => t.ReplacedByToken).IsRequired(false);
                 entity.HasIndex(t => t.Token).IsUnique();
             });
 
@@ -133,6 +143,42 @@ namespace FinTreX.Infrastructure.Contexts
                     .IsUnique();
             });
 
+            // CryptoEnrichmentSnapshot
+            builder.Entity<CryptoEnrichmentSnapshot>(entity =>
+            {
+                entity.ToTable("CryptoEnrichmentSnapshots");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Symbol).IsRequired().HasMaxLength(20);
+                entity.Property(x => x.EnrichmentStatus)
+                    .HasConversion<string>()
+                    .HasMaxLength(32);
+                entity.Property(x => x.LastAttemptedAtUtc);
+                entity.Property(x => x.LastProvider).HasMaxLength(50);
+                entity.Property(x => x.Network).HasMaxLength(100);
+                entity.Property(x => x.MarketCapUsdt).HasColumnType("decimal(28,4)");
+                entity.Property(x => x.CirculatingSupply).HasColumnType("decimal(28,4)");
+                entity.Property(x => x.TotalSupply).HasColumnType("decimal(28,4)");
+                entity.Property(x => x.RefreshedAtUtc);
+                entity.HasIndex(x => x.Symbol).IsUnique();
+            });
+
+            // DailyClose
+            builder.Entity<DailyClose>(entity =>
+            {
+                entity.ToTable("DailyCloses");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Ticker).IsRequired().HasMaxLength(20);
+                entity.Property(x => x.AssetType).IsRequired().HasMaxLength(10);
+                entity.Property(x => x.ClosePrice).HasColumnType("decimal(18,4)");
+                entity.Property(x => x.Change).HasColumnType("decimal(18,4)");
+                entity.Property(x => x.ChangePercent).HasColumnType("decimal(18,4)");
+                entity.Property(x => x.Date).HasColumnType("date");
+                entity.Property(x => x.WrittenAt);
+
+                entity.HasIndex(x => new { x.Ticker, x.Date }).IsUnique();
+            });
+
             // ── SubscriptionPlan ─────────────────────────────────────────────
             builder.Entity<SubscriptionPlan>(entity =>
             {
@@ -143,6 +189,10 @@ namespace FinTreX.Infrastructure.Contexts
                 entity.Property(x => x.Description).HasMaxLength(500);
                 entity.Property(x => x.MonthlyPriceTRY).HasPrecision(10, 2);
                 entity.Property(x => x.YearlyPriceTRY).HasPrecision(10, 2);
+                
+                entity.Property(x => x.StripeProductId).HasMaxLength(100);
+                entity.Property(x => x.StripeMonthlyPriceId).HasMaxLength(100);
+                entity.Property(x => x.StripeYearlyPriceId).HasMaxLength(100);
 
                 entity.Property(x => x.Tier)
                     .HasConversion<string>()
@@ -158,6 +208,10 @@ namespace FinTreX.Infrastructure.Contexts
                 entity.HasKey(x => x.Id);
 
                 entity.Property(x => x.ApplicationUserId).IsRequired().HasMaxLength(450);
+                
+                entity.Property(x => x.StripeCustomerId).HasMaxLength(100);
+                entity.Property(x => x.StripeSubscriptionId).HasMaxLength(100);
+                entity.Property(x => x.BillingPeriod).HasMaxLength(10).HasDefaultValue("monthly");
 
                 entity.Property(x => x.Status)
                     .HasConversion<string>()
@@ -267,6 +321,94 @@ namespace FinTreX.Infrastructure.Contexts
                 entity.HasIndex(x => x.ConsultancyTaskId).IsUnique();
             });
 
+            // ── EmailVerificationToken ───────────────────────────────────────
+            builder.Entity<EmailVerificationToken>(entity =>
+            {
+                entity.ToTable("EmailVerificationTokens");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ApplicationUserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Email).IsRequired().HasMaxLength(256);
+                entity.Property(x => x.CodeHash).IsRequired().HasMaxLength(128);
+
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Fast lookup for active tokens by user
+                entity.HasIndex(x => new { x.ApplicationUserId, x.IsUsed, x.ExpiresAt });
+            });
+
+            // ── Conversation ─────────────────────────────────────────────
+            builder.Entity<Conversation>(entity =>
+            {
+                entity.ToTable("Conversations");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.CreatedByUserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Title).HasMaxLength(200);
+
+                // FK → Creator (ApplicationUser)
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => x.LastMessageAtUtc);
+            });
+
+            // ── ConversationParticipant ──────────────────────────────────
+            builder.Entity<ConversationParticipant>(entity =>
+            {
+                entity.ToTable("ConversationParticipants");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.UserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Role)
+                    .HasConversion<string>()
+                    .HasMaxLength(20);
+
+                // FK → Conversation
+                entity.HasOne(x => x.Conversation)
+                    .WithMany(c => c.Participants)
+                    .HasForeignKey(x => x.ConversationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // FK → ApplicationUser
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // A user can appear only once per conversation
+                entity.HasIndex(x => new { x.ConversationId, x.UserId }).IsUnique();
+                entity.HasIndex(x => x.UserId); // Fast lookup: "my conversations"
+            });
+
+            // ── ChatMessage ──────────────────────────────────────────────
+            builder.Entity<ChatMessage>(entity =>
+            {
+                entity.ToTable("ChatMessages");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.SenderId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Content).IsRequired().HasMaxLength(4000);
+                entity.Property(x => x.MessageType)
+                    .HasConversion<string>()
+                    .HasMaxLength(20);
+
+                // FK → Conversation
+                entity.HasOne(x => x.Conversation)
+                    .WithMany(c => c.Messages)
+                    .HasForeignKey(x => x.ConversationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Composite index: message history pagination (cursor-based)
+                entity.HasIndex(x => new { x.ConversationId, x.Id });
+                entity.HasIndex(x => x.SenderId);
+            });
+
             // ── Seed: Subscription Plans ─────────────────────────────────────
             builder.Entity<SubscriptionPlan>().HasData(
                 new SubscriptionPlan
@@ -309,6 +451,42 @@ namespace FinTreX.Infrastructure.Contexts
                     IsActive = true
                 }
             );
+
+            // ── AI Assistant ─────────────────────────────────────────────────
+            builder.Entity<AiConversation>(b =>
+            {
+                b.ToTable("AiConversations");
+                b.HasKey(x => x.Id);
+
+                b.Property(x => x.UserId).IsRequired().HasMaxLength(450); // AspNetUsers.Id = 450 char
+                b.Property(x => x.Title).HasMaxLength(200);
+                b.Property(x => x.CreatedAtUtc).IsRequired();
+                b.Property(x => x.IsActive).HasDefaultValue(true);
+                b.Property(x => x.IsProcessing).HasDefaultValue(false);
+
+                // User → Conversations (FK to AspNetUsers via UserId string)
+                b.HasIndex(x => new { x.UserId, x.IsActive, x.LastMessageAtUtc })
+                 .HasDatabaseName("IX_AiConversations_User_Active_LastMsg");
+
+                b.HasMany(x => x.Messages)
+                 .WithOne(m => m.AiConversation)
+                 .HasForeignKey(m => m.AiConversationId)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<AiChatMessage>(b =>
+            {
+                b.ToTable("AiChatMessages");
+                b.HasKey(x => x.Id);
+
+                b.Property(x => x.Content).IsRequired().HasMaxLength(8000); // Assistant cevabı uzun olabilir
+                b.Property(x => x.Role).IsRequired().HasConversion<int>();
+                b.Property(x => x.ToolsUsed).HasMaxLength(1000);
+                b.Property(x => x.SentAtUtc).IsRequired();
+
+                b.HasIndex(x => new { x.AiConversationId, x.SentAtUtc })
+                 .HasDatabaseName("IX_AiChatMessages_Conv_SentAt");
+            });
 
             base.OnModelCreating(builder);
         }

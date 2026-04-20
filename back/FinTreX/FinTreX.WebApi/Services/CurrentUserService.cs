@@ -30,5 +30,8 @@ namespace FinTreX.WebApi.Services
         public bool IsEconomist => IsInRole("Economist");
 
         public bool IsAdmin => IsInRole("Admin");
+        public string? AuthToken =>
+            _httpContextAccessor.HttpContext?.Request.Headers["Authorization"]
+                .ToString().Replace("Bearer ", "", System.StringComparison.OrdinalIgnoreCase);
     }
 }

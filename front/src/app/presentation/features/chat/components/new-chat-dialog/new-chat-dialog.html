@@ -1,0 +1,81 @@
+<div class="dialog-overlay" (click)="onCancel()">
+  <div class="dialog-card" (click)="$event.stopPropagation()">
+    <header class="dialog-card__header">
+      <h3 class="dialog-card__title">Yeni Sohbet Başlat</h3>
+      <button class="dialog-card__close" (click)="onCancel()" aria-label="Kapat">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </header>
+
+    <main class="dialog-card__body">
+      @if (isLoading()) {
+        <div class="dialog-card__loading">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>Ekonomistler yükleniyor...</span>
+        </div>
+      } @else if (economists().length === 0) {
+        <div class="dialog-card__empty">
+          <i class="fa-solid fa-user-slash"></i>
+          <p>Size atanmış aktif bir ekonomist bulunamadı.</p>
+          <small>Yeni bir ekonomist kiralamak için Danışmanlık sayfasını ziyaret edin.</small>
+        </div>
+      } @else {
+        <form (ngSubmit)="onSubmit()" #chatForm="ngForm" class="dialog-form">
+          <div class="dialog-form__group">
+            <label class="dialog-form__label">Ekonomist Seçin</label>
+            <select
+              name="economistId"
+              [(ngModel)]="form.economistId"
+              class="dialog-form__input dialog-form__input--select"
+              required
+            >
+              @for (econ of economists(); track econ.economistId) {
+                <option [value]="econ.economistId">{{ econ.economistName }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="dialog-form__group">
+            <label class="dialog-form__label">Konu (Opsiyonel)</label>
+            <input
+              type="text"
+              name="title"
+              [(ngModel)]="form.title"
+              placeholder="Örn: Portföy Dağılımı Hakkında"
+              class="dialog-form__input"
+              maxlength="100"
+            />
+          </div>
+
+          <div class="dialog-form__group">
+            <label class="dialog-form__label">İlk Mesaj (Opsiyonel)</label>
+            <textarea
+              name="initialMessage"
+              [(ngModel)]="form.initialMessage"
+              placeholder="Sohbeti başlatmak için bir mesaj yazın..."
+              class="dialog-form__input dialog-form__input--textarea"
+              rows="3"
+              maxlength="1000"
+            ></textarea>
+          </div>
+
+          <footer class="dialog-form__actions">
+            <button type="button" class="btn btn--secondary" (click)="onCancel()" [disabled]="isSubmitting()">
+              İptal
+            </button>
+            <button
+              type="submit"
+              class="btn btn--primary"
+              [disabled]="!chatForm.valid || isSubmitting()"
+            >
+              @if (isSubmitting()) {
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+              }
+              Başlat
+            </button>
+          </footer>
+        </form>
+      }
+    </main>
+  </div>
+</div>

@@ -9,7 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
+#nullable enable
 namespace FinTreX.Core.Services
 {
     /// <summary>
@@ -22,17 +24,23 @@ namespace FinTreX.Core.Services
         private readonly IPortfolioAssetRepository _assetRepository;
         private readonly IEconomistClientRepository _economistClientRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IBistSubscriptionManager? _bistSubscriptionManager;
+        private readonly ILogger<PortfolioService> _logger;
 
         public PortfolioService(
             IPortfolioRepository portfolioRepository,
             IPortfolioAssetRepository assetRepository,
             IEconomistClientRepository economistClientRepository,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            ILogger<PortfolioService> logger,
+            IBistSubscriptionManager? bistSubscriptionManager = null)
         {
             _portfolioRepository = portfolioRepository;
             _assetRepository = assetRepository;
             _economistClientRepository = economistClientRepository;
             _currentUserService = currentUserService;
+            _logger = logger;
+            _bistSubscriptionManager = bistSubscriptionManager;
         }
 
         public async Task<IReadOnlyList<PortfolioDto>> GetUserPortfoliosAsync()
@@ -119,6 +127,20 @@ namespace FinTreX.Core.Services
             };
 
             await _assetRepository.AddAsync(asset);
+
+            if (asset.AssetType == AssetType.BIST && _bistSubscriptionManager is not null)
+            {
+                try
+                {
+                    _bistSubscriptionManager.RequestSubscription(asset.Symbol);
+                }
+                catch (Exception ex)
+                {
+                    // Non-critical: stream will pick it up on next reconnect if this fails.
+                    _logger.LogWarning(ex, "Failed to request dynamic BIST subscription for {Symbol}.", asset.Symbol);
+                }
+            }
+
             return MapAssetToDto(asset);
         }
 

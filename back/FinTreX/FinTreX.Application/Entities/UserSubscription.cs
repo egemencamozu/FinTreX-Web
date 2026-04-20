@@ -31,5 +31,17 @@ namespace FinTreX.Core.Entities
 
         // ── Navigation ───────────────────────────────────────────────────────
         public SubscriptionPlan SubscriptionPlan { get; set; }
+
+        /// <summary>Stripe Customer ID for this user.</summary>
+        public string? StripeCustomerId { get; set; }
+
+        /// <summary>Stripe Subscription ID for the active subscription.</summary>
+        public string? StripeSubscriptionId { get; set; }
+
+        /// <summary>Whether the subscription is set to cancel at period end.</summary>
+        public bool CancelAtPeriodEnd { get; set; } = false;
+
+        /// <summary>Current billing period: "monthly" or "yearly".</summary>
+        public string BillingPeriod { get; set; } = "monthly";
     }
 }

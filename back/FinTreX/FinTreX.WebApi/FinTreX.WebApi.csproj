@@ -3,6 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Version>1.1.0</Version>
     <UserSecretsId>1ebd6a43-360a-4dcb-aff3-550a446e79eb</UserSecretsId>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>FinTreX.WebApi.xml</DocumentationFile>

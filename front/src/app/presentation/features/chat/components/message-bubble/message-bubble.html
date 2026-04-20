@@ -1,0 +1,53 @@
+<div class="message-wrapper" [class.message-wrapper--me]="isMe">
+  <div class="message-bubble" [class.message-bubble--me]="isMe" [class.message-bubble--deleted]="message.isDeleted">
+    @if (message.isDeleted) {
+      <div class="message-bubble__deleted-text">
+        <i class="fas fa-ban"></i> Bu mesaj silindi
+      </div>
+    } @else {
+      <div class="message-bubble__content">
+        @if (isEditing()) {
+          <textarea
+            [ngModel]="editContent()"
+            (ngModelChange)="editContent.set($event)"
+            class="message-bubble__edit-input"
+            (keyup.enter)="saveEdit()"
+            (keyup.escape)="cancelEdit()"
+            autoFocus
+          ></textarea>
+          <div class="message-bubble__edit-actions">
+            <button (click)="saveEdit()" title="Kaydet"><i class="fas fa-check"></i></button>
+            <button (click)="cancelEdit()" title="İptal"><i class="fas fa-times"></i></button>
+          </div>
+        } @else {
+          {{ message.content }}
+        }
+      </div>
+      
+      <div class="message-bubble__info">
+        @if (message.editedAtUtc) {
+          <span class="message-bubble__edited">(düzenlendi)</span>
+        }
+        <span class="message-bubble__time">
+          {{ message.sentAtUtc | date: 'HH:mm' }}
+        </span>
+      </div>
+
+      @if (isMe && !message.isDeleted && !isEditing()) {
+        <div class="message-bubble__actions">
+          <button class="message-bubble__actions-trigger" (click)="$event.stopPropagation()">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+          <div class="message-bubble__dropdown">
+            <button (click)="startEdit()">
+              <i class="fas fa-edit"></i> Düzenle
+            </button>
+            <button class="danger" (click)="deleteMessage()">
+              <i class="fas fa-trash"></i> Sil
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

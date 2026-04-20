@@ -1,4 +1,5 @@
 using FinTreX.Core.Interfaces;
+using FinTreX.Core.DTOs.Account;
 using System.Collections.Generic;
 using FinTreX.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -31,76 +32,70 @@ namespace FinTreX.WebApi.Controllers.v1
             return Ok(userSummary);
         }
 
+        [HttpGet("stats")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAdminStats()
+        {
+            var stats = await _userManagementService.GetAdminStatsAsync();
+            return Ok(stats);
+        }
+
         [HttpGet("users")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userManager.Users.ToListAsync();
-            var userSummaries = new List<object>();
-
-            foreach (var user in users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                userSummaries.Add(new
-                {
-                    user.Id,
-                    user.FirstName,
-                    user.LastName,
-                    user.Email,
-                    user.UserName,
-                    user.EmailConfirmed,
-                    IsActive = user.EmailConfirmed, // Use this for now
-                    Role = roles.FirstOrDefault() ?? "User"
-                });
-            }
-
-            return Ok(userSummaries);
+            var users = await _userManagementService.GetAllUsersAsync();
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserById(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
-
-            var roles = await _userManager.GetRolesAsync(user);
-
-            return Ok(new
-            {
-                user.Id,
-                user.FirstName,
-                user.LastName,
-                user.Email,
-                user.UserName,
-                user.EmailConfirmed,
-                Roles = roles
-            });
+            var user = await _userManagementService.GetUserByIdAsync(id);
+            return Ok(user);
         }
 
         [HttpPost("{id}/activate")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ActivateUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            var message = await _userManagementService.ActivateUserAsync(id);
+            return Ok(new { Message = message });
+        }
 
-            user.EmailConfirmed = true; // Use this as 'Active' status
-            await _userManager.UpdateAsync(user);
+        [HttpPost("bulk-deactivate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> BulkDeactivate([FromBody] BulkDeactivateDto dto)
+        {
+            var result = await _userManagementService.BulkDeactivateAsync(dto.UserIds, dto.DurationKey);
+            return Ok(result);
+        }
 
-            return Ok(new { Message = "User activated successfully" });
+        [HttpPost("bulk-activate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> BulkActivate([FromBody] BulkActivateDto dto)
+        {
+            var result = await _userManagementService.BulkActivateAsync(dto.UserIds);
+            return Ok(result);
+        }
+
+        public class DeactivateRequest
+        {
+            public string DurationKey { get; set; }
         }
 
         [HttpPost("{id}/deactivate")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeactivateUser(string id)
+        public async Task<IActionResult> DeactivateUser(string id, [FromBody] DeactivateRequest request)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
-
-            user.EmailConfirmed = false; // Use this as 'Active' status
-            await _userManager.UpdateAsync(user);
-
-            return Ok(new { Message = "User deactivated successfully" });
+            if (request == null || string.IsNullOrWhiteSpace(request.DurationKey))
+            {
+                return BadRequest("DurationKey is required (e.g. ONE_HOUR, ONE_DAY, ONE_WEEK).");
+            }
+            
+            var message = await _userManagementService.DeactivateUserAsync(id, request.DurationKey);
+            return Ok(new { Message = message });
         }
     }
 }

@@ -1,0 +1,72 @@
+<div class="fop">
+  <div class="fop__rail">
+    @for (pill of visiblePills(); track pill.id) {
+    <button
+      type="button"
+      class="fop__pill"
+      [class.fop__pill--active]="isActive(pill.id)"
+      (click)="selectPill(pill.id)"
+    >
+      @if (pill.icon) {
+        @if (pill.isImage) {
+        <img class="fop__icon-img" [src]="pill.icon" [alt]="pill.label" />
+        } @else {
+        <i class="fop__icon" [class]="pill.icon"></i>
+        }
+      }
+      <span>{{ pill.label }}</span>
+    </button>
+    }
+
+    @if (hiddenPills().length > 0) {
+    <button
+      type="button"
+      class="fop__pill fop__more"
+      [class.fop__pill--active]="hasHiddenActive() || isOpen()"
+      (click)="toggleMenu()"
+    >
+      <span>{{ moreLabel }}</span>
+      <i class="fa-solid fa-chevron-up fop__more-icon" [class.fop__more-icon--closed]="!isOpen()"></i>
+    </button>
+    }
+  </div>
+
+  @if (isOpen()) {
+  <div class="fop__menu">
+    <div class="fop__search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input
+        type="search"
+        [placeholder]="searchPlaceholder"
+        [value]="query()"
+        (input)="setQuery($any($event.target).value)"
+      />
+    </div>
+
+    <div class="fop__menu-list">
+      @for (pill of filteredMenuPills(); track pill.id) {
+      <button
+        type="button"
+        class="fop__menu-item"
+        [class.fop__menu-item--active]="isActive(pill.id)"
+        (click)="selectPill(pill.id)"
+      >
+        @if (showMenuIcons && pill.icon) {
+          @if (pill.isImage) {
+          <img class="fop__menu-icon-img" [src]="pill.icon" [alt]="pill.label" />
+          } @else {
+          <i class="fop__menu-icon" [class]="pill.icon"></i>
+          }
+        }
+        <span>{{ pill.label }}</span>
+        @if (isActive(pill.id)) {
+        <i class="fa-solid fa-check fop__menu-check"></i>
+        }
+      </button>
+      } @empty {
+      <div class="fop__empty">Sonuç bulunamadı.</div>
+      }
+    </div>
+  </div>
+  }
+</div>

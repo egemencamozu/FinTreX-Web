@@ -1,0 +1,33 @@
+<div class="msg-bubble" [class.msg-bubble--user]="isUser()" [class.msg-bubble--ai]="!isUser()">
+  <div class="msg-bubble__avatar">
+    @if (isUser()) {
+      <i class="fa-solid fa-user"></i>
+    } @else {
+      <i class="fa-solid fa-robot"></i>
+    }
+  </div>
+
+  <div class="msg-bubble__body">
+    <p class="msg-bubble__content">{{ message().content }}</p>
+
+    @if (message().partialData) {
+      <span class="msg-bubble__badge msg-bubble__badge--warning">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Kısmi veri
+      </span>
+    }
+
+    @if (hasTools()) {
+      <div class="msg-bubble__tools">
+        @for (tool of message().toolsUsed; track tool) {
+          <span class="msg-bubble__badge msg-bubble__badge--tool">
+            <i class="fa-solid fa-wrench"></i>
+            {{ tool }}
+          </span>
+        }
+      </div>
+    }
+
+    <span class="msg-bubble__time">{{ timestamp() }}</span>
+  </div>
+</div>

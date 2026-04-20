@@ -1,0 +1,95 @@
+:host {
+  display: block;
+}
+
+.deactivate-dialog {
+  width: min(100%, 30rem);
+  display: grid;
+  gap: var(--space-5, 20px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl, 16px);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-modal);
+  padding: var(--space-6, 24px);
+}
+
+.deactivate-dialog__header {
+  display: grid;
+  gap: var(--space-2, 8px);
+}
+
+.deactivate-dialog__header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-xl, 24px);
+}
+
+.deactivate-dialog__header p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.deactivate-dialog__field {
+  display: grid;
+  gap: var(--space-2, 8px);
+}
+
+.deactivate-dialog__field span {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm, 14px);
+}
+
+.deactivate-dialog__field select {
+  min-height: 2.75rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: inherit;
+  padding: 0 var(--space-3, 12px);
+}
+
+.deactivate-dialog__field select:focus-visible {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-input-focus);
+  outline: none;
+}
+
+.deactivate-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3, 12px);
+}
+
+.deactivate-dialog__btn {
+  min-height: 2.5rem;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-semibold, 600);
+  padding: 0 var(--space-4, 16px);
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.deactivate-dialog__btn--ghost {
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.deactivate-dialog__btn--ghost:hover {
+  background: var(--state-hover);
+}
+
+.deactivate-dialog__btn--danger {
+  border: 1px solid var(--border-error);
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+}
+
+.deactivate-dialog__btn--danger:hover {
+  background: var(--btn-danger-bg-hover);
+}
+

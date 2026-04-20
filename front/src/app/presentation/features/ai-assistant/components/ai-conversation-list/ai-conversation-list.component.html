@@ -1,0 +1,52 @@
+<div class="ai-conversation-list-c">
+  <div class="ai-conversation-list-c__header">
+    <button 
+      class="ai-conversation-list-c__new-btn"
+      (click)="newChatStarted.emit()"
+      [disabled]="isLoading()"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Yeni Sohbet
+    </button>
+  </div>
+
+  <div class="ai-conversation-list-c__content">
+    @if (isLoading() && conversations().length === 0) {
+      <div class="ai-conversation-list-c__loading">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <span>Yükleniyor...</span>
+      </div>
+    } @else {
+      <div class="ai-conversation-list-c__items">
+        @for (conv of conversations(); track conv.id) {
+          <div 
+            class="ai-conversation-list-c__item"
+            [class.ai-conversation-list-c__item--active]="conv.id === selectedId()"
+            (click)="conversationSelected.emit(conv.id)"
+          >
+            <div class="ai-conversation-list-c__item-main">
+              <span class="ai-conversation-list-c__item-title">
+                {{ conv.title || 'Yeni Sohbet' }}
+              </span>
+              <span class="ai-conversation-list-c__item-date">
+                {{ formatDate(conv.lastMessageAtUtc || conv.createdAtUtc) }}
+              </span>
+            </div>
+            
+            <button 
+              class="ai-conversation-list-c__delete-btn"
+              (click)="onDelete($event, conv.id)"
+              aria-label="Sil"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        } @empty {
+          <div class="ai-conversation-list-c__empty-hint">
+            Henüz bir sohbet yok.
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

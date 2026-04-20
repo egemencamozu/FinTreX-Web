@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.chat-input {
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
+
+  &__wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-xl);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-default);
+    transition: var(--transition-colors);
+
+    &:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-input-focus);
+    }
+  }
+
+  &__field {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    resize: none;
+    max-height: 120px;
+    outline: none;
+    font-family: inherit;
+
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+  }
+
+  &__send-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-info-500);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-all);
+
+    &:disabled {
+      color: var(--text-disabled);
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      transform: scale(1.1);
+      color: var(--color-info-600);
+    }
+  }
+}

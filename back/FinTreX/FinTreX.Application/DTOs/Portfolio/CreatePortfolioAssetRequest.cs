@@ -32,6 +32,6 @@ namespace FinTreX.Core.DTOs.Portfolio
         public DateTime AcquiredAtUtc { get; set; } = DateTime.UtcNow;
 
         [MaxLength(500)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
     }
 }

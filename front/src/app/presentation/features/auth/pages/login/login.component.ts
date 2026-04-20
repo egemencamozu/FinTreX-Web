@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../../../core/services/auth.service';
+import { EmailNotConfirmedError } from '../../../../../core/errors/email-not-confirmed.error';
+import { VerifyEmailModalComponent } from '../../components/verify-email-modal/verify-email-modal.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, VerifyEmailModalComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -16,6 +18,8 @@ export class LoginComponent {
   protected readonly loginForm: FormGroup;
   protected errorMessage = '';
   protected isSubmitting = false;
+  protected showVerifyModal = false;
+  protected pendingEmail = '';
 
   constructor(
     private readonly fb: FormBuilder,
@@ -57,6 +61,11 @@ export class LoginComponent {
           void this.router.navigateByUrl(redirectUrl || this.authService.getRedirectUrl());
         },
         error: (error: Error) => {
+          if (error instanceof EmailNotConfirmedError) {
+            this.pendingEmail = error.email || email;
+            this.showVerifyModal = true;
+            return;
+          }
           this.errorMessage = error.message || 'Giris yapilirken bir hata olustu.';
         },
       });
@@ -69,5 +78,14 @@ export class LoginComponent {
 
   protected onForgotPasswordClick(): void {
     void this.router.navigate(['/auth/forgot-password']);
+  }
+
+  protected onVerifyModalClosed(): void {
+    this.showVerifyModal = false;
+  }
+
+  protected onVerified(): void {
+    this.showVerifyModal = false;
+    // Redirect handled inside VerifyEmailModalComponent via AuthService.getRedirectUrl().
   }
 }

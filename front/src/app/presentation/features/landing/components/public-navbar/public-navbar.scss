@@ -40,23 +40,16 @@
             color: inherit;
             text-decoration: none;
 
-            .public-navbar-c__logo {
-              display: grid;
-              place-items: center;
-              width: 2.75rem;
-              height: 2.75rem;
-              border-radius: 0.9rem;
-              background: linear-gradient(135deg, var(--color-navy-700), var(--color-gold-500));
-              color: var(--text-inverse);
-              font-weight: var(--font-weight-bold, 700);
-              letter-spacing: 0.08em;
-            }
+            .public-navbar-c__logo-img {
+              height: 3.2rem;
+              width: auto;
+              max-width: 14rem;
+              object-fit: contain;
+              transition: transform var(--duration-fast) var(--ease-default);
 
-            .public-navbar-c__brand-text {
-              font-size: 1.125rem;
-              font-weight: var(--font-weight-bold, 700);
-              letter-spacing: -0.03em;
-              color: var(--text-primary);
+              &:hover {
+                transform: scale(1.05);
+              }
             }
           }
         }

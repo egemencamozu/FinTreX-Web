@@ -14,4 +14,12 @@ export const SUBSCRIPTION_ROUTES: Routes = [
     path: 'billing',
     loadComponent: () => import('./pages/billing/billing').then((m) => m.Billing),
   },
+  {
+    path: 'success',
+    loadComponent: () => import('./pages/manage/manage').then((m) => m.Manage),
+  },
+  {
+    path: 'cancel',
+    loadComponent: () => import('./pages/manage/manage').then((m) => m.Manage),
+  },
 ];

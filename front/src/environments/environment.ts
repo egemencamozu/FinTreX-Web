@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://fintrex-api.azurewebsites.net/api',
-  authApiUrl: '/account' // adjust if necessary
+  apiBaseUrl: 'https://localhost:9001/api',
+  authApiUrl: '/account', // adjust if necessary
 };

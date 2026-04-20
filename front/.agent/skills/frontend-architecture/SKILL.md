@@ -7,7 +7,6 @@ description: Comprehensive architecture, coding standards, and rules for the Fin
 > This file is the **single source of truth** for any AI assistant (GitHub Copilot, Cursor, Claude, etc.) working on this codebase.
 > Before generating, editing, or suggesting code — **read and obey every rule in this document.**
 
-
 ---
 
 ## PART I — Project Foundation

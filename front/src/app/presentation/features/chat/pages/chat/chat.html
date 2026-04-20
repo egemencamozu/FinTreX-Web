@@ -1,0 +1,32 @@
+<div class="chat-page">
+  <aside class="chat-page__sidebar">
+    <app-conversation-list
+      [conversations]="conversations()"
+      [activeConversationId]="activeConversation()?.id ?? null"
+      [isLoading]="isLoading()"
+      (conversationSelected)="onConversationSelected($event)"
+      (conversationsChanged)="loadConversations()"
+      (newChatRequested)="openNewChatDialog()"
+      (renameRequested)="onRenameConversation($event)"
+      (deleteRequested)="onDeleteConversation($event)"
+    />
+  </aside>
+
+  <main class="chat-page__content">
+    @if (activeConversation(); as conv) {
+      <app-chat-window
+        [conversation]="conv"
+        [currentUserId]="currentUserId()"
+      />
+    } @else {
+      <app-empty-state (newChat)="openNewChatDialog()" />
+    }
+  </main>
+
+  @if (isNewChatDialogOpen()) {
+    <app-new-chat-dialog
+      (close)="isNewChatDialogOpen.set(false)"
+      (conversationCreated)="onConversationCreated($event)"
+    />
+  }
+</div>

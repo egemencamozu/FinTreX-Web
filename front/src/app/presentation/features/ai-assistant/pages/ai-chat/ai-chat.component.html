@@ -1,0 +1,40 @@
+<section class="ai-chat-c">
+  <div class="ai-chat-c__wrapper">
+    <div class="ai-chat-c__container">
+      <div class="ai-chat-c__shell">
+        
+        <!-- Sidebar: Conversation List -->
+        <aside class="ai-chat-c__sidebar">
+          <app-ai-conversation-list
+            [conversations]="conversations()"
+            [selectedId]="selectedConversationId()"
+            [isLoading]="isLoading()"
+            (conversationSelected)="selectConversation($event)"
+            (conversationDeleted)="deleteConversation($event)"
+            (newChatStarted)="startNewChat()"
+          ></app-ai-conversation-list>
+        </aside>
+
+        <!-- Main Content: Chat Window -->
+        <main class="ai-chat-c__main-content">
+          <app-ai-chat-window
+            [messages]="messages()"
+            [activeConversationId]="selectedConversationId()"
+            [isAITyping]="isAITyping()"
+            [showEmptyState]="showEmptyState()"
+            (messageSent)="onMessageSent($event)"
+            (startChatRequested)="startNewChat()"
+          ></app-ai-chat-window>
+          
+          @if (isLoading() && messages().length === 0) {
+            <div class="ai-chat-c__overlay">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              <span>Konuşma yükleniyor...</span>
+            </div>
+          }
+        </main>
+
+      </div>
+    </div>
+  </div>
+</section>

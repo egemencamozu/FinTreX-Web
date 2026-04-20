@@ -14,5 +14,6 @@ namespace FinTreX.Core.Interfaces
         bool IsInRole(string role);
         bool IsEconomist { get; }
         bool IsAdmin { get; }
+        string? AuthToken { get; }
     }
 }

@@ -1,0 +1,44 @@
+<div class="mk__list mk__list--indices">
+  <div class="mk__list-header">
+    <span></span>
+    <span class="center">#</span>
+    <span>Endeks</span>
+    <span class="right">Değer</span>
+    <span class="right">Değişim %</span>
+  </div>
+
+  @for (item of indices; track trackByTicker($index, item); let i = $index) {
+    <div class="mk__list-row">
+      <div class="mk__cell mk__cell--star">
+        <button
+          class="mk__star-btn"
+          [class.mk__star-btn--on]="favorites.has(item.ticker)"
+          (click)="favoriteToggle.emit(item.ticker)"
+        >
+          <i [class]="favorites.has(item.ticker) ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+        </button>
+      </div>
+
+      <div class="mk__cell mk__cell--rank">{{ i + 1 }}</div>
+
+      <div class="mk__cell mk__cell--name">
+        <app-market-asset-cell
+          [symbol]="formatTicker(item.ticker)"
+          [subLabel]="item.name"
+          [avatarKey]="item.ticker"
+          [showLogo]="true"
+        />
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono">
+        {{ item.price | compactNumber }}
+      </div>
+
+      <div class="mk__cell mk__cell--right">
+        <span class="mk__change" [ngClass]="ui.deltaClass(item.changePercent)">
+          {{ item.changePercent | marketChange }}
+        </span>
+      </div>
+    </div>
+  }
+</div>

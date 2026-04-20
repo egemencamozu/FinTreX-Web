@@ -1,0 +1,29 @@
+<div class="ml" [class.ml--center-value]="centerValue()">
+  @if (title() || moreLabel()) {
+    <div class="ml__header">
+      @if (title()) { <span class="ml__title">{{ title() }}</span> }
+      @if (moreLabel()) {
+        <a class="ml__more" [href]="moreLink() || null">{{ moreLabel() }} <i class="fa-solid fa-chevron-right"></i></a>
+      }
+    </div>
+  }
+
+  <div class="ml__list">
+    @for (item of items(); track item.label) {
+      <div class="ml__row">
+        <div class="ml__avatar" [style.background]="item.avatarColor">
+          @if (item.avatarUrl && !failedUrls().has(item.avatarUrl)) {
+            <img class="ml__avatar-img" [src]="item.avatarUrl" [alt]="item.label" (error)="onImgError(item.avatarUrl!)" />
+          } @else {
+            {{ item.avatarFallback }}
+          }
+        </div>
+        <span class="ml__label">{{ item.label }}</span>
+        <span class="ml__value">{{ item.value }}</span>
+        <span class="ml__change" [class.ml__change--up]="item.change > 0" [class.ml__change--down]="item.change < 0">
+          {{ item.change > 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
+        </span>
+      </div>
+    }
+  </div>
+</div>

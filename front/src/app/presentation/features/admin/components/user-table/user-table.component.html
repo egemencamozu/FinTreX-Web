@@ -1,0 +1,215 @@
+<section class="user-table-container">
+  @if (isLoading() && users().length === 0) {
+  <div class="table-state state-loading">
+    <div class="loading-spinner"></div>
+    <p>Kullanici verileri yukleniyor...</p>
+  </div>
+  } @else if (!isLoading() && users().length === 0) {
+  <div class="table-state state-empty">
+    <i class="fa-solid fa-users-slash"></i>
+    <p>Gosterilecek kullanici bulunamadi.</p>
+  </div>
+  } @else {
+  <div class="user-table-container">
+    @if (isLoading()) {
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+        <span>Yükleniyor...</span>
+      </div>
+    }
+
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th class="selection-col">
+            <label class="premium-checkbox">
+              <input type="checkbox" 
+                     [checked]="areAllSelected()" 
+                     (change)="toggleSelectAll.emit()" />
+              <span class="checkmark"></span>
+            </label>
+          </th>
+          <th class="sortable" (click)="toggleSort('name')">
+            Kullanici
+            <i class="fa-solid" 
+               [class.fa-sort-up]="sortState.key === 'name' && sortState.direction === 'asc'"
+               [class.fa-sort-down]="sortState.key === 'name' && sortState.direction === 'desc'"
+               [class.fa-sort]="sortState.key !== 'name' || !sortState.direction"></i>
+          </th>
+          <th class="sortable" (click)="toggleSort('role')">
+            Rol
+            <i class="fa-solid"
+               [class.fa-sort-up]="sortState.key === 'role' && sortState.direction === 'asc'"
+               [class.fa-sort-down]="sortState.key === 'role' && sortState.direction === 'desc'"
+               [class.fa-sort]="sortState.key !== 'role' || !sortState.direction"></i>
+          </th>
+          <th class="sortable" (click)="toggleSort('status')">
+            Durum
+            <i class="fa-solid"
+               [class.fa-sort-up]="sortState.key === 'status' && sortState.direction === 'asc'"
+               [class.fa-sort-down]="sortState.key === 'status' && sortState.direction === 'desc'"
+               [class.fa-sort]="sortState.key !== 'status' || !sortState.direction"></i>
+          </th>
+          <th>Ban Durumu</th>
+          <th class="actions-col"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (user of users(); track user.id) {
+        <tr [class.is-busy]="isBusy(user.id)" 
+            [class.is-selected]="isSelected(user.id)">
+          <td class="selection-col">
+            <label class="premium-checkbox">
+              <input type="checkbox" 
+                     [checked]="isSelected(user.id)" 
+                     (change)="toggleSelection.emit(user.id)" />
+              <span class="checkmark"></span>
+            </label>
+          </td>
+          <td>
+            <div class="user-cell">
+              @if (user.avatarUrl) {
+              <img [src]="user.avatarUrl" [alt]="user.name" class="user-avatar" />
+              } @else {
+              <div class="user-avatar-placeholder">{{ user.initials }}</div>
+              }
+              <div class="user-info">
+                <span class="user-name">{{ user.name }}</span>
+                <span class="user-email">{{ user.email }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td data-label="ROL">
+            <span class="badge badge--role" [attr.data-role]="user.role.toLowerCase()">
+              {{ user.role }}
+            </span>
+          </td>
+
+          <td data-label="DURUM">
+            <span class="badge badge--status" 
+                  [class.badge--active]="user.status === 'ACTIVE'"
+                  [class.badge--inactive]="user.status === 'INACTIVE'">
+              <i class="fa-solid fa-circle"></i>
+              {{ user.status === 'ACTIVE' ? 'AKTiF' : 'PASiF' }}
+            </span>
+          </td>
+
+          <td data-label="BAN DURUMU">
+            @if (user.status === 'INACTIVE') {
+            @let info = getDeactivationInfo(user.deactivatedUntil);
+            <div class="status-duration-cell" [class.is-permanent]="info.isPermanent">
+              <div class="main-text">
+                <i class="fa-solid" [class.fa-infinity]="info.isPermanent"
+                  [class.fa-calendar-day]="!info.isPermanent"></i>
+                {{ info.text }}
+              </div>
+              @if (info.subtext) {
+              <div class="sub-text">{{ info.subtext }}</div>
+              }
+            </div>
+            } @else {
+            <span class="muted-text">—</span>
+            }
+          </td>
+
+          <td class="premium-table__actions">
+            <button type="button" class="btn-icon-action" [class.is-open]="isMenuOpen(user.id)"
+              [disabled]="isBusy(user.id)" (click)="toggleMenu(user.id, $event)" title="Islemler">
+              @if (isBusy(user.id)) {
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              } @else {
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+              }
+            </button>
+
+            @if (isMenuOpen(user.id)) {
+            <div class="action-menu" role="menu">
+              <div class="menu-header">Hizli Islemler</div>
+
+              @if (user.role !== 'ADMIN') {
+              @if (user.status === 'ACTIVE') {
+              @if (deactivatingUserId() === user.id) {
+              <div class="menu-inline-form premium-form" (click)="$event.stopPropagation()">
+                <div class="form-header">
+                  <i class="fa-solid fa-hourglass-half"></i>
+                  <span>Devre Dışı Süresi</span>
+                </div>
+
+                <div class="custom-select-wrapper" (click)="toggleDurationDropdown($event)">
+                  <div class="custom-select-trigger" [class.is-open]="isDurationSelectOpen()">
+                    <span>{{ getSelectedDurationLabel() }}</span>
+                    <i class="fa-solid fa-chevron-down select-icon"></i>
+                  </div>
+
+                  @if (isDurationSelectOpen()) {
+                    <ul class="custom-select-options">
+                      @for (option of durationOptions; track option.value) {
+                        <li class="custom-option" 
+                            [class.selected]="selectedDuration() === option.value"
+                            (click)="selectDurationOption(option.value, $event)">
+                          <div class="option-content">
+                             <i class="fa-solid fa-check" [class.invisible]="selectedDuration() !== option.value"></i>
+                             <span>{{ option.label }}</span>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+
+                <div class="menu-actions-premium">
+                  <button type="button" class="btn-cancel-glass" (click)="cancelDeactivate()">
+                    İptal
+                  </button>
+                  <button type="button" class="btn-confirm-premium"
+                    (click)="confirmDeactivate(user.id)">
+                    <i class="fa-solid fa-check"></i>
+                    Onayla
+                  </button>
+                </div>
+              </div>
+              } @else {
+              <button type="button" class="menu-item menu-item--danger" (click)="startDeactivate(user.id, $event)">
+                <i class="fa-solid fa-user-minus"></i>
+                Hesabı Devre Dışı Bırak
+              </button>
+              }
+              } @else {
+              <button type="button" class="menu-item menu-item--success" (click)="requestActivate(user.id)">
+                <i class="fa-solid fa-user-plus"></i>
+                Hesabı Etkinleştir
+              </button>
+              }
+              }
+
+
+              <div class="menu-divider"></div>
+
+              <button type="button" class="menu-item" disabled>
+                <i class="fa-solid fa-eye"></i>
+                Profil Detayları
+              </button>
+            </div>
+            }
+          </td>
+        </tr>
+        } @empty {
+          @if (!isLoading()) {
+            <tr>
+              <td colspan="6">
+                <div class="empty-state-premium">
+                  <i class="fa-solid fa-users-slash"></i>
+                  <p>Arama kriterlerinize uygun kullanıcı bulunamadı.</p>
+                  <span class="empty-subtext">Filtreleri sıfırlamayı veya aramayı değiştirmeyi deneyin.</span>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+</section>

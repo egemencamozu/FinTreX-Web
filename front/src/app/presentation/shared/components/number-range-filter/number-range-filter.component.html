@@ -1,0 +1,58 @@
+<div class="nr-filter">
+  <button
+    type="button"
+    class="nr-filter__trigger"
+    [class.nr-filter__trigger--active]="isActive()"
+    (click)="togglePanel()"
+  >
+    <span class="nr-filter__trigger-label">{{ label }}</span>
+    <i class="fa-solid fa-chevron-down" [class.nr-filter__chevron--open]="isOpen()"></i>
+  </button>
+
+  @if (isOpen()) {
+    <div class="nr-filter__panel" role="dialog" [attr.aria-label]="label + ' filtresi'">
+      <div class="nr-filter__options">
+        @for (preset of presets; track preset.id) {
+          <button
+            type="button"
+            class="nr-filter__option"
+            [class.nr-filter__option--selected]="isPresetSelected(preset.id)"
+            (click)="selectPreset(preset)"
+          >
+            <span>{{ preset.label }}</span>
+            @if (isPresetSelected(preset.id)) {
+              <i class="fa-solid fa-check"></i>
+            }
+          </button>
+        }
+      </div>
+
+      <div class="nr-filter__range">
+        <input
+          type="number"
+          min="0"
+          step="any"
+          class="nr-filter__input"
+          [placeholder]="minPlaceholder"
+          [value]="draftMin() ?? ''"
+          (input)="onMinInput($any($event.target).value)"
+        />
+        <span class="nr-filter__dash">-</span>
+        <input
+          type="number"
+          min="0"
+          step="any"
+          class="nr-filter__input"
+          [placeholder]="maxPlaceholder"
+          [value]="draftMax() ?? ''"
+          (input)="onMaxInput($any($event.target).value)"
+        />
+      </div>
+
+      <div class="nr-filter__actions">
+        <button type="button" class="nr-filter__reset" (click)="onReset()">Reset</button>
+        <button type="button" class="nr-filter__apply" (click)="onApply()">Apply</button>
+      </div>
+    </div>
+  }
+</div>

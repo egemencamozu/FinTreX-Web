@@ -1,0 +1,120 @@
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-surface);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.25rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  &__new-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: var(--bg-info-subtle);
+    color: var(--text-link);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-all);
+
+    &:hover {
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
+      transform: scale(1.05);
+    }
+  }
+
+  &__search {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  &__search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border-default);
+
+    i {
+      color: var(--text-tertiary);
+      margin-right: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    input {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+
+      &::placeholder {
+        color: var(--text-tertiary);
+      }
+    }
+
+    &:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-input-focus);
+      background: var(--bg-input-focus);
+    }
+  }
+
+  &__items {
+    flex: 1;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-slate-300);
+      border-radius: var(--radius-full);
+    }
+  }
+
+  &__loading, &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-secondary);
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  &__loading {
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--border-default);
+      border-top-color: var(--color-info-500);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

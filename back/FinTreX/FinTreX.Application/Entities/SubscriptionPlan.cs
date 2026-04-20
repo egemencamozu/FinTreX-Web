@@ -38,5 +38,14 @@ namespace FinTreX.Core.Entities
 
         /// <summary>JSON serialized list of features.</summary>
         public string? FeaturesJson { get; set; }
+        
+        /// <summary>Stripe Product ID (e.g. "prod_xxx").</summary>
+        public string? StripeProductId { get; set; }
+
+        /// <summary>Stripe Price ID for monthly billing (e.g. "price_xxx").</summary>
+        public string? StripeMonthlyPriceId { get; set; }
+
+        /// <summary>Stripe Price ID for yearly billing (e.g. "price_xxx").</summary>
+        public string? StripeYearlyPriceId { get; set; }
     }
 }

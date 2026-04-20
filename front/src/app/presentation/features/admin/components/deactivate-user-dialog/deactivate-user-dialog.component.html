@@ -1,0 +1,31 @@
+<div class="deactivate-dialog">
+  <header class="deactivate-dialog__header">
+    <h2>Hesabi Deaktif Et</h2>
+    <p>
+      {{ data.userName }} kullanicisini ne kadar sureyle deaktif etmek istiyorsunuz?
+    </p>
+  </header>
+
+  <label class="deactivate-dialog__field">
+    <span>Deaktif Suresi</span>
+    <select
+      [ngModel]="selectedDuration()"
+      (ngModelChange)="onDurationChange($event)"
+      aria-label="Deaktif suresi secimi"
+    >
+      @for (option of durationOptions; track option.key) {
+        <option [ngValue]="option.key">{{ option.label }}</option>
+      }
+    </select>
+  </label>
+
+  <footer class="deactivate-dialog__actions">
+    <button type="button" class="deactivate-dialog__btn deactivate-dialog__btn--ghost" (click)="cancel()">
+      Iptal
+    </button>
+    <button type="button" class="deactivate-dialog__btn deactivate-dialog__btn--danger" (click)="confirm()">
+      Deaktif Et
+    </button>
+  </footer>
+</div>
+

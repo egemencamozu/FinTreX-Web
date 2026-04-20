@@ -12,6 +12,7 @@ namespace FinTreX.Core
             services.AddScoped<IEconomistClientService, EconomistClientService>();
             services.AddScoped<IConsultancyTaskService, ConsultancyTaskService>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<IChatService, ChatService>();
         }
     }
 }

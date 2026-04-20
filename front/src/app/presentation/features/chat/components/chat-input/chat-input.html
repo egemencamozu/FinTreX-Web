@@ -1,0 +1,19 @@
+<div class="chat-input">
+  <div class="chat-input__wrapper">
+    <textarea
+      class="chat-input__field"
+      placeholder="Bir mesaj yazın..."
+      [(ngModel)]="messageText"
+      (keydown)="onKeyDown($event)"
+      rows="1"
+    ></textarea>
+    
+    <button 
+      class="chat-input__send-btn" 
+      [disabled]="!messageText().trim()"
+      (click)="onSend()"
+    >
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
+</div>

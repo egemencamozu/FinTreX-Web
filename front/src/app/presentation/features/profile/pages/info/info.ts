@@ -1,5 +1,4 @@
-
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -8,8 +7,11 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UserRole } from '../../../../../core/enums/user-role.enum';
 import { SubscriptionTier } from '../../../../../core/enums/subscription-tier.enum';
+import { SubscriptionRepository } from '../../../../../core/interfaces/subscription.repository';
+import { AuthService } from '../../../../../core/services/auth.service';
 import mockProfile from '../../mock/user-profile.mock.json';
 import mockSessions from '../../mock/user-sessions.mock.json';
 import mockStats from '../../mock/user-stats.mock.json';
@@ -78,22 +80,17 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   templateUrl: './info.html',
   styleUrl: './info.scss',
 })
-export class Info {
+export class Info implements OnInit {
   protected readonly UserRole = UserRole;
   protected readonly SubscriptionTier = SubscriptionTier;
 
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly subscriptionRepository = inject(SubscriptionRepository);
+  private readonly authService = inject(AuthService);
 
   // ── Data signals ──────────────────────────────────────────────────────────
-  readonly user = signal<UserProfile>({
-    ...mockProfile,
-    role: mockProfile.role as UserRole,
-    subscriptionTier: mockProfile.subscriptionTier as SubscriptionTier,
-    avatarUrl: mockProfile.avatarUrl ?? null,
-    createdAt: new Date(mockProfile.createdAt),
-    lastLogin: new Date(mockProfile.lastLogin),
-    notifications: mockProfile.notifications,
-  });
+  readonly user = signal<UserProfile>(this.initializeUser());
 
   readonly stats = signal<UserStats>(mockStats);
 
@@ -102,6 +99,51 @@ export class Info {
   );
 
   readonly notifications = signal<NotificationPrefs>({ ...mockProfile.notifications });
+
+  // ── Lifecycle ────────────────────────────────────────────────────────────
+  ngOnInit(): void {
+    this.fetchSubscriptionData();
+  }
+
+  private fetchSubscriptionData(): void {
+    this.subscriptionRepository.getMySubscription().subscribe({
+      next: (sub) => {
+        this.user.update((u) => ({
+          ...u,
+          subscriptionTier: sub.plan.tier,
+        }));
+      },
+      error: (err) => console.error('Failed to fetch subscription:', err),
+    });
+  }
+
+  private initializeUser(): UserProfile {
+    const active = this.authService.getCurrentUser();
+    if (active) {
+      return {
+        id: active.id,
+        name: active.firstName,
+        surname: active.lastName,
+        email: active.email,
+        phone: active.phoneNumber ?? '',
+        role: active.role,
+        subscriptionTier: active.subscriptionTier,
+        avatarUrl: null,
+        createdAt: new Date(),
+        lastLogin: new Date(),
+        notifications: mockProfile.notifications,
+      };
+    }
+    return {
+      ...mockProfile,
+      role: mockProfile.role as UserRole,
+      subscriptionTier: mockProfile.subscriptionTier as unknown as SubscriptionTier,
+      avatarUrl: mockProfile.avatarUrl ?? null,
+      createdAt: new Date(mockProfile.createdAt),
+      lastLogin: new Date(mockProfile.lastLogin),
+      notifications: mockProfile.notifications,
+    };
+  }
 
   // ── Computed ──────────────────────────────────────────────────────────────
   readonly initials = computed(() => {
@@ -238,6 +280,11 @@ export class Info {
     if (d.includes('iphone') || d.includes('android') || d.includes('mobile')) return 'mobile';
     if (d.includes('ipad') || d.includes('tablet')) return 'tablet';
     return 'desktop';
+  }
+
+  // ── Navigation ───────────────────────────────────────────────────────────
+  navigateToSubscription(): void {
+    this.router.navigate(['/app/subscription/manage']);
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────

@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using FinTreX.Infrastructure.Configuration;
 
 namespace FinTreX.Infrastructure.Contexts
 {
@@ -21,16 +22,14 @@ namespace FinTreX.Infrastructure.Contexts
                 .AddEnvironmentVariables()
                 .Build();
 
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new InvalidOperationException("ConnectionStrings:DefaultConnection is required for design-time migrations.");
-            }
+            var connectionString = PostgresConnectionStringGuard.Validate(
+                configuration.GetConnectionString("DefaultConnection"),
+                "ConnectionStrings:DefaultConnection");
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
+            optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
             {
-                sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                npgsqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
             });
 
             return new ApplicationDbContext(optionsBuilder.Options);

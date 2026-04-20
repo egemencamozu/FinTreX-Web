@@ -248,3 +248,11 @@
     </p>
   </div>
 </div>
+
+@if (showVerifyModal) {
+  <app-verify-email-modal
+    [email]="pendingEmail"
+    (closed)="onVerifyModalClosed()"
+    (verified)="onVerified()"
+  />
+}

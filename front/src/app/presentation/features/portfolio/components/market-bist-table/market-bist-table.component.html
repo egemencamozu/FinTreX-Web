@@ -1,0 +1,65 @@
+<div class="mk__list mk__list--stocks">
+  <div class="mk__list-header">
+    <span></span>
+    <span class="center">#</span>
+    <span>İsim</span>
+    <span class="right sortable">Fiyat
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('price','desc')" (click)="sortByDir('price','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('price','asc')" (click)="sortByDir('price','asc')"></i>
+      </span>
+    </span>
+    <span class="right sortable">Değişim %
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('change','desc')" (click)="sortByDir('change','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('change','asc')" (click)="sortByDir('change','asc')"></i>
+      </span>
+    </span>
+    <span class="right sortable">Hacim
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('volume','desc')" (click)="sortByDir('volume','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('volume','asc')" (click)="sortByDir('volume','asc')"></i>
+      </span>
+    </span>
+  </div>
+
+  @for (item of stocks; track trackByTicker($index, item); let i = $index) {
+    <div class="mk__list-row">
+      <div class="mk__cell mk__cell--star">
+        <button
+          class="mk__star-btn"
+          [class.mk__star-btn--on]="favorites.has(item.ticker)"
+          (click)="favoriteToggle.emit(item.ticker)"
+        >
+          <i [class]="favorites.has(item.ticker) ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+        </button>
+      </div>
+
+      <div class="mk__cell mk__cell--rank">{{ i + 1 }}</div>
+
+      <div class="mk__cell mk__cell--name">
+        <app-market-asset-cell
+          [symbol]="formatTicker(item.ticker)"
+          [subLabel]="item.companyName"
+          [avatarKey]="item.ticker"
+          [showLogo]="true"
+        />
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono">
+        {{ item.price | marketPrice: 'TRY' }}
+      </div>
+
+      <div class="mk__cell mk__cell--right">
+        <span class="mk__change" [ngClass]="ui.deltaClass(item.changePercent)">
+          {{ item.changePercent | marketChange }}
+        </span>
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">
+        {{ item.volume | compactNumber }}
+      </div>
+
+    </div>
+  }
+</div>

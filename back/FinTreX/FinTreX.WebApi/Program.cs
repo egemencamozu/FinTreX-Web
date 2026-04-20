@@ -2,6 +2,7 @@ using FinTreX.Core;
 using FinTreX.Infrastructure;
 using FinTreX.Infrastructure.Models;
 using FinTreX.WebApi.Extensions;
+using FinTreX.WebApi.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -36,6 +37,12 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat = "'v'VVV";
     options.SubstituteApiVersionInUrl = true;
 });
+
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IMarketDataSubscriptionTracker, MarketDataSubscriptionTracker>();
+builder.Services.AddSingleton<IChatConnectionTracker, ChatConnectionTracker>();
+builder.Services.AddMarketDataServices(builder.Configuration);
+builder.Services.AddMarketDataBroadcaster<MarketDataHub>();
 
 // CORS — restrict to known frontend origins
 const string corsPolicyName = "FinTreXCorsPolicy";
@@ -74,6 +81,8 @@ app.UseAuthorization();
 app.UseSwaggerExtension();
 app.UseErrorHandlingMiddleware();
 app.UseHealthChecks("/health");
+app.MapHub<MarketDataHub>("/hubs/market");
+app.MapHub<ChatHub>("/hubs/chat");
 app.MapControllers();
 
 
@@ -133,11 +142,13 @@ using (var scope = app.Services.CreateScope())
     {
         Log.Warning(ex, "An error occurred seeding the DB");
     }
-    finally
-    {
-        Log.CloseAndFlush();
-    }
 }
 
-//Start the application
-app.Run();
+try
+{
+    app.Run();
+}
+finally
+{
+    Log.CloseAndFlush();
+}

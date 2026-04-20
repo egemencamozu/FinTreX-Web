@@ -1,13 +1,18 @@
 <div class="holdings-card">
   <div class="holdings-card__header">
-    <h3 class="holdings-card__title">{{ heading() }}</h3>
+    <div class="holdings-card__title-wrap">
+      <h3 class="holdings-card__title">{{ heading() }}</h3>
+      <ng-content select="[cardTitleMeta]" />
+    </div>
     <div class="holdings-card__controls">
       <ng-content select="[cardControls]" />
-      <app-segmented-control
-        [options]="viewOptions()"
-        [value]="activeView()"
-        (valueChange)="setView($event)"
-      />
+      @if (viewOptions().length > 0) {
+        <app-segmented-control
+          [options]="viewOptions()"
+          [value]="activeView()"
+          (valueChange)="setView($event)"
+        />
+      }
     </div>
   </div>
   <div class="holdings-card__body">

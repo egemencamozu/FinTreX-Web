@@ -1,189 +1,225 @@
-<section class="feature-page">
-  <header class="feature-page__header">
-    <p class="feature-page__eyebrow">Admin</p>
-    <h1>Abonelik Paketleri</h1>
-    <p class="feature-page__description">
-      Platformda kullanıcılara sunulan abonelik paketlerini canlı veritabanı üzerinden görüntüleyin ve yönetin.
-    </p>
-  </header>
-
-  @if (errorMessage) {
-    <p class="feature-page__error">{{ errorMessage }}</p>
-  }
-
-  @if (successMessage) {
-    <p class="feature-page__success">{{ successMessage }}</p>
-  }
-
-  <div class="feature-page__grid">
+<div class="admin-page-layout">
+  <div class="summary-container">
     @for (section of sections; track section.title) {
-      <article class="feature-card">
-        <span class="feature-card__metric">{{ section.highlight }}</span>
-        <h2>{{ section.title }}</h2>
-        <p>{{ section.description }}</p>
+      <article class="summary-info-card">
+        <div class="summary-info-card__badge">{{ section.highlight }}</div>
+        <div class="summary-info-card__body">
+          <p>{{ section.description }}</p>
+        </div>
       </article>
     }
   </div>
 
-  <section class="plans">
-    <header class="plans__header">
-      <h2>Mevcut Paketler</h2>
-      @if (loading) {
-        <span>İşleniyor...</span>
+  <section class="content-section">
+    <div class="action-bar-sticky">
+      <div class="action-bar-content">
+        <div class="header-main">
+          <h1>Abonelik Paketleri</h1>
+        </div>
+        @if (loading) {
+          <div class="status-indicator">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <span>Güncelleniyor...</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="plans-container">
+      @if (!loading && plans.length === 0) {
+        <div class="empty-state">
+          <i class="fa-solid fa-box-open"></i>
+          <p>Gösterilecek paket bulunamadı.</p>
+        </div>
       }
-    </header>
 
-    @if (!loading && plans.length === 0) {
-      <p>Gösterilecek paket bulunamadı.</p>
-    }
-
-    <div class="plans__list">
-      @for (plan of plans; track plan.id) {
-        <article class="plan-card" [class.editing]="editingPlanId === plan.id">
-          @if (editingPlanId !== plan.id) {
-            <!-- VIEW MODE -->
-            <div class="plan-card__header">
-              <span class="tier-badge">{{ plan.tier }}</span>
-              <span class="status-badge" [class.status-badge--active]="plan.isActive" [class.status-badge--inactive]="!plan.isActive">
-                {{ plan.isActive ? 'Aktif' : 'Pasif' }}
-              </span>
-            </div>
-            
-            <div class="plan-card__body">
-              <h3>{{ plan.displayName }}</h3>
-              <p class="description">{{ plan.description }}</p>
-
-              <div class="metrics">
-                <div class="metric">
-                  <strong>Aylık Ücret</strong>
-                  <span>{{ plan.monthlyPriceTRY === 0 ? 'Ücretsiz' : (plan.monthlyPriceTRY + ' ₺') }}</span>
-                </div>
-                <div class="metric">
-                  <strong>Yıllık Ücret</strong>
-                  <span>{{ plan.yearlyPriceTRY === 0 ? 'Ücretsiz' : (plan.yearlyPriceTRY + ' ₺') }}</span>
-                </div>
-                <div class="metric">
-                  <strong>Max Danışman</strong>
-                  <span>{{ plan.maxEconomists === 999 ? 'Sınırsız' : plan.maxEconomists }}</span>
-                </div>
-              </div>
-              
-              <ul class="features-list">
-                @for (feature of plan.features; track feature.name) {
-                  <li [class.has-feature]="feature.status === 'included'" [class.not-feature]="feature.status === 'excluded'">
-                    @if (feature.status === 'included') {
-                      <i class="fa-solid fa-circle-check"></i>
-                    } @else {
-                      <i class="fa-solid fa-circle-xmark"></i>
-                    }
-                    <span>{{ feature.name }}</span>
-                  </li>
-                }
-                @if (!plan.features || plan.features.length === 0) {
-                  <li class="no-features"><i class="fa-solid fa-minus"></i> Özel özellik tanımlanmamış</li>
-                }
-              </ul>
-            </div>
-
-            <div class="plan-card__actions">
-              <button class="edit-button" (click)="editPlan(plan)" [disabled]="loading">
-                <i class="fa-solid fa-pen"></i> Düzenle
-              </button>
-            </div>
-          } @else {
-            <!-- EDIT MODE -->
-            <form (ngSubmit)="savePlan(plan.id)" #editForm="ngForm" class="edit-form">
-              <div class="edit-form__header">
-                <h3>Paketi Düzenle: {{ plan.tier }}</h3>
-                <span class="status-badge" [class.status-badge--active]="editFormData.isActive" [class.status-badge--inactive]="!editFormData.isActive">
-                   {{ editFormData.isActive ? 'Yayında' : 'Yayından Kaldırıldı' }}
+      <div class="plans-grid">
+        @for (plan of plans; track plan.id) {
+          <article class="plan-item-card" [class.is-editing]="editingPlanId === plan.id">
+            @if (editingPlanId !== plan.id) {
+              <!-- VIEW MODE -->
+              <div class="plan-item-card__header">
+                <span class="tier-tag">{{ plan.tier }}</span>
+                <span class="status-tag" [class.status-tag--active]="plan.isActive" [class.status-tag--inactive]="!plan.isActive">
+                  {{ plan.isActive ? 'Aktif' : 'Pasif' }}
                 </span>
               </div>
               
-              <div class="form-group">
-                <label>Görünüm Adı</label>
-                <input type="text" name="displayName" [(ngModel)]="editFormData.displayName" required placeholder="Ör: Premium Paket">
-              </div>
+              <div class="plan-item-card__body">
+                <h3>{{ plan.displayName }}</h3>
+                <p class="plan-item-card__desc">{{ plan.description }}</p>
 
-              <div class="price-grid">
-                <div class="form-group">
-                  <label>Aylık Fiyat (₺)</label>
-                  <input type="number" name="monthlyPriceTRY" [(ngModel)]="editFormData.monthlyPriceTRY" (ngModelChange)="applyYearlyDiscount()" required min="0">
-                </div>
-                <div class="form-group">
-                  <label>Yıllık İndirim (%)</label>
-                  <div class="input-with-badge">
-                    <input type="number" name="yearlyDiscountPercent" [(ngModel)]="yearlyDiscountPercent" (ngModelChange)="applyYearlyDiscount()" min="0" max="100">
-                    <span class="discount-badge">%</span>
+                <div class="plan-metrics">
+                  <div class="plan-metric">
+                    <span class="label">Aylık Ücret</span>
+                    <span class="value">{{ plan.monthlyPriceTRY === 0 ? 'Ücretsiz' : (plan.monthlyPriceTRY + ' ₺') }}</span>
+                  </div>
+                  <div class="plan-metric">
+                    <span class="label">Yıllık Ücret</span>
+                    <span class="value">{{ plan.yearlyPriceTRY === 0 ? 'Ücretsiz' : (plan.yearlyPriceTRY + ' ₺') }}</span>
+                  </div>
+                  <div class="plan-metric">
+                    <span class="label">Maksimum Danışman</span>
+                    <span class="value">{{ plan.maxEconomists === 999 ? 'Sınırsız ' : plan.maxEconomists }}</span>
                   </div>
                 </div>
-                <div class="form-group highlight">
-                  <label>Yıllık Fiyat (₺ - Oto)</label>
-                  <input type="number" name="yearlyPriceTRY" [(ngModel)]="editFormData.yearlyPriceTRY" required min="0" readonly>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label>Max Ekonomist Limiti</label>
-                <input type="number" name="maxEconomists" [(ngModel)]="editFormData.maxEconomists" required min="1">
-              </div>
-
-              <div class="features-matrix">
-                <label>Özellik Matrisi & Görünürlük</label>
-                <p class="matrix-info">Havuzdaki tüm özellikleri buradan yönetebilirsiniz. Alt paketlerde 'X' olarak işaretlemek satışları artırır!</p>
                 
-                <div class="matrix-list">
-                  @for (featName of globalFeaturePool; track featName) {
-                    <div class="matrix-row">
-                      <span class="feat-name">{{ featName }}</span>
-                      
-                      <div class="status-controls">
-                        <button type="button" class="status-btn status-btn--hidden" 
-                          [class.active]="getFeatureStatus(featName) === 'hidden'"
-                          (click)="setFeatureStatus(featName, 'hidden')" title="Listede Kapat">
-                          <i class="fa-solid fa-eye-slash"></i> Gizle
-                        </button>
-                        
-                        <button type="button" class="status-btn status-btn--excluded" 
-                          [class.active]="getFeatureStatus(featName) === 'excluded'"
-                          (click)="setFeatureStatus(featName, 'excluded')" title="Kırmızı X Göster">
-                          <i class="fa-solid fa-xmark"></i> Hariç (X)
-                        </button>
-                        
-                        <button type="button" class="status-btn status-btn--included" 
-                          [class.active]="getFeatureStatus(featName) === 'included'"
-                          (click)="setFeatureStatus(featName, 'included')" title="Yeşil Tik Göster">
-                          <i class="fa-solid fa-check"></i> Dahil (V)
-                        </button>
+                <ul class="features-check-list">
+                  @for (feature of plan.features; track feature.name) {
+                    <li [class.item-included]="feature.status === 'included'" [class.item-excluded]="feature.status === 'excluded'">
+                      @if (feature.status === 'included') {
+                        <i class="fa-solid fa-check"></i>
+                      } @else {
+                        <i class="fa-solid fa-xmark"></i>
+                      }
+                      <span>{{ feature.name }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+
+              <div class="plan-item-card__footer">
+                <button class="btn-edit" (click)="editPlan(plan)" [disabled]="loading">
+                  <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                </button>
+              </div>
+            } @else {
+              <!-- EDIT MODE -->
+              <form (ngSubmit)="savePlan(plan.id)" #editForm="ngForm" class="plan-edit-form">
+                <div class="plan-edit-form__header">
+                  <div class="title-with-icon">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <h3>{{ plan.tier }} Düzenle</h3>
+                  </div>
+                  <div class="status-toggle-wrapper">
+                    <label class="switch-control">
+                      <input type="checkbox" name="isActive" [(ngModel)]="editFormData.isActive">
+                      <span class="switch-slider"></span>
+                    </label>
+                    <span class="status-label" [class.is-active]="editFormData.isActive">
+                      {{ editFormData.isActive ? 'Yayında' : 'Pasif' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-scroll-area">
+                  <!-- SECTION: BASIC INFO -->
+                  <div class="form-section">
+                    <div class="form-section-header">
+                      <i class="fa-solid fa-info-circle"></i>
+                      <span>Temel Bilgiler</span>
+                    </div>
+                    
+                    <div class="input-group">
+                      <label>Görünüm Adı</label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-tag"></i>
+                        <input type="text" name="displayName" [(ngModel)]="editFormData.displayName" required placeholder="Paket Adı">
                       </div>
                     </div>
-                  }
+
+                    <div class="input-group">
+                      <label>Maksimum Ekonomist Limiti</label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <input type="number" name="maxEconomists" [(ngModel)]="editFormData.maxEconomists" required min="1">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- SECTION: PRICING -->
+                  <div class="form-section">
+                    <div class="form-section-header">
+                      <i class="fa-solid fa-coins"></i>
+                      <span>Fiyatlandırma</span>
+                    </div>
+
+                    <div class="pricing-grid">
+                      <div class="input-group">
+                        <label>Aylık Fiyat</label>
+                        <div class="input-addon-group">
+                          <input type="number" name="monthlyPriceTRY" [(ngModel)]="editFormData.monthlyPriceTRY" (ngModelChange)="applyYearlyDiscount()" required min="0">
+                          <span class="addon">₺</span>
+                        </div>
+                      </div>
+
+                      <div class="input-group">
+                        <label>Yıllık İndirim</label>
+                        <div class="input-addon-group">
+                          <input type="number" name="yearlyDiscountPercent" [(ngModel)]="yearlyDiscountPercent" (ngModelChange)="applyYearlyDiscount()" min="0" max="100">
+                          <span class="addon">%</span>
+                        </div>
+                      </div>
+
+                      <div class="input-group is-readonly">
+                        <label>Yıllık Fiyat (Oto)</label>
+                        <div class="input-addon-group">
+                          <input type="number" name="yearlyPriceTRY" [(ngModel)]="editFormData.yearlyPriceTRY" required min="0" readonly>
+                          <span class="addon">₺</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- SECTION: MATRIX -->
+                  <div class="form-section">
+                    <div class="form-section-header">
+                      <i class="fa-solid fa-layer-group"></i>
+                      <span>Özellik Matrisi</span>
+                    </div>
+                    
+                    <div class="matrix-info">
+                      Havuzdaki özellikleri paket bazlı yönetin.
+                    </div>
+                    
+                    <div class="matrix-list">
+                      @for (featName of globalFeaturePool; track featName) {
+                        <div class="matrix-row">
+                          <span class="feat-label">{{ featName }}</span>
+                          
+                          <div class="feat-actions">
+                            <button type="button" class="feat-btn feat-btn--hide" 
+                              [class.active]="getFeatureStatus(featName) === 'hidden'"
+                              (click)="setFeatureStatus(featName, 'hidden')" title="Listede Kapat">
+                              <i class="fa-solid fa-eye-slash"></i>
+                            </button>
+                            
+                            <button type="button" class="feat-btn feat-btn--no" 
+                              [class.active]="getFeatureStatus(featName) === 'excluded'"
+                              (click)="setFeatureStatus(featName, 'excluded')" title="Kırmızı X Göster">
+                              <i class="fa-solid fa-xmark"></i>
+                            </button>
+                            
+                            <button type="button" class="feat-btn feat-btn--yes" 
+                              [class.active]="getFeatureStatus(featName) === 'included'"
+                              (click)="setFeatureStatus(featName, 'included')" title="Yeşil Tik Göster">
+                              <i class="fa-solid fa-check"></i>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+
+                    <div class="matrix-add-wrapper">
+                      <input type="text" [(ngModel)]="newFeatureName" name="newFeat" placeholder="Yeni özellik ekle..." (keyup.enter)="addNewFeature()">
+                      <button type="button" class="btn-add-pool" (click)="addNewFeature()" [disabled]="!newFeatureName.trim()">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="add-to-pool">
-                  <input type="text" [(ngModel)]="newFeatureName" name="newFeat" placeholder="Yeni özellik ismi girin..." (keyup.enter)="addNewFeature()">
-                  <button type="button" class="add-pool-btn" (click)="addNewFeature()" [disabled]="!newFeatureName.trim()">
-                    <i class="fa-solid fa-plus"></i> Havuza Ekle
+                <div class="form-footer">
+                  <button type="button" class="btn-secondary" (click)="cancelEdit()">Vazgeç</button>
+                  <button type="submit" class="btn-primary" [disabled]="loading || editForm.invalid">
+                    <i class="fa-solid fa-floppy-disk"></i> Matrisi Kaydet
                   </button>
                 </div>
-              </div>
-
-              <div class="form-group checkbox-group">
-                 <label class="toggle-switch">
-                    <input type="checkbox" name="isActive" [(ngModel)]="editFormData.isActive">
-                    <span class="toggle-slider"></span>
-                    Satışa Açık (Kullanıcılar Görebilir)
-                 </label>
-              </div>
-
-              <div class="edit-actions">
-                <button type="button" class="cancel-button" (click)="cancelEdit()">İptal</button>
-                <button type="submit" class="save-button" [disabled]="loading || editForm.invalid">Matrisi Kaydet</button>
-              </div>
-            </form>
-          }
-        </article>
-      }
+              </form>
+            }
+          </article>
+        }
+      </div>
     </div>
   </section>
-</section>
+</div>

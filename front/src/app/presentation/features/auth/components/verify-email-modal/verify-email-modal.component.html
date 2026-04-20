@@ -1,0 +1,81 @@
+<div
+  class="verify-modal-c"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="verifyModalTitle"
+  (click)="onBackdropClick($event)"
+>
+  <div class="verify-modal-c__dialog" (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="verify-modal-c__close"
+      aria-label="Kapat"
+      [disabled]="isSubmitting"
+      (click)="closed.emit()"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="verify-modal-c__header">
+      <span class="verify-modal-c__icon"><i class="fa-solid fa-envelope-open-text"></i></span>
+      <h2 id="verifyModalTitle" class="verify-modal-c__title">Email Adresini Doğrula</h2>
+      <p class="verify-modal-c__desc">
+        <strong>{{ email }}</strong> adresine 6 haneli bir doğrulama kodu gönderdik. Kod 10 dakika
+        boyunca geçerlidir.
+      </p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="verify-modal-c__alert verify-modal-c__alert--error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    @if (infoMessage) {
+      <div class="verify-modal-c__alert verify-modal-c__alert--info">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>{{ infoMessage }}</span>
+      </div>
+    }
+
+    <form class="verify-modal-c__form" (ngSubmit)="onSubmit()">
+      <app-otp-input
+        [formControl]="codeControl"
+        [disabled]="isSubmitting"
+        [invalid]="!!errorMessage"
+        (completed)="onCodeCompleted($event)"
+      />
+
+      <button
+        class="verify-modal-c__submit"
+        type="submit"
+        [disabled]="codeControl.invalid || isSubmitting"
+      >
+        @if (isSubmitting) {
+          <i class="fa-solid fa-spinner fa-spin"></i> Doğrulanıyor...
+        } @else {
+          <i class="fa-solid fa-check"></i> Doğrula
+        }
+      </button>
+    </form>
+
+    <div class="verify-modal-c__resend">
+      <span class="verify-modal-c__resend-text">Kod gelmedi mi?</span>
+      <button
+        type="button"
+        class="verify-modal-c__resend-btn"
+        [disabled]="cooldownSeconds > 0 || isResending || isSubmitting"
+        (click)="onResend()"
+      >
+        @if (isResending) {
+          <i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...
+        } @else if (cooldownSeconds > 0) {
+          Yeniden gönder ({{ cooldownSeconds }}s)
+        } @else {
+          <i class="fa-solid fa-rotate-right"></i> Yeniden gönder
+        }
+      </button>
+    </div>
+  </div>
+</div>

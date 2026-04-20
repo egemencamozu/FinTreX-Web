@@ -11,5 +11,7 @@ namespace FinTreX.Core.DTOs.Subscription
         public DateTime StartedAtUtc { get; set; }
         public DateTime? CurrentPeriodEndUtc { get; set; }
         public DateTime? CancelledAtUtc { get; set; }
+        public bool CancelAtPeriodEnd { get; set; }
+        public string BillingPeriod { get; set; } = "monthly";
     }
 }

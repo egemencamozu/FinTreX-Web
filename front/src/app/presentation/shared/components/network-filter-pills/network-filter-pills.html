@@ -1,0 +1,19 @@
+<div class="nfp-container">
+  @for (pill of pills; track pill.id) {
+    <button
+      class="nfp-pill"
+      [class.nfp-pill--active]="isActivePill(pill.id)"
+      (click)="selectPill(pill.id)"
+    >
+      @if (pill.icon) {
+        @if (pill.isImage) {
+          <img [src]="pill.icon" width="15" height="15" [alt]="pill.label" />
+        } @else {
+          <i [class]="pill.icon"></i>
+        }
+      }
+      <span class="nfp-label">{{ pill.label }}</span>
+    </button>
+  }
+</div>
+

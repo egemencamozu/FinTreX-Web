@@ -1,0 +1,20 @@
+<div class="otp-input-c" [class.otp-input-c--invalid]="invalid" role="group" aria-label="Doğrulama kodu">
+  @for (slot of slots; track slot) {
+    <input
+      #cell
+      class="otp-input-c__cell"
+      [class.otp-input-c__cell--filled]="values[slot]"
+      type="text"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      maxlength="1"
+      [attr.aria-label]="'Hane ' + (slot + 1)"
+      [disabled]="disabled"
+      [value]="values[slot]"
+      (input)="onInput($event, slot)"
+      (keydown)="onKeyDown($event, slot)"
+      (paste)="onPaste($event, slot)"
+      (blur)="onBlur()"
+    />
+  }
+</div>

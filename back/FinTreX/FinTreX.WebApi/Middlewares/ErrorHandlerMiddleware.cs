@@ -34,11 +34,27 @@ namespace FinTreX.WebApi.Middlewares
             catch (Exception error)
             {
                 var response = context.Response;
+                if (response.HasStarted)
+                {
+                    _logger.LogWarning(
+                        error,
+                        "Exception occurred after response started for {Method} {Path}.",
+                        context.Request.Method,
+                        context.Request.Path);
+                    return;
+                }
+
                 response.ContentType = "application/json";
                 var errorResponse = new ErrorResponse();
 
                 switch (error)
                 {
+                    case Core.Exceptions.EmailNotConfirmedException e:
+                        response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        errorResponse.Message = e.Message;
+                        errorResponse.Code = "EMAIL_NOT_CONFIRMED";
+                        errorResponse.Email = e.Email;
+                        break;
                     case Core.Exceptions.ApiException e:
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         errorResponse.Message = e.Message;

@@ -10,6 +10,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { EnvironmentConfigService } from '../services/environment-config.service';
+import { EmailNotConfirmedError } from '../errors/email-not-confirmed.error';
 
 /**
  * Central HTTP Interceptor — Single Responsibility per concern via private helpers:
@@ -99,6 +100,10 @@ export class ApiHttpInterceptor implements HttpInterceptor {
         error.error?.Message ||
         error.message ||
         `Hata Kodu: ${error.status}`;
+
+      if (error.status === 403 && error.error?.code === 'EMAIL_NOT_CONFIRMED') {
+        return throwError(() => new EmailNotConfirmedError(error.error.email ?? '', message));
+      }
 
       switch (error.status) {
         case 401:

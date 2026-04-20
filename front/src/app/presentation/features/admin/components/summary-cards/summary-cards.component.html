@@ -1,0 +1,80 @@
+<div class="summary-cards-c">
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="summary-cards-c__grid">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="summary-card skeleton">
+          <div class="skeleton__icon"></div>
+          <div class="skeleton__content">
+            <div class="skeleton__label"></div>
+            <div class="skeleton__value"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+  <!-- Error State -->
+  @else if (hasError) {
+    <div class="summary-cards-c__error">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>İstatistikler yüklenemedi.</p>
+      <button class="btn-retry" (click)="onRetry()">
+        <i class="fa-solid fa-rotate-right"></i> Tekrar Dene
+      </button>
+    </div>
+  }
+  <!-- Data State -->
+  @else {
+    <div class="summary-cards-c__grid">
+      <!-- Total Users -->
+      <div class="summary-card" 
+           [class.is-active]="activeStatusFilter === 'ALL'"
+           (click)="onCardClick('ALL')">
+        <div class="summary-card__icon icon--navy">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Toplam Kullanıcı</span>
+          <span class="summary-card__value">{{ stats?.totalUsers || 0 }}</span>
+        </div>
+      </div>
+
+      <!-- Active Users -->
+      <div class="summary-card"
+           [class.is-active]="activeStatusFilter === 'ACTIVE'"
+           (click)="onCardClick('ACTIVE')">
+        <div class="summary-card__icon icon--success">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Aktif Kullanıcı</span>
+          <span class="summary-card__value text--success">{{ stats?.activeUsers || 0 }}</span>
+        </div>
+      </div>
+
+      <!-- Inactive Users -->
+      <div class="summary-card"
+           [class.is-active]="activeStatusFilter === 'INACTIVE'"
+           (click)="onCardClick('INACTIVE')">
+        <div class="summary-card__icon icon--warning">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Deaktif Kullanıcı</span>
+          <span class="summary-card__value text--warning">{{ stats?.inactiveUsers || 0 }}</span>
+        </div>
+      </div>
+
+      <!-- Economists -->
+      <div class="summary-card no-click">
+        <div class="summary-card__icon icon--info">
+          <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Ekonomist</span>
+          <span class="summary-card__value text--info">{{ stats?.totalEconomists || 0 }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

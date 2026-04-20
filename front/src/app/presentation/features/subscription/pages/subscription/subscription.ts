@@ -18,7 +18,7 @@ export class Subscription implements OnInit {
   readonly plans = signal<SubscriptionPlan[]>([]);
   readonly mySubscription = signal<UserSubscription | null>(null);
 
-  readonly activePlanId = computed(() => this.mySubscription()?.subscriptionPlanId);
+  readonly activePlanId = computed(() => this.mySubscription()?.plan?.id);
 
   ngOnInit(): void {
     this.loadData();

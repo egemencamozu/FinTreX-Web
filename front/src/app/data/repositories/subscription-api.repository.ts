@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { SubscriptionRepository } from '../../core/interfaces/subscription.repository';
+import {
+  BillingPeriod,
+  CheckoutSessionResult,
+  SubscriptionRepository,
+} from '../../core/interfaces/subscription.repository';
 import { SubscriptionPlan, UserSubscription } from '../../core/models/subscription.model';
 import { EnvironmentConfigService } from '../../core/services/environment-config.service';
 
@@ -11,6 +15,7 @@ import { EnvironmentConfigService } from '../../core/services/environment-config
 })
 export class SubscriptionApiRepository implements SubscriptionRepository {
   private readonly baseUrl: string;
+  private readonly paymentsUrl = '/v1/payments';
 
   constructor(
     private readonly http: HttpClient,
@@ -24,7 +29,6 @@ export class SubscriptionApiRepository implements SubscriptionRepository {
   }
 
   getAdminPlans(): Observable<SubscriptionPlan[]> {
-    // Admin routes use the specialized admin prefix in backend
     return this.http.get<SubscriptionPlan[]>(`${this.configService.get('apiBaseUrl')}/v1/admin/subscription-plans`);
   }
 
@@ -33,7 +37,6 @@ export class SubscriptionApiRepository implements SubscriptionRepository {
   }
 
   upgradePlan(planId: number): Observable<UserSubscription> {
-    // Calling POST /api/v1/Subscriptions/upgrade/{planId}
     return this.http.post<UserSubscription>(`${this.baseUrl}/upgrade/${planId}`, {});
   }
 
@@ -43,5 +46,20 @@ export class SubscriptionApiRepository implements SubscriptionRepository {
 
   updateAdminPlan(planId: number, data: any): Observable<SubscriptionPlan> {
     return this.http.put<SubscriptionPlan>(`${this.configService.get('apiBaseUrl')}/v1/admin/subscription-plans/${planId}`, data);
+  }
+
+  createCheckoutSession(planId: number, billingPeriod: BillingPeriod): Observable<CheckoutSessionResult> {
+    return this.http.post<CheckoutSessionResult>(`${this.configService.get('apiBaseUrl')}${this.paymentsUrl}/create-checkout-session`, {
+      planId,
+      billingPeriod,
+    });
+  }
+
+  createPortalSession(): Observable<{ url: string }> {
+    return this.http.post<{ url: string }>(`${this.configService.get('apiBaseUrl')}${this.paymentsUrl}/create-portal-session`, {});
+  }
+
+  verifyCheckoutSession(sessionId: string): Observable<UserSubscription> {
+    return this.http.get<UserSubscription>(`${this.configService.get('apiBaseUrl')}${this.paymentsUrl}/verify-session/${sessionId}`);
   }
 }

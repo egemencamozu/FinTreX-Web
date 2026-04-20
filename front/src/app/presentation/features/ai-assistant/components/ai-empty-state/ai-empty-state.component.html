@@ -1,0 +1,20 @@
+<div class="ai-empty-state-c">
+  <div class="ai-empty-state-c__content">
+    <div class="ai-empty-state-c__icon-wrapper">
+      <i class="fa-solid fa-robot ai-empty-state-c__icon"></i>
+    </div>
+    <h3 class="ai-empty-state-c__title">AI Portföy Asistanı</h3>
+    <p class="ai-empty-state-c__description">
+      Finansal verilerinizi analiz etmek, portföy stratejileri geliştirmek veya 
+      piyasa trendlerini sormak için bir sohbet başlatın.
+    </p>
+    <button 
+      class="ai-empty-state-c__action-btn" 
+      (click)="startNewChat.emit()"
+      data-testid="start-first-chat-btn"
+    >
+      <i class="fa-solid fa-plus"></i>
+      Yeni Sohbet Başlat
+    </button>
+  </div>
+</div>

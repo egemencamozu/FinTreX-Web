@@ -1,206 +1,333 @@
 <section class="pf-c">
-  <!-- Header: Portfolio Selection & Controls -->
-  <header class="pf-header">
-    <div class="pf-title-group">
-      <h1>My Portfolios</h1>
-      <div class="pf-selector-wrapper">
-        <select class="pf-select" [value]="activePortfolioIndex()" (change)="onPortfolioChange($event)">
-          @for (pf of portfolios(); track pf.id; let i = $index) {
-            <option [value]="i">{{ pf.name }}</option>
-          }
-          @if (portfolios().length === 0 && !isLoading()) {
-            <option value="-1">No Portfolios</option>
-          }
-        </select>
-        <button class="btn-icon" title="New Portfolio" (click)="showNewPortfolioModal.set(true)">
-          <i class="icon-plus-circle"></i>
-        </button>
-        @if (currentPortfolio()) {
-          <button class="btn-icon btn-danger" title="Delete Portfolio" (click)="deleteCurrentPortfolio()">
-            <i class="icon-trash"></i>
+  <div class="pf-c__wrapper">
+    <div class="pf-c__container">
+
+      <!-- =========== HEADER PANEL =========== -->
+      <header class="pf-c__header-panel">
+        <div class="pf-c__title-row">
+          <h1 class="pf-c__page-title">My Portfolios</h1>
+          <div class="pf-c__selector-group">
+            <div class="pf-c__dropdown" [class.pf-c__dropdown--open]="isPortfolioDropdownOpen()">
+              <button
+                class="pf-c__dropdown-trigger"
+                (click)="togglePortfolioDropdown()"
+                data-testid="portfolio-dropdown-trigger"
+              >
+                <span class="pf-c__dropdown-trigger-text text-truncate">
+                  {{ currentPortfolio()?.name || (isLoading() ? 'Loading...' : 'Select Portfolio') }}
+                </span>
+                <i class="fa-solid fa-chevron-down pf-c__dropdown-chevron"></i>
+              </button>
+
+              @if (isPortfolioDropdownOpen()) {
+                <div class="pf-c__dropdown-backdrop" (click)="isPortfolioDropdownOpen.set(false)"></div>
+                <div class="pf-c__dropdown-menu animate-pop">
+                  @for (pf of portfolios(); track pf.id; let i = $index) {
+                    <button
+                      class="pf-c__dropdown-item"
+                      [class.pf-c__dropdown-item--active]="activePortfolioIndex() === i"
+                      (click)="selectPortfolio(i)"
+                    >
+                      <span class="pf-c__dropdown-item-text">{{ pf.name }}</span>
+                      @if (activePortfolioIndex() === i) {
+                        <i class="fa-solid fa-check pf-c__dropdown-item-check"></i>
+                      }
+                    </button>
+                  }
+                  @if (portfolios().length === 0 && !isLoading()) {
+                    <div class="pf-c__dropdown-empty">No portfolios found</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <button
+              class="pf-c__icon-btn"
+              title="New Portfolio"
+              (click)="showNewPortfolioModal.set(true)"
+              data-testid="btn-new-portfolio"
+            >
+              <i class="fa-solid fa-circle-plus"></i>
+            </button>
+
+            @if (currentPortfolio()) {
+              <button
+                class="pf-c__icon-btn pf-c__icon-btn--danger"
+                title="Delete Portfolio"
+                (click)="deleteCurrentPortfolio()"
+                data-testid="btn-delete-portfolio"
+              >
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            }
+          </div>
+        </div>
+        <div class="pf-c__header-actions">
+          <button
+            class="pf-c__btn-primary"
+            (click)="showAddAssetModal.set(true)"
+            data-testid="btn-add-asset"
+          >
+            <i class="fa-solid fa-plus"></i> Add Asset
           </button>
-        }
-      </div>
-    </div>
-    <div class="pf-actions">
-      <button class="btn-primary" (click)="showAddAssetModal.set(true)">
-        <i class="icon-plus"></i> Add Asset
-      </button>
-    </div>
-  </header>
+        </div>
+      </header>
 
-  @if (isLoading()) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading your investments...</p>
-    </div>
-  } @else if (portfolios().length === 0) {
-    <div class="empty-state">
-      <i class="icon-portfolio-empty"></i>
-      <h3>No portfolios found</h3>
-      <p>Start your investment journey by creating your first portfolio.</p>
-      <button class="btn-primary" (click)="showNewPortfolioModal.set(true)">Create Portfolio</button>
-    </div>
-  } @else {
-    <!-- Charts Card (Existing) -->
-    <app-holdings-card
-      #card="holdingsCard"
-      [heading]="currentPortfolio()?.name || 'Holdings'"
-      [viewOptions]="viewOptions"
-    >
-      <div cardControls>
-        @if (card.activeView() === 'history') {
-          <app-segmented-control
-            [options]="rangeOptions"
-            [value]="activeRange()"
-            (valueChange)="setRange($event)"
+      <!-- =========== MAIN CONTENT =========== -->
+      @if (isLoading()) {
+        <div class="pf-c__loading-state">
+          <div class="pf-c__spinner"></div>
+          <p>Loading your investments...</p>
+        </div>
+      } @else if (portfolios().length === 0) {
+        <div class="pf-c__empty-state">
+          <i class="fa-solid fa-briefcase pf-c__empty-icon"></i>
+          <h3 class="pf-c__empty-title">No portfolios found</h3>
+          <p class="pf-c__empty-text">Start your investment journey by creating your first portfolio.</p>
+          <button
+            class="pf-c__btn-primary"
+            (click)="showNewPortfolioModal.set(true)"
+            data-testid="btn-create-first-portfolio"
+          >
+            Create Portfolio
+          </button>
+        </div>
+      } @else {
+        <!-- KPI PANEL -->
+        <section class="pf-c__kpi-panel">
+          <app-kpi-card
+            label="Total Value"
+            [value]="(totalValue() | currency) || '0'"
+            data-testid="kpi-total-value"
           />
-        }
-      </div>
+          <app-kpi-card
+            label="Total P&L"
+            [value]="(totalPnL() | currency) || '0'"
+            [changeValue]="totalPnLPercent()"
+            data-testid="kpi-total-pnl"
+          />
+          <app-kpi-card
+            label="Assets"
+            [value]="assetCount().toString()"
+            data-testid="kpi-asset-count"
+          />
+          <app-kpi-card
+            label="Active Portfolio"
+            [value]="currentPortfolio()?.name || 'None'"
+            data-testid="kpi-portfolio-name"
+          />
+        </section>
 
-      <ng-template cardView="history">
-        <app-line-chart [data]="activeChartData()" />
-      </ng-template>
+        <!-- CHART PANEL -->
+        <section class="pf-c__chart-panel">
+          <app-holdings-card
+            #card="holdingsCard"
+            [heading]="currentPortfolio()?.name || 'Holdings'"
+            [viewOptions]="viewOptions"
+          >
+            <div cardControls>
+              @if (card.activeView() === 'history') {
+                <app-segmented-control
+                  [options]="rangeOptions"
+                  [value]="activeRange()"
+                  (valueChange)="setRange($event)"
+                />
+              }
+            </div>
 
-      <ng-template cardView="allocation">
-        <app-doughnut-chart [items]="allocationItems()" />
-      </ng-template>
-    </app-holdings-card>
+            <ng-template cardView="history">
+              <app-line-chart [data]="activeChartData()" />
+            </ng-template>
 
-    <!-- Assets List Table -->
-    <div class="assets-card glass-panel">
-      <div class="card-header">
-        <h2>Assets</h2>
-        <span class="badge">{{ currentPortfolio()?.assets?.length || 0 }} items</span>
-      </div>
-      
-      <div class="table-responsive">
-        <table class="assets-table">
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th>Quantity</th>
-              <th>Avg. Cost</th>
-              <th>Total Value</th>
-              <th class="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (asset of currentPortfolio()?.assets; track asset.id) {
-              <tr class="asset-row">
-                <td>
-                  <div class="asset-info">
-                    <div class="asset-icon" [attr.data-type]="asset.assetType">
-                      <i class="icon-{{ asset.assetType.toLowerCase() }}"></i>
-                    </div>
-                    <div class="asset-names">
-                      <span class="symbol">{{ asset.symbol }}</span>
-                      <span class="name">{{ asset.assetName }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>{{ asset.quantity | number:'1.2-4' }}</td>
-                <td>{{ asset.averageCost | currency:asset.currency }}</td>
-                <td class="weight">{{ (asset.quantity * asset.averageCost) | currency:asset.currency }}</td>
-                <td class="text-right">
-                  <div class="row-actions">
-                    <button class="btn-ghost" title="Edit asset" aria-label="Edit asset" (click)="editAsset(asset)">
-                      <i class="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button class="btn-ghost btn-danger-text" title="Delete asset" aria-label="Delete asset" (click)="deleteAsset(asset.id)">
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-            @if (!currentPortfolio()?.assets?.length) {
-              <tr>
-                <td colspan="5" class="empty-table">No assets in this portfolio yet.</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+            <ng-template cardView="allocation">
+              <app-doughnut-chart [items]="allocationItems()" />
+            </ng-template>
+          </app-holdings-card>
+        </section>
+
+        <!-- ASSETS TABLE PANEL -->
+        <section class="pf-c__assets-panel">
+          <div class="pf-c__assets-header">
+            <h2 class="pf-c__assets-title">Assets</h2>
+            <span class="pf-c__assets-badge">
+              {{ currentPortfolio()?.assets?.length || 0 }} items
+            </span>
+          </div>
+
+          <div class="pf-c__table-wrapper">
+            <table class="pf-c__table">
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Quantity</th>
+                  <th>Avg. Cost</th>
+                  <th>Total Value</th>
+                  <th class="pf-c__th-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (asset of currentPortfolio()?.assets; track asset.id) {
+                  <tr class="pf-c__asset-row">
+                    <td>
+                      <div class="pf-c__asset-info">
+                        <div
+                          class="pf-c__asset-icon"
+                          [attr.data-type]="asset.assetType"
+                        >
+                          <i [class]="getAssetIcon(asset.assetType)"></i>
+                        </div>
+                        <div class="pf-c__asset-names">
+                          <span class="pf-c__asset-symbol">{{ asset.symbol }}</span>
+                          <span class="pf-c__asset-name">{{ asset.assetName }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="pf-c__cell-mono">{{ asset.quantity | number:'1.2-4' }}</td>
+                    <td class="pf-c__cell-mono">{{ asset.averageCost | currency:asset.currency }}</td>
+                    <td class="pf-c__cell-value">{{ (asset.quantity * asset.averageCost) | currency:asset.currency }}</td>
+                    <td class="pf-c__th-center">
+                      <div class="pf-c__row-actions">
+                        <button
+                          class="pf-c__action-btn pf-c__action-btn--edit"
+                          title="Edit asset"
+                          aria-label="Edit asset"
+                          (click)="editAsset(asset)"
+                          data-testid="btn-edit-asset"
+                        >
+                          <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button
+                          class="pf-c__action-btn pf-c__action-btn--delete"
+                          title="Delete asset"
+                          aria-label="Delete asset"
+                          (click)="deleteAsset(asset.id)"
+                          data-testid="btn-delete-asset"
+                        >
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+                @if (!currentPortfolio()?.assets?.length) {
+                  <tr>
+                    <td colspan="5" class="pf-c__empty-table">
+                      No assets in this portfolio yet.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
     </div>
-  }
+  </div>
 </section>
 
-<!-- Inline Forms / Modals -->
+<!-- =========== MODALS =========== -->
 @if (showNewPortfolioModal()) {
-  <div class="modal-overlay">
-    <div class="modal-content glass-panel animate-pop">
-      <h2>Create Portfolio</h2>
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" #pfName placeholder="Portfolio Name" class="form-input">
+  <div class="pf-c__modal-overlay" data-testid="modal-create-portfolio">
+    <div class="pf-c__modal-content pf-c__modal-content--sm">
+      <h2 class="pf-c__modal-title">Create Portfolio</h2>
+      <div class="pf-c__form-group">
+        <label class="pf-c__form-label">Name</label>
+        <input
+          type="text"
+          #pfName
+          placeholder="Portfolio Name"
+          class="pf-c__form-input"
+          data-testid="input-portfolio-name"
+        />
       </div>
-      <div class="form-actions">
-        <button class="btn-text" (click)="showNewPortfolioModal.set(false)">Cancel</button>
-        <button class="btn-primary" (click)="createNewPortfolio(pfName.value)">Create</button>
+      <div class="pf-c__form-group">
+        <label class="pf-c__form-label">Description <span class="pf-c__optional">(optional)</span></label>
+        <textarea
+          #pfDesc
+          placeholder="Brief description..."
+          class="pf-c__form-input"
+          rows="3"
+          data-testid="input-portfolio-description"
+        ></textarea>
+      </div>
+      <div class="pf-c__form-actions">
+        <button class="pf-c__btn-text" (click)="showNewPortfolioModal.set(false)">Cancel</button>
+        <button class="pf-c__btn-primary" (click)="createNewPortfolio(pfName.value, pfDesc.value)" data-testid="btn-confirm-create">Create</button>
       </div>
     </div>
   </div>
 }
 
 @if (showAddAssetModal()) {
-  <div class="modal-overlay" (click)="closeAssetModal()">
-    <div class="modal-content glass-panel animate-pop" (click)="$event.stopPropagation()">
-      <h2>{{ editingAsset() ? 'Edit Asset' : ('Add Asset to ' + currentPortfolio()?.name) }}</h2>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Symbol</label>
-          <input type="text" #aSymbol placeholder="BTC, THYAO..." class="form-input"
+  <div class="pf-c__modal-overlay" (click)="closeAssetModal()" data-testid="modal-add-asset">
+    <div class="pf-c__modal-content" (click)="$event.stopPropagation()">
+      <h2 class="pf-c__modal-title">
+        {{ editingAsset() ? 'Edit Asset' : ('Add Asset to ' + currentPortfolio()?.name) }}
+      </h2>
+      <div class="pf-c__form-grid">
+        <div class="pf-c__form-group pf-c__form-group--full">
+          <label class="pf-c__form-label">Symbol</label>
+          <input type="text" #aSymbol placeholder="BTC, THYAO..." class="pf-c__form-input"
             [value]="editingAsset()?.symbol || ''"
-            [disabled]="!!editingAsset()">
+            [disabled]="!!editingAsset()"
+            data-testid="input-asset-symbol" />
         </div>
-        <div class="form-group">
-          <label>Asset Name</label>
-          <input type="text" #aName placeholder="Bitcoin, Türk Hava Yolları..." class="form-input"
+        <div class="pf-c__form-group pf-c__form-group--full">
+          <label class="pf-c__form-label">Asset Name</label>
+          <input type="text" #aName placeholder="Bitcoin, Türk Hava Yolları..." class="pf-c__form-input"
             [value]="editingAsset()?.assetName || ''"
-            [disabled]="!!editingAsset()">
+            [disabled]="!!editingAsset()"
+            data-testid="input-asset-name" />
         </div>
-        <div class="form-group">
-          <label>Type</label>
-          <select #aType class="form-input" 
+        <div class="pf-c__form-group">
+          <label class="pf-c__form-label">Type</label>
+          <select #aType class="pf-c__form-input"
             [value]="editingAsset()?.assetType || 'BIST'"
-            [disabled]="!!editingAsset()">
+            [disabled]="!!editingAsset()"
+            data-testid="select-asset-type">
             <option value="BIST">BIST (Borsa İstanbul)</option>
             <option value="Crypto">Crypto</option>
             <option value="PreciousMetal">Precious Metal</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Quantity</label>
-          <input type="number" #aQty placeholder="0.00" min="0.000001" class="form-input"
-            [value]="editingAsset()?.quantity || ''">
+        <div class="pf-c__form-group">
+          <label class="pf-c__form-label">Quantity</label>
+          <input type="number" #aQty placeholder="0.00" min="0.000001" class="pf-c__form-input"
+            [value]="editingAsset()?.quantity || ''"
+            data-testid="input-asset-quantity" />
         </div>
-        <div class="form-group">
-          <label>Avg. Cost</label>
-          <input type="number" #aCost placeholder="0.00" min="0" class="form-input"
-            [value]="editingAsset()?.averageCost || ''">
+        <div class="pf-c__form-group">
+          <label class="pf-c__form-label">Avg. Cost</label>
+          <input type="number" #aCost placeholder="0.00" min="0" class="pf-c__form-input"
+            [value]="editingAsset()?.averageCost || ''"
+            data-testid="input-asset-cost" />
         </div>
-        <div class="form-group">
-          <label>Currency</label>
-          <input type="text" #aCur value="USD" maxlength="8" class="form-input"
+        <div class="pf-c__form-group">
+          <label class="pf-c__form-label">Currency</label>
+          <input type="text" #aCur value="USD" maxlength="8" class="pf-c__form-input"
             [value]="editingAsset()?.currency || 'USD'"
-            [disabled]="!!editingAsset()">
+            [disabled]="!!editingAsset()"
+            data-testid="input-asset-currency" />
         </div>
-        <div class="form-group">
-          <label>Acquired At</label>
-          <input type="date" #aDate class="form-input"
+        <div class="pf-c__form-group">
+          <label class="pf-c__form-label">Acquired At</label>
+          <input type="date" #aDate class="pf-c__form-input"
             [value]="editingAsset()?.acquiredAtUtc ? (editingAsset()?.acquiredAtUtc | date:'yyyy-MM-dd') : ''"
-            [disabled]="!!editingAsset()">
+            [disabled]="!!editingAsset()"
+            data-testid="input-asset-date" />
         </div>
-        <div class="form-group">
-          <label>Notes <span class="optional">(optional)</span></label>
-          <input type="text" #aNotes placeholder="e.g. Long-term hold" class="form-input"
-            [value]="editingAsset()?.notes || ''">
+        <div class="pf-c__form-group">
+          <label class="pf-c__form-label">Notes <span class="pf-c__optional">(optional)</span></label>
+          <input type="text" #aNotes placeholder="e.g. Long-term hold" class="pf-c__form-input"
+            [value]="editingAsset()?.notes || ''"
+            data-testid="input-asset-notes" />
         </div>
       </div>
-      <div class="form-actions">
-        <button class="btn-text" (click)="closeAssetModal()">Cancel</button>
-        <button class="btn-primary" (click)="addAsset(aSymbol.value, aName.value, aType.value, +aQty.value, +aCost.value, aCur.value, aDate.value, aNotes.value)">
+      <div class="pf-c__form-actions">
+        <button class="pf-c__btn-text" (click)="closeAssetModal()">Cancel</button>
+        <button class="pf-c__btn-primary"
+          (click)="addAsset(aSymbol.value, aName.value, aType.value, +aQty.value, +aCost.value, aCur.value, aDate.value, aNotes.value)"
+          data-testid="btn-confirm-asset">
           {{ editingAsset() ? 'Update Asset' : 'Add Asset' }}
         </button>
       </div>

@@ -11,6 +11,6 @@ namespace FinTreX.Core.DTOs.Portfolio
         public decimal? AverageCost { get; set; }
 
         [MaxLength(500)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
     }
 }

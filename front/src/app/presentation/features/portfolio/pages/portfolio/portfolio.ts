@@ -7,12 +7,14 @@ import { HoldingsCardComponent, CardViewDirective } from '../../../../shared/com
 import { SegmentedControlComponent, SegmentedOption } from '../../../../shared/components/segmented-control/segmented-control.component';
 import { LineChartComponent, LineChartInput } from '../../../../shared/components/charts/line-chart/line-chart.component';
 import { DoughnutChartComponent, DoughnutItem } from '../../../../shared/components/charts/doughnut-chart/doughnut-chart.component';
+import { KpiCardComponent } from '../../../../shared/components/kpi-card/kpi-card.component';
 import { finalize } from 'rxjs';
+import { AlertService } from '../../../../../core/services/alert.service';
 
 function cssVar(name: string): string {
   if (typeof window === 'undefined') return '';
   const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return val || (name === '--chart-loss' ? '#ff4d4f' : '');
+  return val || '';
 }
 
 @Component({
@@ -22,12 +24,14 @@ function cssVar(name: string): string {
     CommonModule,
     HoldingsCardComponent, CardViewDirective,
     SegmentedControlComponent, LineChartComponent, DoughnutChartComponent,
+    KpiCardComponent
   ],
   templateUrl: './portfolio.html',
   styleUrl: './portfolio.scss',
 })
 export class Portfolio implements OnInit {
   private readonly portfolioRepo = inject(PortfolioRepository);
+  private readonly alertService = inject(AlertService);
   
   private readonly lossColor = cssVar('--chart-loss');
   private readonly lossAlpha = this.lossColor + '33';
@@ -41,12 +45,37 @@ export class Portfolio implements OnInit {
   readonly showNewPortfolioModal = signal<boolean>(false);
   readonly showAddAssetModal = signal<boolean>(false);
   readonly editingAsset = signal<PortfolioAsset | null>(null);
+  readonly isPortfolioDropdownOpen = signal<boolean>(false);
 
   readonly currentPortfolio = computed(() => 
     this.portfolios().length > this.activePortfolioIndex() 
       ? this.portfolios()[this.activePortfolioIndex()] 
       : null
   );
+
+  // --- KPI Computed Signals ---
+  readonly assetCount = computed(() => this.currentPortfolio()?.assets?.length || 0);
+
+  readonly totalValue = computed(() => {
+    const pf = this.currentPortfolio();
+    if (!pf || !pf.assets) return 0;
+    // Note: currentValue defaults to averageCost if not provided by backend
+    return pf.assets.reduce((sum, a) => sum + (a.quantity * (a.currentValue || a.averageCost)), 0);
+  });
+
+  readonly totalCost = computed(() => {
+    const pf = this.currentPortfolio();
+    if (!pf || !pf.assets) return 0;
+    return pf.assets.reduce((sum, a) => sum + (a.quantity * a.averageCost), 0);
+  });
+
+  readonly totalPnL = computed(() => this.totalValue() - this.totalCost());
+
+  readonly totalPnLPercent = computed(() => {
+    const cost = this.totalCost();
+    if (cost === 0) return 0;
+    return (this.totalPnL() / cost) * 100;
+  });
 
   readonly viewOptions: SegmentedOption[] = [
     { id: 'history', label: 'History' },
@@ -112,39 +141,62 @@ export class Portfolio implements OnInit {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (data: PortfolioModel[]) => this.portfolios.set(data),
-        error: (err: any) => console.error('Failed to load portfolios', err)
+        error: (err: unknown) => {
+          this.alertService.show('error', 'Portföyler yüklenirken bir hata oluştu');
+          console.error('Failed to load portfolios', err);
+        }
       });
   }
 
   // Action Handlers
+  togglePortfolioDropdown(): void {
+    this.isPortfolioDropdownOpen.update(v => !v);
+  }
+
+  selectPortfolio(index: number): void {
+    this.activePortfolioIndex.set(index);
+    this.isPortfolioDropdownOpen.set(false);
+  }
+
   onPortfolioChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     this.activePortfolioIndex.set(parseInt(target.value, 10));
   }
 
-  createNewPortfolio(name: string): void {
+  createNewPortfolio(name: string, description: string = ''): void {
     if (!name) return;
-    this.portfolioRepo.createPortfolio({ name })
+    this.portfolioRepo.createPortfolio({ name, description })
       .subscribe({
         next: () => {
           this.showNewPortfolioModal.set(false);
           this.loadPortfolios();
+          this.alertService.show('success', 'Portföy başarıyla oluşturuldu');
         },
-        error: (err: any) => alert('Error creating portfolio: ' + err.message)
+        error: (err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Portföy oluşturulamadı';
+          this.alertService.show('error', message);
+        }
       });
   }
 
-  deleteCurrentPortfolio(): void {
+  async deleteCurrentPortfolio(): Promise<void> {
     const pf = this.currentPortfolio();
-    if (!pf || !confirm(`Delete "${pf.name}" portfolio?`)) return;
+    if (!pf) return;
+    
+    const confirmed = await this.alertService.confirm(`"${pf.name}" portföyünü silmek istediğinize emin misiniz?`);
+    if (!confirmed) return;
     
     this.portfolioRepo.deletePortfolio(pf.id)
       .subscribe({
         next: () => {
           this.activePortfolioIndex.set(0);
           this.loadPortfolios();
+          this.alertService.show('success', 'Portföy silindi');
         },
-        error: (err: any) => alert('Error deleting portfolio: ' + err.message)
+        error: (err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Portföy silinirken hata oluştu';
+          this.alertService.show('error', message);
+        }
       });
   }
 
@@ -164,8 +216,12 @@ export class Portfolio implements OnInit {
         next: () => {
           this.closeAssetModal();
           this.loadPortfolios();
+          this.alertService.show('success', 'Varlık güncellendi');
         },
-        error: (err: any) => alert('Error updating asset: ' + err.message)
+        error: (err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Güncelleme sırasında hata oluştu';
+          this.alertService.show('error', message);
+        }
       });
     } else {
       // Add logic
@@ -177,17 +233,29 @@ export class Portfolio implements OnInit {
         next: () => {
           this.closeAssetModal();
           this.loadPortfolios();
+          this.alertService.show('success', 'Varlık eklendi');
         },
-        error: (err: any) => alert('Error adding asset: ' + err.message)
+        error: (err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Ekleme sırasında hata oluştu';
+          this.alertService.show('error', message);
+        }
       });
     }
   }
 
-  deleteAsset(assetId: number): void {
-    if (!confirm('Remove this asset?')) return;
+  async deleteAsset(assetId: number): Promise<void> {
+    const confirmed = await this.alertService.confirm('Bu varlığı silmek istediğinize emin misiniz?');
+    if (!confirmed) return;
+
     this.portfolioRepo.deleteAsset(assetId).subscribe({
-      next: () => this.loadPortfolios(),
-      error: (err: any) => alert('Error removing asset: ' + err.message)
+      next: () => {
+        this.loadPortfolios();
+        this.alertService.show('success', 'Varlık kaldırıldı');
+      },
+      error: (err: unknown) => {
+        const message = err instanceof Error ? err.message : 'Silme işlemi sırasında hata oluştu';
+        this.alertService.show('error', message);
+      }
     });
   }
 
@@ -203,5 +271,17 @@ export class Portfolio implements OnInit {
 
   setRange(value: string): void {
     this.activeRange.set(value);
+  }
+
+  /**
+   * Varlık tipine göre uygun Font Awesome ikon sınıfını döner.
+   */
+  getAssetIcon(assetType: string): string {
+    switch (assetType) {
+      case 'BIST': return 'fa-solid fa-building-columns';
+      case 'Crypto': return 'fa-brands fa-bitcoin';
+      case 'PreciousMetal': return 'fa-solid fa-gem';
+      default: return 'fa-solid fa-coins';
+    }
   }
 }

@@ -11,7 +11,7 @@ export const CONSULTANCY_ROUTES: Routes = [
     loadComponent: () => import('./pages/my-economist/my-economist').then((m) => m.MyEconomist),
   },
   {
-    path: 'tasks',
-    loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks),
+    path: 'my-requests',
+    loadComponent: () => import('./pages/my-requests/my-requests').then((m) => m.MyRequests),
   },
 ];

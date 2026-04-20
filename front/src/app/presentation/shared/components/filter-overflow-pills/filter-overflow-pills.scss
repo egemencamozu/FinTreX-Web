@@ -1,0 +1,219 @@
+.fop {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+}
+
+.fop__rail {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 3px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-raised);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.fop__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 28px;
+  min-width: 38px;
+  max-width: 150px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &:hover:not(.fop__pill--active) {
+    background: var(--state-hover);
+    color: var(--text-primary);
+  }
+
+  &--active {
+    background: var(--bg-surface);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+    color: var(--text-primary);
+  }
+}
+
+.fop__icon,
+.fop__icon-img {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.fop__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.fop__icon-img {
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.fop__more {
+  overflow: visible;
+}
+
+.fop__more-icon {
+  width: auto;
+  height: auto;
+  font-size: 10px;
+  transition: transform 150ms;
+
+  &--closed {
+    transform: rotate(180deg);
+  }
+}
+
+.fop__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: auto;
+  right: 0;
+  z-index: 30;
+  width: min(220px, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid var(--border-subtle, var(--border-default));
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-lg, 0 18px 42px rgba(15, 23, 42, 0.16));
+}
+
+.fop__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+
+  i {
+    position: absolute;
+    left: 14px;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--border-subtle, var(--border-default));
+    border-radius: var(--radius-md);
+    background: var(--bg-surface-raised);
+    color: var(--text-primary);
+    padding: 0 14px 0 42px;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-sm);
+    outline: none;
+
+    &::placeholder {
+      color: var(--text-placeholder);
+    }
+
+    &:focus {
+      border-color: var(--border-focus);
+    }
+  }
+}
+
+.fop__menu-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 2px 0;
+}
+
+.fop__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  padding: 0 12px;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--state-hover);
+  }
+
+  &--active {
+    background: var(--state-hover);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+.fop__menu-item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fop__menu-icon,
+.fop__menu-icon-img {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.fop__menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.fop__menu-icon-img {
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.fop__menu-check {
+  margin-left: auto;
+  color: var(--color-primary-500, var(--color-navy-600));
+  font-size: 13px;
+}
+
+.fop__empty {
+  padding: 14px 10px;
+  color: var(--text-tertiary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+}

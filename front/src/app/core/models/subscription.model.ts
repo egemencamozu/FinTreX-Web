@@ -22,14 +22,16 @@ export interface SubscriptionPlan {
 
 export interface UserSubscription {
   id: number;
-  applicationUserId: string;
-  subscriptionPlanId: number;
-  subscriptionPlan: SubscriptionPlan;
+  applicationUserId?: string;
+  subscriptionPlanId?: number;
+  plan: SubscriptionPlan;
   status: SubscriptionStatus;
   startedAtUtc: string;
   currentPeriodEndUtc?: string;
   cancelledAtUtc?: string;
-  createdAtUtc: string;
+  cancelAtPeriodEnd?: boolean;
+  billingPeriod?: string;
+  createdAtUtc?: string;
 }
 
 export interface UpdateSubscriptionPlanDto {

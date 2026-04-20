@@ -1,0 +1,23 @@
+<div class="ai-chat-input-c" [class.ai-chat-input-c--disabled]="disabled()">
+  <textarea
+    #textarea
+    class="ai-chat-input-c__field"
+    [ngModel]="text()"
+    (ngModelChange)="text.set($event)"
+    (keydown)="onKeydown($event)"
+    placeholder="Mesajınızı yazın... (Enter: gönder, Shift+Enter: yeni satır)"
+    rows="1"
+    [disabled]="disabled()"
+    maxlength="4000"
+    data-testid="ai-chat-textarea"
+  ></textarea>
+
+  <button
+    class="ai-chat-input-c__send-btn"
+    (click)="send()"
+    [disabled]="disabled() || !text().trim()"
+    data-testid="ai-chat-send-button"
+  >
+    <i class="fa-solid fa-paper-plane"></i>
+  </button>
+</div>

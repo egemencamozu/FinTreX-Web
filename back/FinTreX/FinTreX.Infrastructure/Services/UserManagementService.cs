@@ -1,4 +1,4 @@
-﻿using FinTreX.Core.DTOs.Account;
+using FinTreX.Core.DTOs.Account;
 using FinTreX.Core.Enums;
 using FinTreX.Core.Exceptions;
 using FinTreX.Core.Interfaces;
@@ -95,6 +95,91 @@ namespace FinTreX.Infrastructure.Services
                 throw new ApiException(string.Join(" ", resetAccessFailedCountResult.Errors.Select(e => e.Description)));
 
             return $"User '{user.Email}' yeniden active edildi.";
+        }
+
+        public async Task<AdminStatsDto> GetAdminStatsAsync()
+        {
+            var regularUsers = await _userManager.GetUsersInRoleAsync(Roles.User.ToString());
+            var economists = await _userManager.GetUsersInRoleAsync(Roles.Economist.ToString());
+
+            var now = DateTimeOffset.UtcNow;
+            
+            return new AdminStatsDto
+            {
+                TotalUsers = regularUsers.Count,
+                ActiveUsers = regularUsers.Count(x => !x.LockoutEnd.HasValue || x.LockoutEnd.Value <= now),
+                InactiveUsers = regularUsers.Count(x => x.LockoutEnd.HasValue && x.LockoutEnd.Value > now),
+                TotalEconomists = economists.Count
+            };
+        }
+
+        public async Task<BulkOperationResultDto> BulkDeactivateAsync(List<string> userIds, string durationKey)
+        {
+            var result = new BulkOperationResultDto();
+            if (userIds == null || !userIds.Any()) return result;
+
+            foreach (var userId in userIds)
+            {
+                try
+                {
+                    var user = await _userManager.FindByIdAsync(userId);
+                    if (user == null)
+                    {
+                        result.FailedCount++;
+                        result.FailedUserIds.Add(userId);
+                        continue;
+                    }
+
+                    var role = await GetSingleRoleAsync(user);
+                    if (string.Equals(role, Roles.Admin.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Skip admins silently as per plan
+                        continue;
+                    }
+
+                    await DeactivateUserAsync(userId, durationKey);
+                    result.SuccessCount++;
+                }
+                catch (Exception)
+                {
+                    result.FailedCount++;
+                    result.FailedUserIds.Add(userId);
+                }
+            }
+
+            result.Message = $"{result.SuccessCount} kullanıcı deaktif edildi, {result.FailedCount} hata.";
+            return result;
+        }
+
+        public async Task<BulkOperationResultDto> BulkActivateAsync(List<string> userIds)
+        {
+            var result = new BulkOperationResultDto();
+            if (userIds == null || !userIds.Any()) return result;
+
+            foreach (var userId in userIds)
+            {
+                try
+                {
+                    var user = await _userManager.FindByIdAsync(userId);
+                    if (user == null)
+                    {
+                        result.FailedCount++;
+                        result.FailedUserIds.Add(userId);
+                        continue;
+                    }
+
+                    await ActivateUserAsync(userId);
+                    result.SuccessCount++;
+                }
+                catch (Exception)
+                {
+                    result.FailedCount++;
+                    result.FailedUserIds.Add(userId);
+                }
+            }
+
+            result.Message = $"{result.SuccessCount} kullanıcı aktif edildi, {result.FailedCount} hata.";
+            return result;
         }
 
         // ── Mapping ─────────────────────────────────────────────────────────

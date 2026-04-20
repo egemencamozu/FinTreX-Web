@@ -1,0 +1,2712 @@
+﻿[
+    {
+        "ticker":  "A1CAP.IS",
+        "companyName":  "A1 Capital Yatırım Menkul Değerler A.Ş.",
+        "sector":  "Aracı Kurumlar"
+    },
+    {
+        "ticker":  "A1YEN.IS",
+        "companyName":  "A1 Yenilenebilir Enerji Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ACSEL.IS",
+        "companyName":  "Aciselsan Acıpayam Selüloz Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ADEL.IS",
+        "companyName":  "Adel Kalemcilik Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ADESE.IS",
+        "companyName":  "Adese Alışveriş Merkezleri Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "ADGYO.IS",
+        "companyName":  "Adra Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AEFES.IS",
+        "companyName":  "Anadolu Efes Biracılık ve Malt Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AFYON.IS",
+        "companyName":  "Afyon Çimento Sanayi T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AGESA.IS",
+        "companyName":  "Agesa Hayat ve Emeklilik A.Ş.",
+        "sector":  "Sigorta"
+    },
+    {
+        "ticker":  "AGHOL.IS",
+        "companyName":  "AG Anadolu Grubu Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "AGROT.IS",
+        "companyName":  "Agrotech Yüksek Teknoloji ve Yatırım A.Ş.",
+        "sector":  "Tarım, Ormancılık ve Balıkçılık"
+    },
+    {
+        "ticker":  "AGYO.IS",
+        "companyName":  "Atakule Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AHGAZ.IS",
+        "companyName":  "Ahlatcı Doğal Gaz Dağıtım Enerji ve Yatırım A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "AHSGY.IS",
+        "companyName":  "Ahes Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AKBNK.IS",
+        "companyName":  "Akbank T.A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "AKCNS.IS",
+        "companyName":  "Akçansa Çimento Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AKENR.IS",
+        "companyName":  "Akenerji Elektrik Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "AKFGY.IS",
+        "companyName":  "Akfen Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AKFYE.IS",
+        "companyName":  "Akfen Yenilenebilir Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "AKGRT.IS",
+        "companyName":  "Aksigorta A.Ş.",
+        "sector":  "Sigorta"
+    },
+    {
+        "ticker":  "AKHAN.IS",
+        "companyName":  "Akhan Un Fabrikası ve Tarım Ürünleri Gıda Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AKMGY.IS",
+        "companyName":  "Akmerkez Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AKSA.IS",
+        "companyName":  "Aksa Akrilik Kimya Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AKSEN.IS",
+        "companyName":  "Aksa Enerji Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "AKSGY.IS",
+        "companyName":  "Akiş Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AKSUE.IS",
+        "companyName":  "Aksu Enerji ve Ticaret A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "AKYHO.IS",
+        "companyName":  "Akdeniz Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "ALARK.IS",
+        "companyName":  "Alarko Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "ALBRK.IS",
+        "companyName":  "Albaraka Türk Katılım Bankası A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "ALCAR.IS",
+        "companyName":  "Alarko Carrier Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ALCTL.IS",
+        "companyName":  "Alcatel Lucent Teletaş Telekomünikasyon A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "ALFAS.IS",
+        "companyName":  "Alfa Solar Enerji Sanayi ve Ticaret A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ALGYO.IS",
+        "companyName":  "Alarko Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "ALKA.IS",
+        "companyName":  "Alkim Kağıt Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ALKLC.IS",
+        "companyName":  "Altınkılıç Gıda ve Süt Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ALTNY.IS",
+        "companyName":  "Ziraat Portföy Altın Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ALVES.IS",
+        "companyName":  "Alves Kablo Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ANELE.IS",
+        "companyName":  "Anel Elektrik Proje Taahhüt ve Ticaret A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "ANGEN.IS",
+        "companyName":  "Anatolia Tanı ve Biyoteknoloji Ürünleri Araştırma Geliştirme Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ANHYT.IS",
+        "companyName":  "Anadolu Hayat Emeklilik A.Ş.",
+        "sector":  "Sigorta"
+    },
+    {
+        "ticker":  "ANSGR.IS",
+        "companyName":  "Anadolu Anonim Türk Sigorta Şirketi",
+        "sector":  "Sigorta"
+    },
+    {
+        "ticker":  "APBDL.IS",
+        "companyName":  "Ak Portföy BIST Banka Dolar Döviz Dengeli Fon",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "APGLD.IS",
+        "companyName":  "Ak Portföy Altın Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "APMDL.IS",
+        "companyName":  "Ak Portföy BIST Metal Dolar Fon",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "APX30.IS",
+        "companyName":  "Ak Portföy BIST 30 Endeks Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ARASE.IS",
+        "companyName":  "Doğu Aras Enerji Yatırımları A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ARCLK.IS",
+        "companyName":  "Arçelik A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ARDYZ.IS",
+        "companyName":  "Ardyz Animasyon ve Dijital Medya Teknolojileri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "ARENA.IS",
+        "companyName":  "Arena Bilgisayar Sanayi ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "ARFYE.IS",
+        "companyName":  "ARF Bio Yenilenebilir Enerji Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ARMGD.IS",
+        "companyName":  "Armada Gıda Ticaret Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ARSAN.IS",
+        "companyName":  "Arsan Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "ARTMS.IS",
+        "companyName":  "Artemis Halı A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ARZUM.IS",
+        "companyName":  "Arzum Elektrikli Ev Aletleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "ASELS.IS",
+        "companyName":  "Aselsan Elektronik Sanayi ve Ticaret A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "ASGYO.IS",
+        "companyName":  "Asce Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "ASTOR.IS",
+        "companyName":  "Astor Enerji A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ASUZU.IS",
+        "companyName":  "Anadolu Isuzu Otomotiv Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ATAGY.IS",
+        "companyName":  "Ata Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "ATAKP.IS",
+        "companyName":  "Atakey Patates Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ATATP.IS",
+        "companyName":  "Ata Portföy Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ATATR.IS",
+        "companyName":  "Ata Portföy TL Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ATEKS.IS",
+        "companyName":  "Akın Tekstil A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ATLAS.IS",
+        "companyName":  "Atlas Menkul Kıymetler Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "ATSYH.IS",
+        "companyName":  "Atlantis Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "AVGYO.IS",
+        "companyName":  "Avrasya Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AVHOL.IS",
+        "companyName":  "Avrupa Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "AVOD.IS",
+        "companyName":  "A.V.O.D. Kurutulmuş Gıda ve Tarım Ürünleri Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AVPGY.IS",
+        "companyName":  "Avrupakent Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "AVTUR.IS",
+        "companyName":  "Avrasya Turizm Yatırımları ve Ticaret A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "AYCES.IS",
+        "companyName":  "Ayces Turizm ve Ticaret A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "AYDEM.IS",
+        "companyName":  "Aydem Yenilenebilir Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "AYEN.IS",
+        "companyName":  "Ayen Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "AYES.IS",
+        "companyName":  "Ayes Çelik Hasır ve Çit Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AYGAZ.IS",
+        "companyName":  "Aygaz A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "AZTEK.IS",
+        "companyName":  "Aztek Mühendislik A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "BAGFS.IS",
+        "companyName":  "Bagfaş Bandırma Gübre Fabrikaları A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BAHKM.IS",
+        "companyName":  "Bahadır Kimya Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BAKAB.IS",
+        "companyName":  "Bak Ambalaj Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BALAT.IS",
+        "companyName":  "Balatacilar Balatacilik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BALSU.IS",
+        "companyName":  "Balsu Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BANVT.IS",
+        "companyName":  "Banvit Bandırma Vitaminli Yem Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BARMA.IS",
+        "companyName":  "Barem Ambalaj Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BASCM.IS",
+        "companyName":  "Baştaş Başkent Çimento Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BASGZ.IS",
+        "companyName":  "Başkent Doğalgaz Dağıtım Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "BAYRK.IS",
+        "companyName":  "Bayrak EBT Taban Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BEGYO.IS",
+        "companyName":  "Batı Ege Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "BERA.IS",
+        "companyName":  "Bera Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "BESLR.IS",
+        "companyName":  "Besler Gıda ve Kimya Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BESTE.IS",
+        "companyName":  "Best Brands Grup Enerji Yatırım A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "BEYAZ.IS",
+        "companyName":  "Beyaz Filo Oto Kiralama A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "BFREN.IS",
+        "companyName":  "Bosch Fren Sistemleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BJKAS.IS",
+        "companyName":  "Beşiktaş Futbol Yatırımları Sanayi ve Ticaret A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "BLCYT.IS",
+        "companyName":  "Bilici Yatırım Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BLUME.IS",
+        "companyName":  "Blume Metal Kimya A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BMSCH.IS",
+        "companyName":  "BMS Çelik Hasır Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BMSTL.IS",
+        "companyName":  "BMS Birleşik Metal Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BNTAS.IS",
+        "companyName":  "Bantaş Bandırma Ambalaj Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BOBET.IS",
+        "companyName":  "Boğaziçi Beton Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BORLS.IS",
+        "companyName":  "Borova Portföy Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "BORSK.IS",
+        "companyName":  "Bor Şeker A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BOSSA.IS",
+        "companyName":  "Bossa Ticaret ve Sanayi İşletmeleri T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BRKO.IS",
+        "companyName":  "Birko Birleşik Koyunlulular Mensucat Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BRKSN.IS",
+        "companyName":  "Berkosan Yalıtım ve Tecrit Maddeleri Üretim ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BRKVY.IS",
+        "companyName":  "Birikim Varlık Yönetim A.Ş.",
+        "sector":  "Varlık Yönetimi"
+    },
+    {
+        "ticker":  "BRLSM.IS",
+        "companyName":  "Birleşim Mühendislik Isıtma Soğutma Havalandırma Sanayi ve Ticaret A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "BRMEN.IS",
+        "companyName":  "Birlik Mensucat Ticaret ve Sanayi İşletmesi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BRSAN.IS",
+        "companyName":  "Borusan Birleşik Boru Fabrikaları Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BRYAT.IS",
+        "companyName":  "Borusan Yatırım ve Pazarlama A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "BSOKE.IS",
+        "companyName":  "Batısöke Söke Çimento Sanayii T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BULGS.IS",
+        "companyName":  "Bulls Girişim Sermayesi Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "BURCE.IS",
+        "companyName":  "Burçelik Bursa Çelik Döküm Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BURVA.IS",
+        "companyName":  "Burçelik Vana Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BVSAN.IS",
+        "companyName":  "Bülbüloğlu Vinç Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "BYDNR.IS",
+        "companyName":  "Boydak Portföy Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "CANTE.IS",
+        "companyName":  "Çan2 Termik A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "CATES.IS",
+        "companyName":  "Çates Elektrik Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "CCOLA.IS",
+        "companyName":  "Coca-Cola İçecek A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CELHA.IS",
+        "companyName":  "Çelik Halat ve Tel Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CEMAS.IS",
+        "companyName":  "Çemaş Döküm Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CEMTS.IS",
+        "companyName":  "Çemtaş Çelik Makina Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CEMZY.IS",
+        "companyName":  "Cem Zeytin A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CEOEM.IS",
+        "companyName":  "CEO Event ve Organizasyon A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "CGCAM.IS",
+        "companyName":  "Çağdaş Cam Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CMBTN.IS",
+        "companyName":  "Çimbeton Hazırbeton ve Prefabrik Yapı Elemanları Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CMENT.IS",
+        "companyName":  "Çimentaş İzmir Çimento Fabrikası T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CONSE.IS",
+        "companyName":  "Consus Enerji İşletmeciliği ve Hizmetleri A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "COSMO.IS",
+        "companyName":  "Cosmos Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "CRDFA.IS",
+        "companyName":  "Creditwest Faktoring A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "CRFSA.IS",
+        "companyName":  "Carrefoursa Carrefour Sabancı Ticaret Merkezi A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "CUSAN.IS",
+        "companyName":  "Çuhadaroğlu Metal Sanayi ve Pazarlama A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "CVKMD.IS",
+        "companyName":  "CVK Maden İşletmeleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "Madencilik ve Taş Ocakçılığı"
+    },
+    {
+        "ticker":  "CWENE.IS",
+        "companyName":  "CW Enerji Mühendislik Ticaret ve Sanayi A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "DAPGM.IS",
+        "companyName":  "Dap Gayrimenkul Geliştirme A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "DARDL.IS",
+        "companyName":  "Dardanel Önentaş Gıda Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DCTTR.IS",
+        "companyName":  "DCT Trading Dış Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "DENGE.IS",
+        "companyName":  "Denge Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "DERHL.IS",
+        "companyName":  "Derlüks Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "DESA.IS",
+        "companyName":  "Desa Deri Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DESPC.IS",
+        "companyName":  "Despec Bilgisayar Pazarlama ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "DEVA.IS",
+        "companyName":  "Deva Holding A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DGATE.IS",
+        "companyName":  "Datagate Bilgisayar Malzemeleri Ticaret A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "DGGYO.IS",
+        "companyName":  "Doğuş Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "DGNMO.IS",
+        "companyName":  "Doğanlar Mobilya Grubu İmalat Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DMRGD.IS",
+        "companyName":  "DMR Unlu Mamuller Üretim Gıda Toptan Perakende İhracat A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DMSAS.IS",
+        "companyName":  "Demisaş Döküm Emaye Mamülleri Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DOAS.IS",
+        "companyName":  "Doğuş Otomotiv Servis ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "DOCO.IS",
+        "companyName":  "Doco İnteraktif Medya ve Eğlence A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "DOFER.IS",
+        "companyName":  "Dofer Yapı Malzemeleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DOFRB.IS",
+        "companyName":  "Do\u0026Co Restaurants and Catering A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "DOGUB.IS",
+        "companyName":  "Doğusan Boru Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DOHOL.IS",
+        "companyName":  "Doğan Şirketler Grubu Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "DOKTA.IS",
+        "companyName":  "Döktaş Dökümcülük Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DSTKF.IS",
+        "companyName":  "Destek Finans Faktoring A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "DUNYH.IS",
+        "companyName":  "Dünya Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "DURDO.IS",
+        "companyName":  "Duran Doğan Basım ve Ambalaj Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DURKN.IS",
+        "companyName":  "Durukan Şekerleme Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DYOBY.IS",
+        "companyName":  "DYO Boya Fabrikaları Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "DZGYO.IS",
+        "companyName":  "Deniz Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "EBEBK.IS",
+        "companyName":  "Ebebek Mağazacılık A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "ECOGR.IS",
+        "companyName":  "Ecogreen Enerji Holding A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ECZYT.IS",
+        "companyName":  "Eczacıbaşı Yatırım Holding Ortaklığı A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "EDATA.IS",
+        "companyName":  "E-Data Teknoloji A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "EFOR.IS",
+        "companyName":  "Efor Yatırım Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EGEEN.IS",
+        "companyName":  "Ege Endüstri ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EGEGY.IS",
+        "companyName":  "Egeyapı Avrupa Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "EGEPO.IS",
+        "companyName":  "Ege Profil Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EGGUB.IS",
+        "companyName":  "Ege Gübre Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EGPRO.IS",
+        "companyName":  "Ege Profil Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EGSER.IS",
+        "companyName":  "Ege Seramik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EKGYO.IS",
+        "companyName":  "Emlak Konut Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "EKOS.IS",
+        "companyName":  "Ekos Teknoloji ve Elektrik A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EKSUN.IS",
+        "companyName":  "Eksun Gıda Tarım Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EMKEL.IS",
+        "companyName":  "Emek Elektrik Endüstrisi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EMPAE.IS",
+        "companyName":  "Empa Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ENDAE.IS",
+        "companyName":  "Enda Enerji Holding A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ENERY.IS",
+        "companyName":  "Enerya Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ENJSA.IS",
+        "companyName":  "Enerjisa Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ENRYA.IS",
+        "companyName":  "Enerjisa Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ENTRA.IS",
+        "companyName":  "IC Enterra Yenilenebilir Enerji A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "EPLAS.IS",
+        "companyName":  "Egeplast Ege Plastik Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ERBOS.IS",
+        "companyName":  "Erbosan Erciyas Boru Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ERCB.IS",
+        "companyName":  "Erciyas Çelik Boru Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EREGL.IS",
+        "companyName":  "Ereğli Demir ve Çelik Fabrikaları T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ERSU.IS",
+        "companyName":  "Ersu Meyve ve Gıda Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ESCAR.IS",
+        "companyName":  "Escort Teknoloji Yatırım A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "ESCOM.IS",
+        "companyName":  "Escom Elektronik Sanayi ve Ticaret A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "ESEN.IS",
+        "companyName":  "Esenboğa Elektrik Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ETYAT.IS",
+        "companyName":  "Euro Trend Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "EUHOL.IS",
+        "companyName":  "Euro Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "EUKYO.IS",
+        "companyName":  "Euro Kapital Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "EUPWR.IS",
+        "companyName":  "Europower Enerji ve Otomasyon Teknolojileri Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EUREN.IS",
+        "companyName":  "Europen Endüstri İnşaat Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "EUYO.IS",
+        "companyName":  "Euro Menkul Kıymet Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "EYGYO.IS",
+        "companyName":  "EYG Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "FADE.IS",
+        "companyName":  "Fade Gıda Yatırım Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "FENER.IS",
+        "companyName":  "Fenerbahçe Futbol A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "FLAP.IS",
+        "companyName":  "Flap Kongre Toplantı Hizmetleri A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "FONET.IS",
+        "companyName":  "Fonet Bilgi Teknolojileri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "FORMT.IS",
+        "companyName":  "Formet Metal ve Cam Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "FORTE.IS",
+        "companyName":  "Forte Bilgisayar Sistemleri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "FRMPL.IS",
+        "companyName":  "Formül Plastik ve Metal Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "FROTO.IS",
+        "companyName":  "Ford Otomotiv Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "FZLGY.IS",
+        "companyName":  "Fuzul Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "GARAN.IS",
+        "companyName":  "Türkiye Garanti Bankası A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "GARFA.IS",
+        "companyName":  "Garanti Faktoring A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "GATEG.IS",
+        "companyName":  "Gate Elektronik A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "GEDZA.IS",
+        "companyName":  "Gediz Ambalaj Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GENKM.IS",
+        "companyName":  "Gentaş Kimya Sanayi ve Ticaret Pazarlama A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GENTS.IS",
+        "companyName":  "Gentaş Dekoratif Yüzeyler Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GEREL.IS",
+        "companyName":  "Gersan Elektrik Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GESAN.IS",
+        "companyName":  "Girişim Elektrik Sanayi Taahhüt ve Ticaret A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "GLBMD.IS",
+        "companyName":  "Global Menkul Değerler A.Ş.",
+        "sector":  "Aracı Kurumlar"
+    },
+    {
+        "ticker":  "GLCVY.IS",
+        "companyName":  "Gelecek Varlık Yönetimi A.Ş.",
+        "sector":  "Varlık Yönetimi"
+    },
+    {
+        "ticker":  "GLDTR.IS",
+        "companyName":  "Ziraat Portföy TL Altın Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "GLRMK.IS",
+        "companyName":  "Gülermak Ağır Sanayi İnşaat ve Taahhüt A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "GLRYH.IS",
+        "companyName":  "Güler Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "GLYHO.IS",
+        "companyName":  "Global Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "GMSTR.IS",
+        "companyName":  "Gamestreet Teknoloji A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "GMSTRF.IS",
+        "companyName":  "Gamestreet Teknoloji A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "GMTAS.IS",
+        "companyName":  "Gimat Mağazacılık Sanayi ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "GOKNR.IS",
+        "companyName":  "Göknur Gıda Maddeleri Enerji İmalat İthalat İhracat Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GOLTS.IS",
+        "companyName":  "Göltaş Göller Bölgesi Çimento Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GOODY.IS",
+        "companyName":  "Goodyear Lastikleri T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GOZDE.IS",
+        "companyName":  "Gözde Girişim Sermayesi Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "GRNYO.IS",
+        "companyName":  "Garanti Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "GRSEL.IS",
+        "companyName":  "Gür-Sel Turizm Taşımacılık ve Servis Ticaret A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "GRTHO.IS",
+        "companyName":  "Grainturk Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "GSDDE.IS",
+        "companyName":  "GSD Denizcilik Gayrimenkul İnşaat Sanayi ve Ticaret A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "GSDHO.IS",
+        "companyName":  "GSD Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "GSRAY.IS",
+        "companyName":  "Galatasaray Sportif Sınai ve Ticari Yatırımlar A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "GUBRF.IS",
+        "companyName":  "Gübre Fabrikaları T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "GUNDG.IS",
+        "companyName":  "Gündoğdu Gıda Süt Ürünleri Sanayi ve Dış Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "HALKB.IS",
+        "companyName":  "Türkiye Halk Bankası A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "HATEK.IS",
+        "companyName":  "Hateks Hatay Tekstil İşletmeleri A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "HATSN.IS",
+        "companyName":  "Hat-San Gemi İnşaa Bakım Onarım Deniz Nakliyat Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "HDFGS.IS",
+        "companyName":  "Hedef Girişim Sermayesi Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "HEDEF.IS",
+        "companyName":  "Hedef Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "HEKTS.IS",
+        "companyName":  "Hektaş Ticaret T.A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "HKTM.IS",
+        "companyName":  "Hidropar Hareket Kontrol Teknolojileri Merkezi Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "HLGYO.IS",
+        "companyName":  "Halk Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "HOROZ.IS",
+        "companyName":  "Horoz Lojistik Kargo Hizmetleri ve Ticaret A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "HRKET.IS",
+        "companyName":  "Hareket Proje Taşımacılığı ve Yük Mühendisliği A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "HTTBT.IS",
+        "companyName":  "Hat-tır Bilgi Teknolojileri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "HUBVC.IS",
+        "companyName":  "Hub Girişim Sermayesi Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "HUNER.IS",
+        "companyName":  "Hun Yenilenebilir Enerji Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "HURGZ.IS",
+        "companyName":  "Hürriyet Gazetecilik ve Matbaacılık A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "JANTS.IS",
+        "companyName":  "Jantsa Jant Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KAPLM.IS",
+        "companyName":  "Kaplamin Ambalaj Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KAREL.IS",
+        "companyName":  "Karel Elektronik Sanayi ve Ticaret A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "KARSN.IS",
+        "companyName":  "Karsan Otomotiv Sanayii ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KARTN.IS",
+        "companyName":  "Kartonsan Karton Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KATMR.IS",
+        "companyName":  "Katmerciler Araç Üstü Ekipman Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KAYSE.IS",
+        "companyName":  "Kayseri Şeker Fabrikası A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KBORU.IS",
+        "companyName":  "Kuzey Boru A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KCAER.IS",
+        "companyName":  "Kocaer Çelik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KCHOL.IS",
+        "companyName":  "Koç Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "KENT.IS",
+        "companyName":  "Kent Gıda Maddeleri Sanayii ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KERVN.IS",
+        "companyName":  "Kervansaray Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "KGYO.IS",
+        "companyName":  "Koray Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "KLGYO.IS",
+        "companyName":  "Kiler Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "KLMSN.IS",
+        "companyName":  "Klimasan Klima Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KLNMA.IS",
+        "companyName":  "Türkiye Kalkınma ve Yatırım Bankası A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "KLRHO.IS",
+        "companyName":  "Kiler Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "KLSER.IS",
+        "companyName":  "Kaleseramik Çanakkale Kalebodur Seramik Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KLSYN.IS",
+        "companyName":  "Koleksiyon Mobilya Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KLYPV.IS",
+        "companyName":  "Kalyon Güneş Teknolojileri Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "KMPUR.IS",
+        "companyName":  "Kimteks Poliüretan Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KNFRT.IS",
+        "companyName":  "Konfrut Tarım A.Ş.",
+        "sector":  "Tarım, Ormancılık ve Balıkçılık"
+    },
+    {
+        "ticker":  "KOCMT.IS",
+        "companyName":  "Koç Metalurji A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KONKA.IS",
+        "companyName":  "Konya Kağıt Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KONTR.IS",
+        "companyName":  "Kontrol Elektromekanik A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KONYA.IS",
+        "companyName":  "Konya Çimento Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KOPOL.IS",
+        "companyName":  "Koza Polyester Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KORDS.IS",
+        "companyName":  "Kordsa Teknik Tekstil A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KOTON.IS",
+        "companyName":  "Koton Mağazacılık Tekstil Sanayi ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "KRDMA.IS",
+        "companyName":  "Kardemir Karabük Demir Çelik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KRDMB.IS",
+        "companyName":  "Kardemir Karabük Demir Çelik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KRDMD.IS",
+        "companyName":  "Kardemir Karabük Demir Çelik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KRGYO.IS",
+        "companyName":  "Körfez Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "KRONT.IS",
+        "companyName":  "Kron Telekomünikasyon Hizmetleri A.Ş.",
+        "sector":  "Haberleşme"
+    },
+    {
+        "ticker":  "KRPLS.IS",
+        "companyName":  "Koroplast Temizlik Ambalaj Ürünleri Sanayi ve Dış Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KRSTL.IS",
+        "companyName":  "Kristal Kola ve Meşrubat Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KRTEK.IS",
+        "companyName":  "Karsu Tekstil Sanayii ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KRVGD.IS",
+        "companyName":  "Kervan Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KSTUR.IS",
+        "companyName":  "Kuştur Kuşadası Turizm Endüstrisi A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "KTLEV.IS",
+        "companyName":  "Katılımevim Tasarruf Finansman A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "KTSKR.IS",
+        "companyName":  "Kütahya Şeker Fabrikası A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KUTPO.IS",
+        "companyName":  "Kütahya Porselen Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "KUVVA.IS",
+        "companyName":  "Kuvva Gıda Ticaret ve Sanayi Yatırımları A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "KUYAS.IS",
+        "companyName":  "Kuyaş Yatırım A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "KZBGY.IS",
+        "companyName":  "Kızılbük Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "KZGYO.IS",
+        "companyName":  "Kuzugrup Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "LKMNH.IS",
+        "companyName":  "Lokman Hekim Engürüsağ Sağlık Turizm Eğitim Hizmetleri ve İnşaat A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "LMKDC.IS",
+        "companyName":  "Limak Doğu Anadolu Çimento Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "LOGO.IS",
+        "companyName":  "Logo Yazılım Sanayi ve Ticaret A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "LRSHO.IS",
+        "companyName":  "Loras Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "LUKSK.IS",
+        "companyName":  "Lüks Kadife Ticaret ve Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "LXGYO.IS",
+        "companyName":  "Luxera Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "LYDHO.IS",
+        "companyName":  "Lydia Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "LYDYE.IS",
+        "companyName":  "Lydia Yeşil Enerji Kaynakları A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "MAALT.IS",
+        "companyName":  "Marmaris Altınyunus Turistik Tesisler A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "MACKO.IS",
+        "companyName":  "Mackolik İnternet Hizmetleri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "MAGEN.IS",
+        "companyName":  "Margün Enerji Üretim Sanayi ve Ticaret A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "MAKTK.IS",
+        "companyName":  "Makina Takım Endüstrisi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MANAS.IS",
+        "companyName":  "Manas Enerji Yönetimi A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "MARBL.IS",
+        "companyName":  "Tureks Turunç Madencilik İç ve Dış Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MARKA.IS",
+        "companyName":  "Marka Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "MARMR.IS",
+        "companyName":  "Marmara Holding A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MCARD.IS",
+        "companyName":  "Migros Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "MEDTR.IS",
+        "companyName":  "Meditera Tıbbi Malzeme Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MEGAP.IS",
+        "companyName":  "Mega Polietilen Köpük Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MEGMT.IS",
+        "companyName":  "Mega Metal Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MEKAG.IS",
+        "companyName":  "Meka Global Makine İmalat Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MEPET.IS",
+        "companyName":  "Mepet Metro Petrol ve Tesisleri Sanayi Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "MERCN.IS",
+        "companyName":  "Mercan Kimya Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MERKO.IS",
+        "companyName":  "Merko Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "METRO.IS",
+        "companyName":  "Metro Ticari ve Mali Yatırımlar Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "MEYSU.IS",
+        "companyName":  "Meysu Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MGROS.IS",
+        "companyName":  "Migros Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "MHRGY.IS",
+        "companyName":  "MHR Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "MMCAS.IS",
+        "companyName":  "MMC Sanayi ve Ticari Yatırımlar A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "MNDRS.IS",
+        "companyName":  "Menderes Tekstil Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MNDTR.IS",
+        "companyName":  "Mondi Turkey Oluklu Mukavva Kağıt ve Ambalaj Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MOBTL.IS",
+        "companyName":  "Mobtelo Mobil Teknoloji A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "MOGAN.IS",
+        "companyName":  "Mogan Enerji Yatırım Holding A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "MOPAS.IS",
+        "companyName":  "Mopaş Marketçilik Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "MPARK.IS",
+        "companyName":  "MLP Sağlık Hizmetleri A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "MRGYO.IS",
+        "companyName":  "Martı Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "MRSHL.IS",
+        "companyName":  "Marshall Boya ve Vernik Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "MSGYO.IS",
+        "companyName":  "Mistral Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "MTRKS.IS",
+        "companyName":  "Matriks Bilgi Dağıtım Hizmetleri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "MTRYO.IS",
+        "companyName":  "Metro Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "MZHLD.IS",
+        "companyName":  "Mazhar Zorlu Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "NATEN.IS",
+        "companyName":  "Naturel Yenilenebilir Enerji Ticaret A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "NETAS.IS",
+        "companyName":  "Netaş Telekomünikasyon A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "NETCD.IS",
+        "companyName":  "Net Holding A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "NPTLR.IS",
+        "companyName":  "Neptür Turizm ve Yatırım A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "NTGAZ.IS",
+        "companyName":  "Naturelgaz Sanayi ve Ticaret A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "NTHOL.IS",
+        "companyName":  "Net Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "NUGYO.IS",
+        "companyName":  "Nurol Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "NUHCM.IS",
+        "companyName":  "Nuh Çimento Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OBAMS.IS",
+        "companyName":  "Oba Makarnacılık Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OBASE.IS",
+        "companyName":  "Obase Bilgisayar Sistemleri ve Yazılım Hizmetleri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "ODAS.IS",
+        "companyName":  "Odaş Elektrik Üretim Sanayi Ticaret A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "OFSYM.IS",
+        "companyName":  "Ofis Yem Gıda Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ONCSM.IS",
+        "companyName":  "Oncosem Onkolojik Sistemler Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ONRYT.IS",
+        "companyName":  "Onryo Teknoloji A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "OPK30.IS",
+        "companyName":  "Oyak Portföy BIST 30 Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "OPT25.IS",
+        "companyName":  "Oyak Portföy BIST 25 Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "OPTGY.IS",
+        "companyName":  "Oyak Portföy GYO Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "OPTLR.IS",
+        "companyName":  "Oyak Portföy TL Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "OPX30.IS",
+        "companyName":  "Oyak Portföy X30 Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ORCAY.IS",
+        "companyName":  "Orçay Ortaköy Çay Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ORGE.IS",
+        "companyName":  "Orge Enerji Elektrik Taahhüt A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "ORMA.IS",
+        "companyName":  "Orma Orman Mahsülleri İntegre Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OSMEN.IS",
+        "companyName":  "Osmanlı Yatırım Menkul Değerler A.Ş.",
+        "sector":  "Aracı Kurumlar"
+    },
+    {
+        "ticker":  "OTKAR.IS",
+        "companyName":  "Otokar Otomotiv ve Savunma Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OTTO.IS",
+        "companyName":  "Otto Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "OYAKC.IS",
+        "companyName":  "Oyak Çimento Fabrikaları A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OYAYO.IS",
+        "companyName":  "Oyak Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "OYLUM.IS",
+        "companyName":  "Oylum Sinai Yatırımlar A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OYYAT.IS",
+        "companyName":  "Oyak Yatırım Menkul Değerler A.Ş.",
+        "sector":  "Aracı Kurumlar"
+    },
+    {
+        "ticker":  "OZATD.IS",
+        "companyName":  "Özata Denizcilik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OZGYO.IS",
+        "companyName":  "Özderici Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "OZKGY.IS",
+        "companyName":  "Özak Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "OZRDN.IS",
+        "companyName":  "Özerden Ambalaj Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "OZSUB.IS",
+        "companyName":  "Özsu Balık Üretim A.Ş.",
+        "sector":  "Tarım, Ormancılık ve Balıkçılık"
+    },
+    {
+        "ticker":  "OZYSR.IS",
+        "companyName":  "Özyaşar Tel ve Galvanizleme Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PAGYO.IS",
+        "companyName":  "Panora Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "PAHOL.IS",
+        "companyName":  "Pasifik Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "PAMEL.IS",
+        "companyName":  "Pamel Yenilenebilir Elektrik Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "PARSN.IS",
+        "companyName":  "Parsan Makina Parçaları Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PASEU.IS",
+        "companyName":  "Pasifik Eurasia Lojistik Dış Ticaret A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "PATEK.IS",
+        "companyName":  "Patek Elektronik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PEKGY.IS",
+        "companyName":  "Peker Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "PENGD.IS",
+        "companyName":  "Penguen Gıda Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PENTA.IS",
+        "companyName":  "Penta Teknoloji Ürünleri Dağıtım Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "PETKM.IS",
+        "companyName":  "Petkim Petrokimya Holding A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PETUN.IS",
+        "companyName":  "Pınar Entegre Et ve Un Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PGSUS.IS",
+        "companyName":  "Pegasus Hava Taşımacılığı A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "PKART.IS",
+        "companyName":  "Plastikkart Akıllı Kart İletişim Sistemleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "PKENT.IS",
+        "companyName":  "Petrokent Turizm A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "PLTUR.IS",
+        "companyName":  "Platinium Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "PNLSN.IS",
+        "companyName":  "Panelsan Çatı Cephe Sistemleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PNSUT.IS",
+        "companyName":  "Pınar Süt Mamülleri Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "POLHO.IS",
+        "companyName":  "Polisan Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "POLTK.IS",
+        "companyName":  "Politeknik Metal Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PRDGS.IS",
+        "companyName":  "Pardus Girişim Sermayesi Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "PRKAB.IS",
+        "companyName":  "Türk Prysmian Kablo ve Sistemleri A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PRKME.IS",
+        "companyName":  "Park Elektrik Üretim Madencilik Sanayi ve Ticaret A.Ş.",
+        "sector":  "Madencilik ve Taş Ocakçılığı"
+    },
+    {
+        "ticker":  "PRZMA.IS",
+        "companyName":  "Prizma Pres Matbaacılık Yayıncılık Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "PSDTC.IS",
+        "companyName":  "Pergamon Status Dış Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "PSGYO.IS",
+        "companyName":  "Pasifik Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "QNBFK.IS",
+        "companyName":  "QNB Finansal Kiralama A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "QNBTR.IS",
+        "companyName":  "QNB Bank A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "QTEMZ.IS",
+        "companyName":  "Quantum Teknoloji Hizmetleri A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "QUAGR.IS",
+        "companyName":  "Qua Granite Hayal Yapı ve Ürünleri Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "RALYH.IS",
+        "companyName":  "Ral Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "RAYSG.IS",
+        "companyName":  "Ray Sigorta A.Ş.",
+        "sector":  "Sigorta"
+    },
+    {
+        "ticker":  "REEDR.IS",
+        "companyName":  "Reedr Dijital Yayıncılık A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "RGYAS.IS",
+        "companyName":  "Reysaş Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "RNPOL.IS",
+        "companyName":  "Rainbow Polikarbonat Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "RODRG.IS",
+        "companyName":  "Rodrigo Tekstil Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ROYAL.IS",
+        "companyName":  "Royal Halı İplik Tekstil Mobilya Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "RTALB.IS",
+        "companyName":  "RTA Laboratuvarları Biyolojik Ürünler İlaç ve Makine Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "RUBNS.IS",
+        "companyName":  "Rubenis Tekstil Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "RUZYE.IS",
+        "companyName":  "Ruzy Madencilik ve Enerji Yatırımları Sanayi ve Ticaret A.Ş.",
+        "sector":  "Madencilik ve Taş Ocakçılığı"
+    },
+    {
+        "ticker":  "RYGYO.IS",
+        "companyName":  "Reysaş Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "RYSAS.IS",
+        "companyName":  "Reysaş Taşımacılık ve Lojistik Ticaret A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "SAFKR.IS",
+        "companyName":  "Safkar Ege Soğutmacılık Klima Soğuk Hava Tesisleri İhracat İthalat Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SAHOL.IS",
+        "companyName":  "Hacı Ömer Sabancı Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "SAMAT.IS",
+        "companyName":  "Saray Matbaacılık Kağıtçılık Kırtasiyecilik Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SANEL.IS",
+        "companyName":  "San-El Mühendislik Elektrik Taahhüt Sanayi ve Ticaret A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "SANFM.IS",
+        "companyName":  "Sanifoam Endüstri ve Tüketim Ürünleri Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SANKO.IS",
+        "companyName":  "Sanko Pazarlama İthalat İhracat A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "SARKY.IS",
+        "companyName":  "Sarkuysan Elektrolitik Bakır Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SASA.IS",
+        "companyName":  "Sasa Polyester Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SAYAS.IS",
+        "companyName":  "Say Yenilenebilir Enerji Ekipmanları Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SDTTR.IS",
+        "companyName":  "SDT Uzay ve Savunma Teknolojileri A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "SEGMN.IS",
+        "companyName":  "Seğmen Kardeşler Gıda Üretim ve Ambalaj Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SEGYO.IS",
+        "companyName":  "Şeker Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "SEKFK.IS",
+        "companyName":  "Şeker Finansal Kiralama A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "SEKUR.IS",
+        "companyName":  "Sekuro Plastik Ambalaj Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SELEC.IS",
+        "companyName":  "Selçuk Ecza Deposu Ticaret ve Sanayi A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "SELVA.IS",
+        "companyName":  "Selva Gıda Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SERNT.IS",
+        "companyName":  "Seranit Granit Seramik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SEYKM.IS",
+        "companyName":  "Seyitler Kimya Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SKBNK.IS",
+        "companyName":  "Şekerbank T.A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "SKTAS.IS",
+        "companyName":  "Söktaş Tekstil Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SKYLP.IS",
+        "companyName":  "Skyp Teknoloji A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "SKYMD.IS",
+        "companyName":  "Şeker Yatırım Menkul Değerler A.Ş.",
+        "sector":  "Aracı Kurumlar"
+    },
+    {
+        "ticker":  "SMART.IS",
+        "companyName":  "Smart Güneş Enerjisi Teknolojileri A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "SMRTG.IS",
+        "companyName":  "Smart Güneş Enerjisi Teknolojileri Araştırma Geliştirme Üretim Sanayi ve Ticaret A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "SMRVA.IS",
+        "companyName":  "Sümer Varlık Yönetim A.Ş.",
+        "sector":  "Varlık Yönetimi"
+    },
+    {
+        "ticker":  "SNGYO.IS",
+        "companyName":  "Sinpaş Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "SNPAM.IS",
+        "companyName":  "Sönmez Pamuklu Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SODSN.IS",
+        "companyName":  "Sodaş Sodyum Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SOKE.IS",
+        "companyName":  "Söke Değirmencilik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SOKM.IS",
+        "companyName":  "Şok Marketler Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "SONME.IS",
+        "companyName":  "Sönmez Pamuklu Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SRVGY.IS",
+        "companyName":  "Servet Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "SUMAS.IS",
+        "companyName":  "Sumaş Suni Tahta ve Mobilya Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SUNTK.IS",
+        "companyName":  "Sun Tekstil Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "SURGY.IS",
+        "companyName":  "Sur Tatil Evleri Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "SUWEN.IS",
+        "companyName":  "Suwen Tekstil Sanayi Pazarlama A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "SVGYO.IS",
+        "companyName":  "Savur Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "TABGD.IS",
+        "companyName":  "Tab Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "TARKM.IS",
+        "companyName":  "Tarkim Bitki Koruma Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TATEN.IS",
+        "companyName":  "Tatlıpınar Enerji Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "TATGD.IS",
+        "companyName":  "Tat Gıda Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TAVHL.IS",
+        "companyName":  "TAV Havalimanları Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "TBORG.IS",
+        "companyName":  "Türk Tuborg Bira ve Malt Sanayii A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TCELL.IS",
+        "companyName":  "Turkcell İletişim Hizmetleri A.Ş.",
+        "sector":  "Haberleşme"
+    },
+    {
+        "ticker":  "TCKRC.IS",
+        "companyName":  "Kıraç Galvaniz Telekomünikasyon Metal Makine İnşaat Elektrik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TDGYO.IS",
+        "companyName":  "Trend Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "TEHOL.IS",
+        "companyName":  "Tera Yatırım Teknoloji Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "TEKTU.IS",
+        "companyName":  "Tektutkal Yapıştırıcı Ürünleri İmalat Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TERA.IS",
+        "companyName":  "Tera Yatırım Menkul Değerler A.Ş.",
+        "sector":  "Aracı Kurumlar"
+    },
+    {
+        "ticker":  "TEZOL.IS",
+        "companyName":  "Europap Tezol Kağıt Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TGSAS.IS",
+        "companyName":  "TGS Dış Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "THYAO.IS",
+        "companyName":  "Türk Hava Yolları A.O.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "TKFEN.IS",
+        "companyName":  "Tekfen Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "TKNSA.IS",
+        "companyName":  "Teknosa İç ve Dış Ticaret A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "TLMAN.IS",
+        "companyName":  "Trabzon Liman İşletmeciliği A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "TMPOL.IS",
+        "companyName":  "Temapol Polimer Plastik ve İnşaat Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TMSN.IS",
+        "companyName":  "Tümosan Motor ve Traktör Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TNZTP.IS",
+        "companyName":  "Tınaztepe Gıda Ürünleri ve İçecek Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TOASO.IS",
+        "companyName":  "Tofaş Türk Otomobil Fabrikası A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TRALT.IS",
+        "companyName":  "Türk Altın İşletmeleri A.Ş.",
+        "sector":  "Madencilik ve Taş Ocakçılığı"
+    },
+    {
+        "ticker":  "TRCAS.IS",
+        "companyName":  "Turcas Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "TRENJ.IS",
+        "companyName":  "TR Doğal Enerji Kaynakları Araştırma ve Üretim A.Ş.",
+        "sector":  "Madencilik ve Taş Ocakçılığı"
+    },
+    {
+        "ticker":  "TRGYO.IS",
+        "companyName":  "Torunlar Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "TRHOL.IS",
+        "companyName":  "Tera Finansal Yatırımlar Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "TRMET.IS",
+        "companyName":  "TR Anadolu Metal Madencilik İşletmeleri A.Ş.",
+        "sector":  "Madencilik ve Taş Ocakçılığı"
+    },
+    {
+        "ticker":  "TSGYO.IS",
+        "companyName":  "TSKB Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "TSKB.IS",
+        "companyName":  "Türkiye Sınai Kalkınma Bankası A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "TSPOR.IS",
+        "companyName":  "Trabzonspor Sportif Yatırım ve Futbol İşletmeciliği Ticaret A.Ş.",
+        "sector":  "Diğer Hizmetler"
+    },
+    {
+        "ticker":  "TTKOM.IS",
+        "companyName":  "Türk Telekomunikasyon A.Ş.",
+        "sector":  "Haberleşme"
+    },
+    {
+        "ticker":  "TTRAK.IS",
+        "companyName":  "Türk Traktör ve Ziraat Makineleri A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TUCLK.IS",
+        "companyName":  "Tuğçelik Alüminyum ve Metal Mamülleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TUKAS.IS",
+        "companyName":  "Tukaş Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TUPRS.IS",
+        "companyName":  "Tüpraş-Türkiye Petrol Rafinerileri A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "TUREX.IS",
+        "companyName":  "Tureks Turizm Taşımacılık A.Ş.",
+        "sector":  "Ulaştırma ve Depolama"
+    },
+    {
+        "ticker":  "TURGG.IS",
+        "companyName":  "Türker Proje Gayrimenkul ve Yatırım Geliştirme A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "TURSG.IS",
+        "companyName":  "Türkiye Sigorta A.Ş.",
+        "sector":  "Sigorta"
+    },
+    {
+        "ticker":  "UCAYM.IS",
+        "companyName":  "Üçay Mühendislik Enerji ve İklimlendirme Teknolojileri A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "UFUK.IS",
+        "companyName":  "Ufuk Yatırım Yönetim ve Gayrimenkul A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "ULAS.IS",
+        "companyName":  "Ulaşlar Turizm Yatırımları ve Dayanıklı Tüketim Malları Ticaret Pazarlama A.Ş.",
+        "sector":  "Turizm"
+    },
+    {
+        "ticker":  "ULKER.IS",
+        "companyName":  "Ülker Bisküvi Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ULUFA.IS",
+        "companyName":  "Ulusal Faktoring A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "ULUSE.IS",
+        "companyName":  "Ulusoy Elektrik İmalat Taahhüt ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "ULUUN.IS",
+        "companyName":  "Ulusoy Un Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "UMPAS.IS",
+        "companyName":  "Umpaş Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "UNLU.IS",
+        "companyName":  "Ünlü Yatırım Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "USAK.IS",
+        "companyName":  "Uşak Seramik Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "USDTR.IS",
+        "companyName":  "Ziraat Portföy USD Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "USDTRF.IS",
+        "companyName":  "Ziraat Portföy USD Fonu B",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "VAKBN.IS",
+        "companyName":  "Türkiye Vakıflar Bankası T.A.O.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "VAKFA.IS",
+        "companyName":  "Vakıf Faktoring A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "VAKFN.IS",
+        "companyName":  "Vakıf Finansal Kiralama A.Ş.",
+        "sector":  "Finansal Kiralama ve Faktoring"
+    },
+    {
+        "ticker":  "VAKKO.IS",
+        "companyName":  "Vakko Tekstil ve Hazır Giyim Sanayi İşletmeleri A.Ş.",
+        "sector":  "Toptan ve Perakende Ticaret"
+    },
+    {
+        "ticker":  "VANGD.IS",
+        "companyName":  "Vanet Gıda Sanayi İç ve Dış Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "VBTYZ.IS",
+        "companyName":  "VBT Yazılım A.Ş.",
+        "sector":  "Bilişim"
+    },
+    {
+        "ticker":  "VERTU.IS",
+        "companyName":  "Verusaturk Girişim Sermayesi Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "VERUS.IS",
+        "companyName":  "Verusa Holding A.Ş.",
+        "sector":  "Holding ve Yatırım"
+    },
+    {
+        "ticker":  "VESBE.IS",
+        "companyName":  "Vestel Beyaz Eşya Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "VESTL.IS",
+        "companyName":  "Vestel Elektronik Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "VKFYO.IS",
+        "companyName":  "Vakıf Menkul Kıymet Yatırım Ortaklığı A.Ş.",
+        "sector":  "Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "VKGYO.IS",
+        "companyName":  "Vakıf Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "VRGYO.IS",
+        "companyName":  "Vera Konsept Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "VSNMD.IS",
+        "companyName":  "Vişne Madencilik Üretim Sanayi ve Ticaret A.Ş.",
+        "sector":  "Madencilik ve Taş Ocakçılığı"
+    },
+    {
+        "ticker":  "YAPRK.IS",
+        "companyName":  "Yaprak Süt ve Besi Çiftlikleri Sanayi ve Ticaret A.Ş.",
+        "sector":  "Tarım, Ormancılık ve Balıkçılık"
+    },
+    {
+        "ticker":  "YATAS.IS",
+        "companyName":  "Yataş Yatak ve Yorgan Sanayi Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "YAYLA.IS",
+        "companyName":  "Yayla Enerji Üretim Turizm ve İnşaat Ticaret A.Ş.",
+        "sector":  "İnşaat ve Bayındırlık"
+    },
+    {
+        "ticker":  "YBTAS.IS",
+        "companyName":  "Yibitaş Yozgat İşçi Birliği İnşaat Malzemeleri Ticaret ve Sanayi A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "YEOTK.IS",
+        "companyName":  "Yeo Teknoloji A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "YGGYO.IS",
+        "companyName":  "Yeni Gimat Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "YKBNK.IS",
+        "companyName":  "Yapı ve Kredi Bankası A.Ş.",
+        "sector":  "Bankalar"
+    },
+    {
+        "ticker":  "YKSLN.IS",
+        "companyName":  "Yükselen Çelik A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "YONGA.IS",
+        "companyName":  "Yonga Mobilya Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "YUNSA.IS",
+        "companyName":  "Yünsa Yünlü Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "YYLGD.IS",
+        "companyName":  "Yayla Agro Gıda Sanayi ve Ticaret A.Ş.",
+        "sector":  "İmalat"
+    },
+    {
+        "ticker":  "Z30EA.IS",
+        "companyName":  "Ziraat Portföy BIST 30 EA Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "Z30KE.IS",
+        "companyName":  "Ziraat Portföy BIST 30 KE Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "Z30KP.IS",
+        "companyName":  "Ziraat Portföy BIST 30 KP Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZEDUR.IS",
+        "companyName":  "Zedur Enerji Elektrik Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ZELOT.IS",
+        "companyName":  "Zelot Teknoloji A.Ş.",
+        "sector":  "Teknoloji"
+    },
+    {
+        "ticker":  "ZERGY.IS",
+        "companyName":  "Zeray Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "ZGOLD.IS",
+        "companyName":  "Ziraat Portföy Altın Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZGOLDF.IS",
+        "companyName":  "Ziraat Portföy Altın Fonu B",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZGYO.IS",
+        "companyName":  "Z Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "ZOREN.IS",
+        "companyName":  "Zorlu Enerji Elektrik Üretim A.Ş.",
+        "sector":  "Elektrik, Gaz ve Su"
+    },
+    {
+        "ticker":  "ZPBDL.IS",
+        "companyName":  "Ziraat Portföy Banka Dolar Dengeli Fon",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZPT10.IS",
+        "companyName":  "Ziraat Portföy T10 Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZPX30.IS",
+        "companyName":  "Ziraat Portföy X30 Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZRE20.IS",
+        "companyName":  "Ziraat Portföy RE20 Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZRGYO.IS",
+        "companyName":  "Ziraat Gayrimenkul Yatırım Ortaklığı A.Ş.",
+        "sector":  "Gayrimenkul Yatırım Ortaklığı"
+    },
+    {
+        "ticker":  "ZSR25.IS",
+        "companyName":  "Ziraat Portföy SR25 Fonu",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZTLRF.IS",
+        "companyName":  "Ziraat Portföy TL Fonu B",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZTLRK.IS",
+        "companyName":  "Ziraat Portföy TL Fonu K",
+        "sector":  "ETF/Fon"
+    },
+    {
+        "ticker":  "ZTM25.IS",
+        "companyName":  "Ziraat Portföy TM25 Fonu",
+        "sector":  "ETF/Fon"
+    }
+]

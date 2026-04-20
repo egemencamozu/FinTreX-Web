@@ -22,6 +22,6 @@ namespace FinTreX.Core.Entities
         public bool IsActive { get; set; } = true;
 
         /// <summary>Optional note from admin or user about the assignment.</summary>
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
     }
 }

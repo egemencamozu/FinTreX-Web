@@ -7,8 +7,8 @@ export const ECONOMIST_ROUTES: Routes = [
     loadComponent: () => import('./pages/customers/customers').then((m) => m.Customers),
   },
   {
-    path: 'tasks',
-    loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks),
+    path: 'assigned-tasks',
+    loadComponent: () => import('./pages/assigned-tasks/assigned-tasks').then((m) => m.AssignedTasks),
   },
   {
     path: 'notes',

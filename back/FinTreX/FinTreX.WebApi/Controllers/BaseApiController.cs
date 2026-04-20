@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 
 namespace FinTreX.WebApi.Controllers
+//deneme
 {
     /// <summary>
     /// Base controller providing common utilities for authenticated API controllers.

@@ -1,0 +1,117 @@
+<!-- ── Table ───────────────────────────────────────────────────────────────── -->
+<div class="mk__list mk__list--cmc">
+  <div class="mk__list-header">
+    <span></span>
+    <span class="center">#</span>
+    <span>İsim</span>
+    <span class="right sortable">Fiyat
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('price','desc')" (click)="sortByDir('price','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('price','asc')" (click)="sortByDir('price','asc')"></i>
+      </span>
+    </span>
+    <span class="right sortable">1s %
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('change1h','desc')" (click)="sortByDir('change1h','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('change1h','asc')" (click)="sortByDir('change1h','asc')"></i>
+      </span>
+    </span>
+    <span class="right sortable">24s %
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('change24h','desc')" (click)="sortByDir('change24h','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('change24h','asc')" (click)="sortByDir('change24h','asc')"></i>
+      </span>
+    </span>
+    <span class="right sortable">4s %
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('change4h','desc')" (click)="sortByDir('change4h','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('change4h','asc')" (click)="sortByDir('change4h','asc')"></i>
+      </span>
+    </span>
+    <span class="right sortable">Market Cap
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('marketCap','desc')" (click)="sortByDir('marketCap','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('marketCap','asc')" (click)="sortByDir('marketCap','asc')"></i>
+      </span>
+    </span>
+    <span class="right sortable">Hacim (24s)
+      <span class="mk__sort-icons">
+        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('volume','desc')" (click)="sortByDir('volume','desc')"></i>
+        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('volume','asc')" (click)="sortByDir('volume','asc')"></i>
+      </span>
+    </span>
+    <span class="right">Dolaşım Arzı</span>
+  </div>
+
+  @for (item of cryptos; track trackBySymbol($index, item); let i = $index) {
+    <div class="mk__list-row">
+      <div class="mk__cell mk__cell--star">
+        <button
+          class="mk__star-btn"
+          [class.mk__star-btn--on]="favorites.has(item.symbol)"
+          (click)="favoriteToggle.emit(item.symbol)"
+        >
+          <i [class]="favorites.has(item.symbol) ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+        </button>
+      </div>
+
+      <div class="mk__cell mk__cell--rank">{{ i + 1 }}</div>
+
+      <div class="mk__cell mk__cell--name">
+        <app-market-asset-cell
+          [symbol]="ui.getCoinFullName(item.baseAsset)"
+          [subLabel]="item.baseAsset"
+          [avatarKey]="item.baseAsset || item.symbol"
+          [showLogo]="true"
+        />
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono">
+        {{ item.priceUsdt | marketPrice: 'USD' }}
+      </div>
+
+      <div class="mk__cell mk__cell--right">
+        @if (item.changePercent1h !== null) {
+          <span class="mk__change" [ngClass]="ui.deltaClass(item.changePercent1h)">{{ item.changePercent1h | marketChange }}</span>
+        } @else {
+          <span class="mk__cell--muted">—</span>
+        }
+      </div>
+
+      <div class="mk__cell mk__cell--right">
+        <span class="mk__change" [ngClass]="ui.deltaClass(item.changePercent24h)">{{ item.changePercent24h | marketChange }}</span>
+      </div>
+
+      <div class="mk__cell mk__cell--right">
+        @if (item.changePercent4h !== null) {
+          <span class="mk__change" [ngClass]="ui.deltaClass(item.changePercent4h)">{{ item.changePercent4h | marketChange }}</span>
+        } @else {
+          <span class="mk__cell--muted">—</span>
+        }
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono">
+        @if (item.marketCapUsdt !== null) {
+          ${{ item.marketCapUsdt | compactNumber }}
+        } @else {
+          <span class="mk__cell--muted">—</span>
+        }
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--vol">
+        <span class="mk__cell--mono">${{ item.volume24h | compactNumber }}</span>
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--vol">
+        @if (item.circulatingSupply !== null) {
+          <span class="mk__cell--mono">{{ item.circulatingSupply | compactNumber }} {{ item.baseAsset }}</span>
+          @if (item.totalSupply !== null && item.totalSupply > 0) {
+            <span class="mk__vol-sub">%{{ ((item.circulatingSupply / item.totalSupply) * 100).toFixed(1) }} dolaşımda</span>
+          }
+        } @else {
+          <span class="mk__cell--muted">—</span>
+        }
+      </div>
+    </div>
+  }
+</div>

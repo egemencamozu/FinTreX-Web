@@ -1,4 +1,4 @@
-﻿using FinTreX.Core.DTOs.Account;
+using FinTreX.Core.DTOs.Account;
 using FinTreX.Core.Entities;
 using FinTreX.Core.Enums;
 using FinTreX.Core.Exceptions;
@@ -30,6 +30,7 @@ namespace FinTreX.Infrastructure.Services
         private readonly PasswordResetSettings _passwordResetSettings;
         private readonly ApplicationDbContext _dbContext;
         private readonly IEmailService _emailService;
+        private readonly IEmailVerificationService _emailVerificationService;
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
@@ -37,7 +38,8 @@ namespace FinTreX.Infrastructure.Services
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext dbContext,
             IOptions<PasswordResetSettings> passwordResetSettings,
-            IEmailService emailService)
+            IEmailService emailService,
+            IEmailVerificationService emailVerificationService)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
@@ -45,6 +47,7 @@ namespace FinTreX.Infrastructure.Services
             _dbContext = dbContext;
             _passwordResetSettings = passwordResetSettings.Value;
             _emailService = emailService;
+            _emailVerificationService = emailVerificationService;
         }
 
         // ════════════════════════════════════════════════════════════════════
@@ -72,7 +75,22 @@ namespace FinTreX.Infrastructure.Services
                 throw new ApiException($"Invalid Credentials for '{request.Email}'.");
 
             if (!user.EmailConfirmed)
-                throw new ApiException($"Account Not Confirmed for '{request.Email}'.");
+            {
+                try
+                {
+                    await _emailVerificationService.ResendAsync(request.Email);
+                }
+                catch (ApiException)
+                {
+                    // Cooldown henüz bitmemişse veya başka bir doğrulama-mesaj durumu
+                    // varsa yeni mail atmayız; kullanıcı modalı açıp mevcut kodu
+                    // girmeye devam edebilir.
+                }
+
+                throw new EmailNotConfirmedException(
+                    request.Email,
+                    "Email adresiniz doğrulanmamış. Gönderilen doğrulama kodunu girin.");
+            }
 
             return await BuildAuthenticationResponseAsync(user, ipAddress);
         }
@@ -81,7 +99,7 @@ namespace FinTreX.Infrastructure.Services
         // REGISTER
         // ════════════════════════════════════════════════════════════════════
 
-        public async Task<string> RegisterAsync(RegisterRequest request, string origin)
+        public async Task<RegisterResponse> RegisterAsync(RegisterRequest request, string origin)
         {
             var userName = await GenerateUniqueUserNameAsync(request.UserName, request.Email);
             var userWithSameUserName = await _userManager.FindByNameAsync(userName);
@@ -96,7 +114,7 @@ namespace FinTreX.Infrastructure.Services
                 LastName = request.LastName,
                 PhoneNumber = request.PhoneNumber,
                 UserName = userName,
-                EmailConfirmed = true
+                EmailConfirmed = false
             };
 
             var userWithSameEmail = await _userManager.FindByEmailAsync(request.Email);
@@ -130,7 +148,38 @@ namespace FinTreX.Infrastructure.Services
                 }
             }
 
-            return "User registered successfully. You can now sign in.";
+            // Fire off the OTP email. A failure here is surfaced to the client so
+            // they know to retry via /resend-verification-code instead of being
+            // silently locked out.
+            await _emailVerificationService.GenerateAndSendAsync(user.Id, user.Email);
+
+            return new RegisterResponse
+            {
+                Success = true,
+                RequiresVerification = true,
+                Email = user.Email,
+                Message = "Doğrulama kodu email adresine gönderildi."
+            };
+        }
+
+        // ════════════════════════════════════════════════════════════════════
+        // VERIFY EMAIL (OTP)
+        // ════════════════════════════════════════════════════════════════════
+
+        public async Task<AuthenticationResponse> VerifyEmailAsync(VerifyEmailRequest request, string ipAddress)
+        {
+            await _emailVerificationService.VerifyAsync(request.Email, request.Code);
+
+
+            var user = await _userManager.FindByEmailAsync(request.Email)
+                ?? throw new ApiException($"No account found for {request.Email}.");
+
+            return await BuildAuthenticationResponseAsync(user, ipAddress);
+        }
+
+        public async Task ResendVerificationCodeAsync(ResendVerificationRequest request)
+        {
+            await _emailVerificationService.ResendAsync(request.Email);
         }
 
         // ════════════════════════════════════════════════════════════════════
@@ -162,7 +211,6 @@ namespace FinTreX.Infrastructure.Services
             // Clean up old tokens (keep last 5)
             RemoveOldRefreshTokens(user);
 
-            _dbContext.Update(user);
             await _dbContext.SaveChangesAsync();
 
             // Generate new JWT
@@ -206,7 +254,6 @@ namespace FinTreX.Infrastructure.Services
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
 
-            _dbContext.Update(user);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -285,7 +332,6 @@ namespace FinTreX.Infrastructure.Services
 
             RemoveOldRefreshTokens(user);
 
-            _dbContext.Update(user);
             await _dbContext.SaveChangesAsync();
 
             return new AuthenticationResponse

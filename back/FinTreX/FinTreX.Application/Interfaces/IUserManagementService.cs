@@ -1,4 +1,4 @@
-﻿using FinTreX.Core.DTOs.Account;
+using FinTreX.Core.DTOs.Account;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,5 +22,14 @@ namespace FinTreX.Core.Interfaces
 
         /// <summary>Re-activates a previously deactivated user account.</summary>
         Task<string> ActivateUserAsync(string userId);
+
+        /// <summary>Returns statistics for the admin dashboard.</summary>
+        Task<AdminStatsDto> GetAdminStatsAsync();
+
+        /// <summary>Deactivates multiple user accounts at once.</summary>
+        Task<BulkOperationResultDto> BulkDeactivateAsync(List<string> userIds, string durationKey);
+
+        /// <summary>Activates multiple user accounts at once.</summary>
+        Task<BulkOperationResultDto> BulkActivateAsync(List<string> userIds);
     }
 }
