@@ -1,201 +1,270 @@
-<div class="tasks-container">
-  <!-- Error Banner -->
-  <div *ngIf="errorMessage()" class="tasks-error-banner">
-    <span>{{ errorMessage() }}</span>
-    <button (click)="errorMessage() && errorMessage.set(null)">✕</button>
-  </div>
-
-  <!-- Header -->
-  <div class="tasks-header">
-    <div class="tasks-title-section">
-      <h1>Görevler</h1>
-      <p class="tasks-subtitle">Müşterilerinizden atanan görevleri yönetin</p>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="isLoading()" class="tasks-loading">
-    <div class="tasks-spinner"></div>
-    <p>Görevler yükleniyor...</p>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!isLoading() && tasks().length === 0" class="tasks-empty">
-    <div class="tasks-empty-icon">📋</div>
-    <h3>Görev Yok</h3>
-    <p>Şu anda atanmış göreviniz bulunmamaktadır.</p>
-  </div>
-
-  <!-- Tasks Content -->
-  <div *ngIf="!isLoading() && tasks().length > 0" class="tasks-content">
-    <!-- Stats Cards -->
-    <div class="tasks-stats">
-      <div class="stats-card">
-        <div class="stat-value">{{ taskStats().total }}</div>
-        <div class="stat-label">Toplam Görev</div>
+<section class="tasks-page" aria-label="Ekonomist görevleri">
+  <div class="tasks-page__shell">
+    @if (errorMessage()) {
+      <div class="tasks-page__notice">
+        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+        <span>{{ errorMessage() }}</span>
+        <button type="button" (click)="errorMessage.set(null)" aria-label="Uyarıyı kapat">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
       </div>
-      <div class="stats-card">
-        <div class="stat-value">{{ taskStats().pending }}</div>
-        <div class="stat-label">Beklemede</div>
-      </div>
-      <div class="stats-card">
-        <div class="stat-value">{{ taskStats().inProgress }}</div>
-        <div class="stat-label">Devam Ediyor</div>
-      </div>
-      <div class="stats-card">
-        <div class="stat-value">{{ taskStats().completed }}</div>
-        <div class="stat-label">Tamamlandı</div>
-      </div>
-    </div>
+    }
 
-    <!-- Filter Buttons -->
-    <div class="tasks-filters">
-      <button
-        (click)="filterStatus.set('all')"
-        [class.active]="filterStatus() === 'all'"
-        class="filter-btn"
-      >
-        Tümü
-      </button>
-      <button
-        (click)="filterStatus.set(ConsultancyTaskStatus.Pending)"
-        [class.active]="filterStatus() === ConsultancyTaskStatus.Pending"
-        class="filter-btn"
-      >
-        Beklemede
-      </button>
-      <button
-        (click)="filterStatus.set(ConsultancyTaskStatus.InProgress)"
-        [class.active]="filterStatus() === ConsultancyTaskStatus.InProgress"
-        class="filter-btn"
-      >
-        Devam Ediyor
-      </button>
-      <button
-        (click)="filterStatus.set(ConsultancyTaskStatus.Completed)"
-        [class.active]="filterStatus() === ConsultancyTaskStatus.Completed"
-        class="filter-btn"
-      >
-        Tamamlandı
-      </button>
-    </div>
+    <header class="tasks-page__header">
+      <div>
+        <span class="tasks-page__eyebrow">Danışmanlık</span>
+        <h1>Görevlerim</h1>
+        <p>Müşteri taleplerini takip edin, PAA ön analizini üretin ve nihai ekonomist raporunu tamamlayın.</p>
+      </div>
 
-    <!-- Tasks List -->
-    <div class="tasks-list">
-      <div
-        *ngFor="let task of filteredTasks()"
-        class="task-card"
-        (click)="selectTask(task)"
-        [class.selected]="selectedTask()?.id === task.id"
-      >
-        <div class="task-card-header">
-          <div class="task-card-title-section">
-            <h3 class="task-title">{{ task.title }}</h3>
-            <p class="task-category">{{ task.category }}</p>
+      <div class="tasks-page__summary">
+        <span>{{ taskStats().total }} görev</span>
+        <span>{{ taskStats().pending }} bekliyor</span>
+        <span>{{ taskStats().inProgress }} işlemde</span>
+      </div>
+    </header>
+
+    @if (isLoading()) {
+      <section class="tasks-page__state">
+        <div class="tasks-page__spinner" aria-hidden="true"></div>
+        <p>Görevler yükleniyor...</p>
+      </section>
+    } @else if (tasks().length === 0) {
+      <section class="tasks-page__state tasks-page__state--empty">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+        <h2>Görev yok</h2>
+        <p>Şu anda atanmış analiz göreviniz bulunmuyor.</p>
+      </section>
+    } @else {
+      <section class="tasks-page__stats" aria-label="Görev özeti">
+        <app-kpi-card [compact]="true" label="Toplam" [value]="taskStats().total.toString()" subtitle="Tüm görevler" />
+        <app-kpi-card [compact]="true" label="Beklemede" [value]="taskStats().pending.toString()" subtitle="Yanıt bekliyor" />
+        <app-kpi-card [compact]="true" label="Devam Ediyor" [value]="taskStats().inProgress.toString()" subtitle="Aktif çalışma" />
+        <app-kpi-card [compact]="true" label="Tamamlandı" [value]="taskStats().completed.toString()" subtitle="Raporlandı" />
+      </section>
+
+      <section class="tasks-page__toolbar" aria-label="Görev araçları">
+        <app-segmented-control
+          [options]="statusFilterOptions"
+          [value]="filterStatus()"
+          variant="outline"
+          (valueChange)="setFilterStatus($event)"
+        />
+        <span>{{ filteredTasks().length }} görev gösteriliyor</span>
+      </section>
+
+      <section class="tasks-page__list" aria-label="Görev listesi">
+        @if (filteredTasks().length > 0) {
+          <div class="tasks-page__list-head" aria-hidden="true">
+            <span>Durum</span>
+            <span>Görev</span>
+            <span>Kategori</span>
+            <span>Öncelik</span>
+            <span>Tarih</span>
+            <span></span>
           </div>
-          <div class="task-card-badges">
-            <span [class]="getPriorityClass(task.priority)" class="badge priority-badge">
-              {{ getPriorityDisplay(task.priority) }}
-            </span>
-            <span [class]="getStatusClass(task.status)" class="badge status-badge">
+        }
+
+        @for (task of filteredTasks(); track task.id) {
+          <button type="button" class="tasks-page__row" (click)="selectTask(task)">
+            <span [class]="getStatusClass(task.status)" class="tasks-page__status">
               {{ getStatusDisplay(task.status) }}
             </span>
-          </div>
-        </div>
 
-        <div class="task-card-body">
-          <p class="task-description">{{ task.description }}</p>
+            <span class="tasks-page__row-title">
+              <strong>{{ task.title }}</strong>
+              <small>{{ task.userName }} · {{ task.createdAtUtc | date: 'dd.MM.yyyy, HH:mm' }}</small>
+            </span>
 
-          <!-- Task Details -->
-          <div class="task-details">
-            <div class="detail-item">
-              <span class="detail-label">Müşteri:</span>
-              <span class="detail-value">{{ task.userName }}</span>
-            </div>
-            <div class="detail-item" *ngIf="task.deadline">
-              <span class="detail-label">Tarih:</span>
-              <span class="detail-value">{{ task.deadline | date: 'dd.MM.yyyy' }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Oluşturma:</span>
-              <span class="detail-value">{{ task.createdAtUtc | date: 'dd.MM.yyyy, HH:mm' }}</span>
-            </div>
-          </div>
+            <span class="tasks-page__row-category">{{ getCategoryDisplay(task.category) }}</span>
 
-          <!-- PAA Report - Show only if selected -->
-          <div class="paa-section" *ngIf="selectedTask()?.id === task.id" (click)="$event.stopPropagation()">
-            <div class="paa-header">
-              <span class="paa-icon">🤖</span>
-              <span class="paa-title">PAA — Yapay Zeka Ön Analizi</span>
-              <span class="paa-badge" *ngIf="task.preAnalysisReport?.isSuccessful">Analiz Hazır</span>
-            </div>
+            <span [class]="getPriorityClass(task.priority)" class="tasks-page__priority">
+              {{ getPriorityDisplay(task.priority) }}
+            </span>
 
-            <!-- Report available and successful -->
-            <ng-container *ngIf="task.preAnalysisReport">
-              <div *ngIf="task.preAnalysisReport.isSuccessful" class="paa-report">
-                <div class="paa-risk-row">
-                  <span class="paa-risk-label">Risk Seviyesi:</span>
-                  <span class="paa-risk-val paa-risk-val--{{ task.preAnalysisReport.riskLevel.toLowerCase() }}">
-                    {{ task.preAnalysisReport.riskLevel }}
-                  </span>
-                </div>
-                <p class="paa-summary">{{ task.preAnalysisReport.summary }}</p>
-                <div class="paa-detail-row">
-                  <strong>📊 Piyasa Görünümü</strong>
-                  <p>{{ task.preAnalysisReport.marketOutlook }}</p>
-                </div>
-                <div class="paa-detail-row">
-                  <strong>🔍 Önemli Bulgular</strong>
-                  <p>{{ task.preAnalysisReport.keyFindings }}</p>
-                </div>
-                <p class="paa-disclaimer">Bu rapor CrewAI tarafınca oluşturulan objektif bir özettir. Yatırım tavsiyesi değildir.</p>
-              </div>
-              <div *ngIf="!task.preAnalysisReport.isSuccessful" class="paa-error">
-                ⚠️ {{ task.preAnalysisReport.errorMessage || 'Analiz oluşturulurken bir hata oluştu.' }}
-              </div>
-            </ng-container>
+            <span class="tasks-page__row-date">{{ task.createdAtUtc | date: 'dd.MM.yyyy, HH:mm' }}</span>
 
-            <!-- No report yet -->
-            <div *ngIf="!task.preAnalysisReport" class="paa-pending">
-              <ng-container *ngIf="isGeneratingAnalysis(); else noReportTpl">
-                <div class="paa-spinner"></div>
-                <span>Analiz oluşturuluyor...</span>
-              </ng-container>
-              <ng-template #noReportTpl>
-                <span>Ön analiz henüz oluşturulmadı.</span>
-                <button class="action-btn btn-primary" style="flex:0; padding: 6px 16px;" (click)="generateAnalysis(task.id); $event.stopPropagation()">
-                  Analiz Oluştur
-                </button>
-              </ng-template>
-            </div>
-          </div>
+            <span class="tasks-page__open">
+              Detayı Aç
+              <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            </span>
+          </button>
+        }
 
-          <!-- Action Buttons - Show only if selected -->
-          <div class="task-actions" *ngIf="selectedTask()?.id === task.id">
-            <button
-              *ngIf="task.status === ConsultancyTaskStatus.Pending"
-              (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.InProgress); $event.stopPropagation()"
-              class="action-btn btn-primary"
-            >
-              Başla
-            </button>
-            <button
-              *ngIf="task.status === ConsultancyTaskStatus.InProgress"
-              (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.Completed); $event.stopPropagation()"
-              class="action-btn btn-success"
-            >
-              Tamamla
-            </button>
-            <button
-              *ngIf="task.status !== ConsultancyTaskStatus.Completed"
-              (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.Pending); $event.stopPropagation()"
-              class="action-btn btn-secondary"
-            >
-              Sıfırla
+        @if (filteredTasks().length === 0) {
+          <div class="tasks-page__filter-empty">
+            <i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i>
+            <h2>Bu filtrede görev yok</h2>
+            <p>Seçili durum için listelenecek görev bulunmuyor. Tüm görevleri görmek için filtreyi temizleyin.</p>
+            <button type="button" class="tasks-page__button tasks-page__button--ghost" (click)="setFilterStatus('all')">
+              Tüm Görevleri Göster
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+        }
+      </section>
+    }
   </div>
-</div>
+</section>
+
+@if (selectedTask(); as task) {
+  <div class="tasks-modal" role="dialog" aria-modal="true" aria-label="Görev detayı" (click)="deselectTask()">
+    <article class="tasks-modal__card" (click)="$event.stopPropagation()">
+      <header class="tasks-modal__head">
+        <div>
+          <span class="tasks-page__eyebrow">{{ getCategoryDisplay(task.category) }}</span>
+          <h2>{{ task.title }}</h2>
+          <p>{{ task.description }}</p>
+        </div>
+
+        <button type="button" class="tasks-modal__close" (click)="deselectTask()" aria-label="Detayı kapat">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <section class="tasks-modal__meta" aria-label="Görev bilgileri">
+        <div>
+          <span>Müşteri</span>
+          <strong>{{ task.userName }}</strong>
+        </div>
+        <div>
+          <span>Durum</span>
+          <strong>{{ getStatusDisplay(task.status) }}</strong>
+        </div>
+        <div>
+          <span>Öncelik</span>
+          <strong>{{ getPriorityDisplay(task.priority) }}</strong>
+        </div>
+        <div>
+          <span>Son Tarih</span>
+          <strong>{{ task.deadline ? (task.deadline | date: 'dd.MM.yyyy') : 'Belirtilmedi' }}</strong>
+        </div>
+      </section>
+
+      <section class="tasks-modal__section">
+        <div class="tasks-modal__section-head">
+          <div>
+            <span class="tasks-page__eyebrow">PAA</span>
+            <h3>Yapay Zeka Ön Analizi</h3>
+          </div>
+
+          @if (!task.preAnalysisReport && !isGeneratingAnalysis()) {
+            <button type="button" class="tasks-page__button tasks-page__button--primary" (click)="generateAnalysis(task.id)">
+              Analiz Oluştur
+            </button>
+          }
+        </div>
+
+        @if (task.preAnalysisReport) {
+          @if (task.preAnalysisReport.isSuccessful) {
+            <div class="tasks-modal__paa-report">
+              <div class="tasks-modal__risk-line">
+                <span>Risk Seviyesi</span>
+                <strong>{{ task.preAnalysisReport.riskLevel }}</strong>
+              </div>
+              <p>{{ task.preAnalysisReport.summary }}</p>
+              <div>
+                <strong>Piyasa Görünümü</strong>
+                <p>{{ task.preAnalysisReport.marketOutlook }}</p>
+              </div>
+              <div>
+                <strong>Önemli Bulgular</strong>
+                <p>{{ task.preAnalysisReport.keyFindings }}</p>
+              </div>
+              <small>Bu rapor objektif ön analizdir; yatırım tavsiyesi değildir.</small>
+            </div>
+          } @else {
+            <div class="tasks-modal__paa-error">
+              {{ task.preAnalysisReport.errorMessage || 'Analiz oluşturulurken bir hata oluştu.' }}
+            </div>
+          }
+        } @else {
+          <div class="tasks-modal__empty">
+            @if (isGeneratingAnalysis()) {
+              <div class="tasks-page__spinner tasks-page__spinner--sm" aria-hidden="true"></div>
+              <span>Analiz oluşturuluyor...</span>
+            } @else {
+              <span>Bu görev için henüz PAA ön analizi oluşturulmadı.</span>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="tasks-modal__section">
+        <div class="tasks-modal__section-head">
+          <div>
+            <span class="tasks-page__eyebrow">Rapor</span>
+            <h3>Ekonomist Yanıtı</h3>
+          </div>
+        </div>
+
+        @if (task.economistReport) {
+          <div class="tasks-modal__submitted-report">
+            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+            <p>{{ task.economistReport }}</p>
+          </div>
+        } @else if (task.status === ConsultancyTaskStatus.InProgress) {
+          <label class="tasks-modal__label" for="economist-report">Analiz raporu</label>
+          <textarea
+            id="economist-report"
+            rows="7"
+            placeholder="Müşteri için hazırladığınız detaylı analiz raporunu buraya yazın..."
+            [ngModel]="reportText()"
+            (ngModelChange)="reportText.set($event)"
+          ></textarea>
+        } @else {
+          <div class="tasks-modal__empty">
+            <span>Rapor yazmak için görevi işlem aşamasına alın.</span>
+          </div>
+        }
+      </section>
+
+      @if (task.rating) {
+        <section class="tasks-modal__section tasks-modal__section--rating" aria-label="Müşteri değerlendirmesi">
+          <div class="tasks-modal__section-head">
+            <div>
+              <span class="tasks-page__eyebrow">Değerlendirme</span>
+              <h3>Müşteri Puanı</h3>
+            </div>
+          </div>
+          <div class="tasks-modal__rating-row">
+            <div class="tasks-modal__stars">
+              @for (star of [1,2,3,4,5]; track star) {
+                <i class="fa-solid fa-star tasks-modal__star"
+                   [class.tasks-modal__star--filled]="star <= task.rating!"></i>
+              }
+              <span class="tasks-modal__rating-score">{{ task.rating }} / 5</span>
+            </div>
+            @if (task.ratingFeedback) {
+              <blockquote class="tasks-modal__rating-feedback">"{{ task.ratingFeedback }}"</blockquote>
+            }
+          </div>
+        </section>
+      }
+
+      <footer class="tasks-modal__actions">
+        @if (task.status === ConsultancyTaskStatus.Pending) {
+          <button type="button" class="tasks-page__button tasks-page__button--primary" (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.InProgress)">
+            Göreve Başla
+          </button>
+        }
+
+        @if (task.status === ConsultancyTaskStatus.InProgress && !task.economistReport) {
+          <button
+            type="button"
+            class="tasks-page__button tasks-page__button--success"
+            [disabled]="isSubmittingReport() || !reportText().trim()"
+            (click)="submitReport(task.id)"
+          >
+            {{ isSubmittingReport() ? 'Gönderiliyor...' : 'Raporu Gönder ve Tamamla' }}
+          </button>
+        }
+
+        @if (task.status !== ConsultancyTaskStatus.Completed && task.status !== ConsultancyTaskStatus.Cancelled) {
+          <button type="button" class="tasks-page__button tasks-page__button--ghost" (click)="updateTaskStatus(task.id, ConsultancyTaskStatus.Pending)">
+            Beklemeye Al
+          </button>
+        }
+      </footer>
+    </article>
+  </div>
+}

@@ -24,6 +24,12 @@ namespace FinTreX.Core.Entities
         /// <summary>Yearly price in TRY (Usually with a discount).</summary>
         public decimal YearlyPriceTRY { get; set; }
 
+        /// <summary>Maximum number of portfolios a user can create. 999 = unlimited.</summary>
+        public int MaxPortfolios { get; set; }
+
+        /// <summary>Maximum number of chat messages a user can send per day. 999 = unlimited.</summary>
+        public int MaxDailyChatMessages { get; set; }
+
         /// <summary>Maximum number of economists a user can be assigned to. 999 = unlimited.</summary>
         public int MaxEconomists { get; set; }
 

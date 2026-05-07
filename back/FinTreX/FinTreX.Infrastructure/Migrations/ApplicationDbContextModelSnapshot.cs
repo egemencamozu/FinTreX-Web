@@ -179,10 +179,24 @@ namespace FinTreX.Infrastructure.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
 
+                    b.Property<string>("EconomistReport")
+                        .HasMaxLength(8000)
+                        .HasColumnType("character varying(8000)");
+
                     b.Property<string>("Priority")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("RatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RatingFeedback")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -379,6 +393,116 @@ namespace FinTreX.Infrastructure.Migrations
                     b.ToTable("DailyCloses", (string)null);
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.EconomistApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminDecisionNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("ApplicantUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("Biography")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("CurrentTitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Education")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ExpertiseAreas")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Institution")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("LicensesAndCertificates")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime?>("ReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReviewedByAdminId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("SubmittedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("YearsOfExperience")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicantUserId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SubmittedAtUtc");
+
+                    b.ToTable("EconomistApplications", (string)null);
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.EconomistApplicationLink", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EconomistApplicationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EconomistApplicationId");
+
+                    b.ToTable("EconomistApplicationLinks", (string)null);
+                });
+
             modelBuilder.Entity("FinTreX.Core.Entities.EconomistClient", b =>
                 {
                     b.Property<int>("Id")
@@ -462,6 +586,149 @@ namespace FinTreX.Infrastructure.Migrations
                     b.ToTable("EmailVerificationTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.PaymentTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("AmountDue")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("AmountPaid")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("BillingPeriod")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("CardBrand")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("CardCountry")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
+
+                    b.Property<int?>("CardExpMonth")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CardExpYear")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CardFunding")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("CardLast4")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<long>("DiscountAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FailureCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("FailureMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("HostedInvoiceUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("InvoiceNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("PaidAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PeriodEndUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PeriodStartUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReceiptUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<long>("RefundedAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("RefundedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
+
+                    b.Property<string>("StripeChargeId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("StripeInvoiceId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("StripePaymentIntentId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("StripeSubscriptionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("SubscriptionPlanId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("Subtotal")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TaxAmount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaidAtUtc");
+
+                    b.HasIndex("StripeInvoiceId")
+                        .IsUnique();
+
+                    b.HasIndex("SubscriptionPlanId");
+
+                    b.HasIndex("ApplicationUserId", "PaidAtUtc");
+
+                    b.ToTable("PaymentTransactions", (string)null);
+                });
+
             modelBuilder.Entity("FinTreX.Core.Entities.Portfolio", b =>
                 {
                     b.Property<int>("Id")
@@ -481,6 +748,9 @@ namespace FinTreX.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsHiddenFromEconomists")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -570,6 +840,104 @@ namespace FinTreX.Infrastructure.Migrations
                     b.ToTable("PortfolioAssets", (string)null);
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.PortfolioTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssetName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("AssetType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<DateTime>("ExecutedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("Fees")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("PortfolioId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PortfolioId");
+
+                    b.ToTable("PortfolioTransactions", (string)null);
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.PortfolioValueSnapshot", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CapturedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PortfolioId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalValueTry")
+                        .HasPrecision(24, 8)
+                        .HasColumnType("numeric(24,8)");
+
+                    b.Property<decimal>("TotalValueUsd")
+                        .HasPrecision(24, 8)
+                        .HasColumnType("numeric(24,8)");
+
+                    b.Property<decimal?>("UsdTryRate")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PortfolioId", "CapturedAtUtc");
+
+                    b.ToTable("PortfolioValueSnapshots", (string)null);
+                });
+
             modelBuilder.Entity("FinTreX.Core.Entities.PreAnalysisReport", b =>
                 {
                     b.Property<int>("Id")
@@ -623,6 +991,105 @@ namespace FinTreX.Infrastructure.Migrations
                     b.ToTable("PreAnalysisReports", (string)null);
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.PriceAlert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("AssetName")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("AssetType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<decimal?>("BaselinePrice")
+                        .HasPrecision(24, 8)
+                        .HasColumnType("numeric(24,8)");
+
+                    b.Property<int>("Channels")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<string>("Direction")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Repeat")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<decimal>("TargetValue")
+                        .HasPrecision(24, 8)
+                        .HasColumnType("numeric(24,8)");
+
+                    b.Property<int>("TriggerCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("TriggeredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("TriggeredPrice")
+                        .HasPrecision(24, 8)
+                        .HasColumnType("numeric(24,8)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("WatchlistId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Symbol");
+
+                    b.HasIndex("WatchlistId");
+
+                    b.HasIndex("ApplicationUserId", "Status");
+
+                    b.HasIndex("Status", "AssetType");
+
+                    b.ToTable("PriceAlerts", (string)null);
+                });
+
             modelBuilder.Entity("FinTreX.Core.Entities.SubscriptionPlan", b =>
                 {
                     b.Property<int>("Id")
@@ -653,7 +1120,13 @@ namespace FinTreX.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("MaxDailyChatMessages")
+                        .HasColumnType("integer");
+
                     b.Property<int>("MaxEconomists")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxPortfolios")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("MonthlyPriceTRY")
@@ -693,11 +1166,13 @@ namespace FinTreX.Infrastructure.Migrations
                         {
                             Id = 1,
                             CanChangeEconomist = false,
-                            Description = "Temel erişim — 1 ekonomist ataması, değiştirilemez.",
+                            Description = "Temel erişim — 1 portfolyo, 1 ekonomist ataması, değiştirilemez.",
                             DisplayName = "Ücretsiz",
                             HasPrioritySupport = false,
                             IsActive = true,
+                            MaxDailyChatMessages = 10,
                             MaxEconomists = 1,
+                            MaxPortfolios = 1,
                             MonthlyPriceTRY = 0m,
                             Tier = "Default",
                             YearlyPriceTRY = 0m
@@ -706,11 +1181,13 @@ namespace FinTreX.Infrastructure.Migrations
                         {
                             Id = 2,
                             CanChangeEconomist = true,
-                            Description = "Gelişmiş erişim — 3 ekonomist, değiştirilebilir, genişletilmiş analiz.",
+                            Description = "Gelişmiş erişim — 5 portfolyo, 2 ekonomist, değiştirilebilir.",
                             DisplayName = "Premium",
                             HasPrioritySupport = false,
                             IsActive = true,
-                            MaxEconomists = 3,
+                            MaxDailyChatMessages = 50,
+                            MaxEconomists = 2,
+                            MaxPortfolios = 5,
                             MonthlyPriceTRY = 299m,
                             Tier = "Premium",
                             YearlyPriceTRY = 2870m
@@ -719,15 +1196,109 @@ namespace FinTreX.Infrastructure.Migrations
                         {
                             Id = 3,
                             CanChangeEconomist = true,
-                            Description = "Sınırsız erişim — sınırsız ekonomist, öncelikli destek, tam analiz.",
+                            Description = "Sınırsız erişim — sınırsız portfolyo, ekonomist, öncelikli destek.",
                             DisplayName = "Ultra",
                             HasPrioritySupport = true,
                             IsActive = true,
+                            MaxDailyChatMessages = 999,
                             MaxEconomists = 999,
+                            MaxPortfolios = 999,
                             MonthlyPriceTRY = 799m,
                             Tier = "Ultra",
                             YearlyPriceTRY = 7670m
                         });
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.SupportTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HandledByAdminId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<DateTime?>("RespondedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAtUtc");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SupportTickets", (string)null);
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.SupportTicketMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("SenderRole")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTime>("SentAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SupportTicketId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SentAtUtc");
+
+                    b.HasIndex("SupportTicketId");
+
+                    b.ToTable("SupportTicketMessages", (string)null);
                 });
 
             modelBuilder.Entity("FinTreX.Core.Entities.UserSubscription", b =>
@@ -791,6 +1362,88 @@ namespace FinTreX.Infrastructure.Migrations
                     b.ToTable("UserSubscriptions", (string)null);
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.Watchlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Watchlists", (string)null);
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.WatchlistItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("AssetName")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("AssetType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<int>("WatchlistId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WatchlistId", "Symbol")
+                        .IsUnique();
+
+                    b.ToTable("WatchlistItems", (string)null);
+                });
+
             modelBuilder.Entity("FinTreX.Infrastructure.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -803,6 +1456,12 @@ namespace FinTreX.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EconomistStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -813,6 +1472,9 @@ namespace FinTreX.Infrastructure.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("LastLoginAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -880,6 +1542,10 @@ namespace FinTreX.Infrastructure.Migrations
                     b.Property<string>("CreatedByIp")
                         .HasColumnType("text");
 
+                    b.Property<string>("DeviceName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
                     b.Property<DateTime>("Expires")
                         .HasColumnType("timestamp with time zone");
 
@@ -896,6 +1562,10 @@ namespace FinTreX.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.HasKey("Id");
 
@@ -1102,6 +1772,26 @@ namespace FinTreX.Infrastructure.Migrations
                     b.Navigation("Conversation");
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.EconomistApplication", b =>
+                {
+                    b.HasOne("FinTreX.Infrastructure.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicantUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.EconomistApplicationLink", b =>
+                {
+                    b.HasOne("FinTreX.Core.Entities.EconomistApplication", "EconomistApplication")
+                        .WithMany("Links")
+                        .HasForeignKey("EconomistApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EconomistApplication");
+                });
+
             modelBuilder.Entity("FinTreX.Core.Entities.EconomistClient", b =>
                 {
                     b.HasOne("FinTreX.Infrastructure.Models.ApplicationUser", null)
@@ -1124,6 +1814,22 @@ namespace FinTreX.Infrastructure.Migrations
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.PaymentTransaction", b =>
+                {
+                    b.HasOne("FinTreX.Infrastructure.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinTreX.Core.Entities.SubscriptionPlan", "SubscriptionPlan")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SubscriptionPlan");
                 });
 
             modelBuilder.Entity("FinTreX.Core.Entities.Portfolio", b =>
@@ -1153,6 +1859,28 @@ namespace FinTreX.Infrastructure.Migrations
                     b.Navigation("Portfolio");
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.PortfolioTransaction", b =>
+                {
+                    b.HasOne("FinTreX.Core.Entities.Portfolio", "Portfolio")
+                        .WithMany("Transactions")
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Portfolio");
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.PortfolioValueSnapshot", b =>
+                {
+                    b.HasOne("FinTreX.Core.Entities.Portfolio", "Portfolio")
+                        .WithMany("ValueSnapshots")
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Portfolio");
+                });
+
             modelBuilder.Entity("FinTreX.Core.Entities.PreAnalysisReport", b =>
                 {
                     b.HasOne("FinTreX.Core.Entities.ConsultancyTask", "ConsultancyTask")
@@ -1162,6 +1890,42 @@ namespace FinTreX.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ConsultancyTask");
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.PriceAlert", b =>
+                {
+                    b.HasOne("FinTreX.Infrastructure.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinTreX.Core.Entities.Watchlist", "Watchlist")
+                        .WithMany()
+                        .HasForeignKey("WatchlistId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Watchlist");
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.SupportTicket", b =>
+                {
+                    b.HasOne("FinTreX.Infrastructure.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.SupportTicketMessage", b =>
+                {
+                    b.HasOne("FinTreX.Core.Entities.SupportTicket", "SupportTicket")
+                        .WithMany()
+                        .HasForeignKey("SupportTicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SupportTicket");
                 });
 
             modelBuilder.Entity("FinTreX.Core.Entities.UserSubscription", b =>
@@ -1179,6 +1943,26 @@ namespace FinTreX.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("SubscriptionPlan");
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.Watchlist", b =>
+                {
+                    b.HasOne("FinTreX.Infrastructure.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.WatchlistItem", b =>
+                {
+                    b.HasOne("FinTreX.Core.Entities.Watchlist", "Watchlist")
+                        .WithMany("Items")
+                        .HasForeignKey("WatchlistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Watchlist");
                 });
 
             modelBuilder.Entity("FinTreX.Infrastructure.Models.RefreshToken", b =>
@@ -1258,11 +2042,25 @@ namespace FinTreX.Infrastructure.Migrations
                     b.Navigation("Participants");
                 });
 
+            modelBuilder.Entity("FinTreX.Core.Entities.EconomistApplication", b =>
+                {
+                    b.Navigation("Links");
+                });
+
             modelBuilder.Entity("FinTreX.Core.Entities.Portfolio", b =>
                 {
                     b.Navigation("Assets");
 
                     b.Navigation("SubPortfolios");
+
+                    b.Navigation("Transactions");
+
+                    b.Navigation("ValueSnapshots");
+                });
+
+            modelBuilder.Entity("FinTreX.Core.Entities.Watchlist", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("FinTreX.Infrastructure.Models.ApplicationUser", b =>

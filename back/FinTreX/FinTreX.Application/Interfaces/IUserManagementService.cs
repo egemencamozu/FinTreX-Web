@@ -1,4 +1,5 @@
 using FinTreX.Core.DTOs.Account;
+using FinTreX.Core.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,6 +18,9 @@ namespace FinTreX.Core.Interfaces
         /// <summary>Returns a single user by their Identity ID.</summary>
         Task<UserSummaryDto> GetUserByIdAsync(string userId);
 
+        /// <summary>Updates the authenticated user's editable profile fields.</summary>
+        Task<UserSummaryDto> UpdateMyProfileAsync(string userId, UpdateMyProfileDto request);
+
         /// <summary>Deactivates user account for a selected duration.</summary>
         Task<string> DeactivateUserAsync(string userId, string durationKey);
 
@@ -31,5 +35,8 @@ namespace FinTreX.Core.Interfaces
 
         /// <summary>Activates multiple user accounts at once.</summary>
         Task<BulkOperationResultDto> BulkActivateAsync(List<string> userIds);
+
+        /// <summary>Updates the EconomistStatus field on the user's profile.</summary>
+        Task UpdateEconomistStatusAsync(string userId, EconomistStatus status);
     }
 }

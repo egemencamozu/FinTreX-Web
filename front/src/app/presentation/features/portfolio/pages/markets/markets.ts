@@ -1,4 +1,4 @@
-﻿import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnDestroy, OnInit, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MarketDataRepository } from '../../../../../core/interfaces/market-data.repository';
@@ -13,13 +13,20 @@ import {
   type FilterOverflowPill,
 } from '../../../../shared/components/filter-overflow-pills/filter-overflow-pills';
 import type { MoverListItem } from '../../../../shared/components/mover-list/mover-list.component';
-import type { SegmentedOption } from '../../../../shared/components/segmented-control/segmented-control.component';
+import { SegmentedControlComponent, type SegmentedOption } from '../../../../shared/components/segmented-control/segmented-control.component';
 import { MarketUiService } from '../../services/market-ui.service';
 import { MarketBistTableComponent } from '../../components/market-bist-table/market-bist-table.component';
 import type { StockColSort } from '../../components/market-bist-table/market-bist-table.component';
 import { MarketCryptoTableComponent } from '../../components/market-crypto-table/market-crypto-table.component';
 import type { CryptoColSort } from '../../components/market-crypto-table/market-crypto-table.component';
 import { MarketIndicesTableComponent } from '../../components/market-indices-table/market-indices-table.component';
+import { AlertEditorDrawerComponent } from '../../components/alert-editor-drawer/alert-editor-drawer.component';
+import { WatchlistPickerPopoverComponent } from '../../components/watchlist-picker-popover/watchlist-picker-popover.component';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { WatchlistApiService } from '../../../../../core/services/watchlist-api.service';
+import { PriceAlertApiService } from '../../../../../core/services/price-alert-api.service';
+import { AlertsSignalRService } from '../../../../../core/services/alerts-signalr.service';
+import type { AlertAssetType } from '../../../../../core/models/price-alert.model';
 import {
   NumberRangeFilterComponent,
   type NumberRangeFilterPreset,
@@ -110,10 +117,13 @@ const STOCK_VOLUME_FILTER_PRESETS: readonly NumberRangeFilterPreset[] = [
     MarketBistTableComponent,
     MarketCryptoTableComponent,
     MarketIndicesTableComponent,
+    AlertEditorDrawerComponent,
+    WatchlistPickerPopoverComponent,
     NumberRangeFilterComponent,
     PaginatorComponent,
     NetworkFilterPills,
     FilterOverflowPillsComponent,
+    SegmentedControlComponent,
     MarketPricePipe,
     MarketChangePipe,
     CompactNumberPipe,
@@ -125,7 +135,31 @@ const STOCK_VOLUME_FILTER_PRESETS: readonly NumberRangeFilterPreset[] = [
 export class Markets implements OnInit, OnDestroy {
   private readonly marketDataRepository = inject(MarketDataRepository);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+  readonly watchlistApi = inject(WatchlistApiService);
+  private readonly priceAlertApi = inject(PriceAlertApiService);
+  private readonly alertsSignalR = inject(AlertsSignalRService);
   readonly ui = inject(MarketUiService);
+
+  // ── Alarm kur drawer state ─────────────────────────────────────────────
+  readonly alertDrawerOpen = signal(false);
+  readonly alertDrawerSymbol = signal('');
+  readonly alertDrawerName = signal('');
+  readonly alertDrawerAssetType = signal<AlertAssetType>('BIST');
+  readonly alertDrawerPrice = signal(0);
+  readonly alertDrawerCurrency = signal<'TRY' | 'USD'>('TRY');
+  readonly alertDrawerUserEmail = computed(
+    () => this.authService.getCurrentUser()?.email ?? '',
+  );
+
+  // ── Watchlist picker modal state ───────────────────────────────────────
+  readonly pickerOpen = signal(false);
+  readonly pickerSymbol = signal('');
+  readonly pickerAssetType = signal<AlertAssetType>('BIST');
+  readonly pickerAssetName = signal('');
+
+  /** Yıldızın "dolu" görünmesi için: sembol herhangi bir izleme listesinde mi? */
+  readonly watchlistSymbols = this.watchlistApi.symbolsInAnyWatchlist;
 
   private readonly viewFilterConfig: Record<MarketView, readonly MarketFilterItem[]> = {
     overview: [
@@ -189,7 +223,12 @@ export class Markets implements OnInit, OnDestroy {
   readonly activeView = signal<MarketView>('overview');
   readonly activeFilter = signal('all');
   readonly activeStockSector = signal('all');
-  readonly favoriteCryptos = signal<Set<string>>(new Set());
+  /**
+   * Yıldız "dolu" hesabı artık izleme listesi durumuna bağlı — sembol herhangi
+   * bir listede ise dolu gösterilir. `favoriteCryptos` adı HTML'lerde kullanıldığı
+   * için geriye uyum amaçlı korunuyor.
+   */
+  readonly favoriteCryptos = this.watchlistApi.symbolsInAnyWatchlist;
   readonly activeNetwork = signal<string>('all');
   readonly stockColSort = signal<StockColSort | null>({ col: 'volume', dir: 'desc' });
   readonly cryptoColSort = signal<CryptoColSort | null>({ col: 'marketCap', dir: 'desc' });
@@ -244,6 +283,22 @@ export class Markets implements OnInit, OnDestroy {
   readonly marketCapFilterPresets = MARKET_CAP_FILTER_PRESETS;
   readonly volumeFilterPresets = VOLUME_FILTER_PRESETS;
   readonly stockVolumeFilterPresets = STOCK_VOLUME_FILTER_PRESETS;
+
+  readonly cryptoCurrency   = signal<'USD' | 'TRY'>('USD');
+  readonly stockCurrency    = signal<'TRY' | 'USD'>('TRY');
+  readonly indexCurrency    = signal<'TRY' | 'USD'>('TRY');
+  readonly goldCurrency     = signal<'TRY' | 'USD'>('TRY');
+  readonly overviewCurrency = signal<'TRY' | 'USD'>('USD');
+
+  readonly currencyOptions: SegmentedOption[] = [
+    { id: 'USD', label: 'USD' },
+    { id: 'TRY', label: 'TRY' },
+  ];
+
+  readonly stockCurrencyOptions: SegmentedOption[] = [
+    { id: 'TRY', label: 'TRY' },
+    { id: 'USD', label: 'USD' },
+  ];
 
   readonly moverViewOptions: SegmentedOption[] = [
     { id: 'gainers', label: 'Yükselenler' },
@@ -412,6 +467,35 @@ export class Markets implements OnInit, OnDestroy {
     [...this.indices()].sort((a, b) => a.changePercent - b.changePercent)[0] ?? null,
   );
 
+  private convertUsdToCryptoCurrency(amountUsd: number): number {
+    if (this.cryptoCurrency() !== 'TRY') return amountUsd;
+    const rate = this.usdTry()?.rate ?? 0;
+    return rate > 0 ? amountUsd * rate : amountUsd;
+  }
+
+  private formatCryptoCurrency(amountUsd: number, digits = 2): string {
+    const currency = this.cryptoCurrency();
+    const value = this.convertUsdToCryptoCurrency(amountUsd);
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(value);
+  }
+
+  private formatCryptoCurrencyCompact(amountUsd: number): string {
+    const currency = this.cryptoCurrency();
+    const value = this.convertUsdToCryptoCurrency(amountUsd);
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency,
+      notation: 'compact',
+      compactDisplay: 'short',
+      maximumFractionDigits: 2,
+    }).format(value);
+  }
+
   readonly cryptoGainersList = computed(() =>
     [...this.cryptos()]
       .filter(item => item.changePercent24h > 0)
@@ -432,7 +516,7 @@ export class Markets implements OnInit, OnDestroy {
       avatarFallback: this.ui.getAvatarLetter(item.baseAsset || item.symbol),
       avatarColor: this.ui.getAvatarColor(item.baseAsset || item.symbol),
       label: item.baseAsset,
-      value: new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(item.priceUsdt),
+      value: this.formatCryptoCurrency(item.priceUsdt),
       change: item.changePercent24h,
     })),
   );
@@ -443,7 +527,7 @@ export class Markets implements OnInit, OnDestroy {
       avatarFallback: this.ui.getAvatarLetter(item.baseAsset || item.symbol),
       avatarColor: this.ui.getAvatarColor(item.baseAsset || item.symbol),
       label: item.baseAsset,
-      value: new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(item.priceUsdt),
+      value: this.formatCryptoCurrency(item.priceUsdt),
       change: item.changePercent24h,
     })),
   );
@@ -457,7 +541,7 @@ export class Markets implements OnInit, OnDestroy {
         avatarFallback: this.ui.getAvatarLetter(item.baseAsset || item.symbol),
         avatarColor: this.ui.getAvatarColor(item.baseAsset || item.symbol),
         label: item.baseAsset,
-        value: '$' + new Intl.NumberFormat('tr-TR', { notation: 'compact', compactDisplay: 'short', maximumFractionDigits: 2 }).format(item.volume24h),
+        value: this.formatCryptoCurrencyCompact(item.volume24h),
         change: item.changePercent24h,
       })),
   );
@@ -588,12 +672,12 @@ export class Markets implements OnInit, OnDestroy {
     const gt = this.goldTypes();
     if (!gt) return [];
     return [
-      { symbol: 'GRAM', name: 'Gram AltÄ±n', price: gt.gramTry },
-      { symbol: 'CEYREK', name: 'Ã‡eyrek AltÄ±n', price: gt.ceyrekTry },
-      { symbol: 'YARIM', name: 'YarÄ±m AltÄ±n', price: gt.yarimTry },
-      { symbol: 'TAM', name: 'Tam AltÄ±n', price: gt.tamTry },
-      { symbol: 'CUMHUR', name: 'Cumhuriyet AltÄ±nÄ±', price: gt.cumhuriyetTry },
-      { symbol: 'ATA', name: 'Ata AltÄ±nÄ±', price: gt.ataTry },
+      { symbol: 'GRAM', name: 'Gram Altin', price: gt.gramTry },
+      { symbol: 'CEYREK', name: 'Ceyrek Altin', price: gt.ceyrekTry },
+      { symbol: 'YARIM', name: 'Yarim Altin', price: gt.yarimTry },
+      { symbol: 'TAM', name: 'Tam Altin', price: gt.tamTry },
+      { symbol: 'CUMHUR', name: 'Cumhuriyet Altini', price: gt.cumhuriyetTry },
+      { symbol: 'ATA', name: 'Ata Altini', price: gt.ataTry },
     ];
   });
 
@@ -637,6 +721,12 @@ export class Markets implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadSnapshot(true);
     this.connectLiveFeed();
+    // Piyasa Verileri sayfasına girildiğinde watchlist + aktif alarmları ve
+    // /hubs/alerts kanalını bootstrap et — yıldız/çan modalları bu state'i
+    // kullanıyor.
+    void this.watchlistApi.reload();
+    void this.priceAlertApi.reload();
+    void this.alertsSignalR.connect();
   }
 
   ngOnDestroy(): void {
@@ -670,18 +760,149 @@ export class Markets implements OnInit, OnDestroy {
     this.stockPage.set(1);
   }
 
+  /**
+   * Popover desteği olmayan (ör. indices) tablolar için basit Ana Liste toggle.
+   * BIST/Kripto tablolarında popover açıldığı için bu koddan geçmez.
+   */
   toggleFavorite(symbol: string): void {
-    this.favoriteCryptos.update(set => {
-      const next = new Set(set);
-      if (next.has(symbol)) next.delete(symbol);
-      else next.add(symbol);
-      return next;
-    });
+    const main = this.watchlistApi.defaultWatchlist();
+    if (!main) return;
+    const inAny = this.watchlistApi.isSymbolInAnyWatchlist(symbol);
+    if (inAny) {
+      // Tüm listelerden kaldır
+      this.watchlistApi.toggleSymbolInWatchlists({
+        symbol,
+        assetType: 'BIST',
+        watchlistIds: [],
+      });
+    } else {
+      this.watchlistApi.addItem(main.id, symbol, 'BIST');
+    }
+  }
+
+  // ── Watchlist picker modal ─────────────────────────────────────────────
+  onBistFavoritePickerOpen(payload: { ticker: string; anchor: HTMLElement }): void {
+    const stock = this.visibleStocks().find(s => s.ticker === payload.ticker);
+    this.pickerSymbol.set(payload.ticker);
+    this.pickerAssetType.set('BIST');
+    this.pickerAssetName.set(stock?.companyName ?? '');
+    this.pickerOpen.set(true);
+  }
+
+  onCryptoFavoritePickerOpen(payload: { symbol: string; anchor: HTMLElement }): void {
+    const crypto = this.visibleCryptos().find(c => c.symbol === payload.symbol);
+    // Binance sembol formatını (BTCUSDT) saklıyoruz; hem market data cache
+    // hem de backend AlertEvaluationService bu key üzerinden eşleşiyor.
+    this.pickerSymbol.set(payload.symbol);
+    this.pickerAssetType.set('CRYPTO');
+    this.pickerAssetName.set(
+      crypto ? this.ui.getCoinFullName(crypto.baseAsset) : '',
+    );
+    this.pickerOpen.set(true);
+  }
+
+  closePicker(): void {
+    this.pickerOpen.set(false);
+  }
+
+  /** Piyasa verileri tablosundaki BIST satırının çan butonu. */
+  onBistAlertOpen(ticker: string): void {
+    const stock = this.visibleStocks().find(s => s.ticker === ticker);
+    if (!stock) return;
+    this.alertDrawerSymbol.set(ticker.replace('.IS', ''));
+    this.alertDrawerName.set(stock.companyName ?? '');
+    this.alertDrawerAssetType.set('BIST');
+    this.alertDrawerPrice.set(stock.price);
+    this.alertDrawerCurrency.set('TRY');
+    this.alertDrawerOpen.set(true);
+  }
+
+  /** Piyasa verileri tablosundaki Kripto satırının çan butonu. */
+  onCryptoAlertOpen(symbol: string): void {
+    const crypto = this.visibleCryptos().find(c => c.symbol === symbol);
+    if (!crypto) return;
+    const currency = this.cryptoCurrency();
+    const price =
+      currency === 'TRY' && this.usdTry()
+        ? crypto.priceTry > 0
+          ? crypto.priceTry
+          : crypto.priceUsdt * (this.usdTry()?.rate ?? 0)
+        : crypto.priceUsdt;
+    this.alertDrawerSymbol.set(symbol);
+    this.alertDrawerName.set(this.ui.getCoinFullName(crypto.baseAsset));
+    this.alertDrawerAssetType.set('CRYPTO');
+    this.alertDrawerPrice.set(price);
+    this.alertDrawerCurrency.set(currency);
+    this.alertDrawerOpen.set(true);
+  }
+
+  closeAlertDrawer(): void {
+    this.alertDrawerOpen.set(false);
   }
 
   setActiveNetwork(network: string): void {
     this.activeNetwork.set(network);
     this.cryptoPage.set(1);
+  }
+
+  setCryptoCurrency(value: string): void {
+    if (value === 'USD' || value === 'TRY') this.cryptoCurrency.set(value);
+  }
+
+  setStockCurrency(value: string): void {
+    if (value === 'TRY' || value === 'USD') this.stockCurrency.set(value);
+  }
+
+  setIndexCurrency(value: string): void {
+    if (value === 'TRY' || value === 'USD') this.indexCurrency.set(value);
+  }
+
+  setGoldCurrency(value: string): void {
+    if (value === 'TRY' || value === 'USD') this.goldCurrency.set(value);
+  }
+
+  setOverviewCurrency(value: string): void {
+    if (value === 'TRY' || value === 'USD') this.overviewCurrency.set(value);
+  }
+
+  convertBetweenCurrencies(amount: number, from: 'TRY' | 'USD', to: 'TRY' | 'USD'): number {
+    if (from === to) return amount;
+    const rate = this.usdTry()?.rate ?? 0;
+    if (rate <= 0) return amount;
+    if (from === 'USD' && to === 'TRY') return amount * rate;
+    if (from === 'TRY' && to === 'USD') return amount / rate;
+    return amount;
+  }
+
+  getCryptoDisplayPrice(item: MarketCryptoPrice | null, currency: 'TRY' | 'USD'): number {
+    if (!item) return 0;
+    return currency === 'TRY' ? item.priceTry : item.priceUsdt;
+  }
+
+  getOverviewDisplayPrice(item: OverviewRow): number {
+    return this.convertBetweenCurrencies(item.price, item.currency, this.overviewCurrency());
+  }
+
+  getIndexDisplayPrice(priceTry: number): number {
+    return this.convertBetweenCurrencies(priceTry, 'TRY', this.indexCurrency());
+  }
+
+  getGoldPhysicalDisplayPrice(priceTry: number): number {
+    return this.convertBetweenCurrencies(priceTry, 'TRY', this.goldCurrency());
+  }
+
+  getGoldSpotDisplayPrice(type: 'gram' | 'ounce'): number {
+    const spot = this.goldSpot();
+    if (!spot) return 0;
+    if (this.goldCurrency() === 'TRY') return type === 'gram' ? spot.gramTry : spot.ounceTry;
+    return type === 'gram' ? spot.gramUsd : spot.ounceUsd;
+  }
+
+  getGoldSpotCounterPrice(type: 'gram' | 'ounce'): number {
+    const spot = this.goldSpot();
+    if (!spot) return 0;
+    if (this.goldCurrency() === 'TRY') return type === 'gram' ? spot.gramUsd : spot.ounceUsd;
+    return type === 'gram' ? spot.gramTry : spot.ounceTry;
   }
 
   onCryptoSortChange(sort: CryptoColSort | null): void {

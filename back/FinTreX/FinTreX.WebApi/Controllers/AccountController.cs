@@ -1,8 +1,10 @@
-﻿using FinTreX.Core.DTOs.Account;
+using FinTreX.Core.DTOs.Account;
 using FinTreX.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FinTreX.WebApi.Controllers
@@ -22,7 +24,7 @@ namespace FinTreX.WebApi.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> AuthenticateAsync(AuthenticationRequest request)
         {
-            var response = await _accountService.AuthenticateAsync(request, GenerateIPAddress());
+            var response = await _accountService.AuthenticateAsync(request, GenerateIPAddress(), GetUserAgent());
             SetRefreshTokenCookie(response.RefreshToken);
             return Ok(response);
         }
@@ -39,7 +41,7 @@ namespace FinTreX.WebApi.Controllers
         [HttpPost("verify-email")]
         public async Task<IActionResult> VerifyEmailAsync(VerifyEmailRequest request)
         {
-            var response = await _accountService.VerifyEmailAsync(request, GenerateIPAddress());
+            var response = await _accountService.VerifyEmailAsync(request, GenerateIPAddress(), GetUserAgent());
             SetRefreshTokenCookie(response.RefreshToken);
             return Ok(response);
         }
@@ -61,7 +63,7 @@ namespace FinTreX.WebApi.Controllers
             if (string.IsNullOrWhiteSpace(refreshToken))
                 return BadRequest(new { message = "Refresh token is required." });
 
-            var response = await _accountService.RefreshTokenAsync(refreshToken, GenerateIPAddress());
+            var response = await _accountService.RefreshTokenAsync(refreshToken, GenerateIPAddress(), GetUserAgent());
             SetRefreshTokenCookie(response.RefreshToken);
             return Ok(response);
         }
@@ -95,6 +97,60 @@ namespace FinTreX.WebApi.Controllers
             return Ok(new { message = result });
         }
 
+        /// <summary>Change password while authenticated (requires current password).</summary>
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _accountService.ChangePasswordAsync(userId, request);
+            return Ok(new { message = "Şifre başarıyla değiştirildi." });
+        }
+
+        /// <summary>List the current user's active sessions.</summary>
+        [HttpGet("sessions")]
+        [Authorize]
+        public async Task<IActionResult> GetSessionsAsync()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var currentToken = Request.Cookies["refreshToken"];
+            var sessions = await _accountService.GetSessionsAsync(userId, currentToken);
+            return Ok(sessions);
+        }
+
+        /// <summary>Revoke a specific session by id.</summary>
+        [HttpDelete("sessions/{id:int}")]
+        [Authorize]
+        public async Task<IActionResult> RevokeSessionAsync(int id)
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _accountService.RevokeSessionAsync(userId, id, GenerateIPAddress());
+            return Ok(new { message = "Oturum sonlandırıldı." });
+        }
+
+        /// <summary>Revoke every active session except the current one.</summary>
+        [HttpPost("sessions/revoke-others")]
+        [Authorize]
+        public async Task<IActionResult> RevokeOtherSessionsAsync()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var currentToken = Request.Cookies["refreshToken"];
+            await _accountService.RevokeOtherSessionsAsync(userId, currentToken, GenerateIPAddress());
+            return Ok(new { message = "Diğer oturumlar sonlandırıldı." });
+        }
+
         // ── Helpers ─────────────────────────────────────────────────────────
 
         private void SetRefreshTokenCookie(string token)
@@ -120,6 +176,17 @@ namespace FinTreX.WebApi.Controllers
                 return Request.Headers["X-Forwarded-For"];
             else
                 return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
+        }
+
+        private string GetUserAgent()
+        {
+            return Request.Headers.UserAgent.ToString();
+        }
+
+        private string GetUserId()
+        {
+            return User.FindFirstValue("uid")
+                ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
     }
 }

@@ -1,160 +1,348 @@
-<section class="mec-c">
-  <div class="mec-c__wrapper">
-    <div class="mec-c__container">
+<section class="mec">
+  <div class="mec__wrapper">
+    <div class="mec__container">
 
-      <!-- ── Error Banner ───────────────────────────────────────────────────── -->
+      <!-- ── Notices ──────────────────────────────────────────────────────────── -->
       @if (errorMessage()) {
-        <div class="mec-c__error-banner">
+        <div class="mec__notice mec__notice--error">
+          <i class="fa-solid fa-circle-exclamation"></i>
           <span>{{ errorMessage() }}</span>
-          <button (click)="errorMessage.set(null)">✕</button>
+          <button class="mec__notice-close" (click)="errorMessage.set(null)">✕</button>
+        </div>
+      }
+      @if (successMessage()) {
+        <div class="mec__notice mec__notice--success">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>{{ successMessage() }}</span>
         </div>
       }
 
-      <!-- ── Loading ────────────────────────────────────────────────────────── -->
+      <!-- ── Page Header ───────────────────────────────────────────────────────── -->
+      <header class="mec__header-panel">
+        <div class="mec__header-main">
+          <div class="mec__title-block">
+            <span class="mec__eyebrow">Danışmanlık ve İletişim</span>
+            <h1 class="mec__title">Ekonomistim</h1>
+          </div>
+
+          @if (hasEconomist()) {
+            <div class="mec__header-actions">
+              <span class="mec__plan-pill">
+                {{ activeAssignments().length }} / {{ maxEconomists() }} ekonomist
+              </span>
+              <button class="mec__btn-secondary" (click)="openChangeRequestModal()">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                Değişiklik Talebi
+              </button>
+              @if (!isDefaultPlan() && canAddMore()) {
+                <button class="mec__btn-primary" (click)="showAddModal.set(true)">
+                  <i class="fa-solid fa-plus"></i>
+                  Ekonomist Ekle
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </header>
+
+      <!-- ── Loading ──────────────────────────────────────────────────────────── -->
       @if (isLoading()) {
-        <div class="mec-c__loading">
-          <div class="mec-c__spinner"></div>
+        <div class="mec__state">
+          <div class="mec__spinner"></div>
           <p>Yükleniyor...</p>
         </div>
       }
 
-      <!-- ══════════════════════════════════════════════════════════════════════
-           STATE A — No Economist Assigned
-      ══════════════════════════════════════════════════════════════════════ -->
-      @else if (!hasEconomist()) {
-        <div class="mec-c__empty-state">
-          <div class="mec-c__empty-icon">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <h2 class="mec-c__empty-title">Henüz bir ekonomistiniz yok</h2>
-          <p class="mec-c__empty-desc">
-            Aşağıdaki ekonomistlerden birini seçerek finansal danışmanlık almaya başlayın.
-          </p>
+      @else if (!hasEconomist() && isDefaultPlan()) {
+        <div class="mec__state mec__state--empty">
+          <i class="fa-solid fa-user-clock mec__state-icon"></i>
+          <h2>Ekonomist Bekleniyor</h2>
+          <p>Sisteminize kısa süre içinde bir ekonomist atanacaktır.</p>
         </div>
-
-        <!-- Available Economists Grid -->
-        @if (available().length > 0) {
-          <div class="mec-c__section-header">
-            <h3>Ekonomistler</h3>
-            <span class="mec-c__badge">{{ available().length }} ekonomist</span>
-          </div>
-
-          <div class="mec-c__grid">
-            @for (economist of available(); track economist.id) {
-              <div class="mec-c__card">
-                <div class="mec-c__card-avatar">
-                  {{ getInitials(economist) }}
-                </div>
-                <div class="mec-c__card-info">
-                  <h4 class="mec-c__card-name">{{ economist.firstName }} {{ economist.lastName }}</h4>
-                  <p class="mec-c__card-email">{{ economist.email }}</p>
-                </div>
-                <button
-                  class="mec-c__card-btn"
-                  [disabled]="isAssigning()"
-                  (click)="assignEconomist(economist.id)">
-                  @if (isAssigning()) {
-                    <span class="mec-c__btn-spinner"></span>
-                  } @else {
-                    Seç
-                  }
-                </button>
-              </div>
-            }
-          </div>
-        } @else if (!isLoading()) {
-          <div class="mec-c__no-economists">
-            Şu an aktif ekonomist bulunmuyor.
-          </div>
-        }
       }
 
-      <!-- ══════════════════════════════════════════════════════════════════════
-           STATE B — Economist Assigned
-      ══════════════════════════════════════════════════════════════════════ -->
-      @else {
-        <!-- Hero Card -->
-        <div class="mec-c__hero">
-          <div class="mec-c__profile">
-            <div class="mec-c__avatar-wrap">
-              <div class="mec-c__avatar">{{ avatarInitials() }}</div>
-            </div>
-            <div class="mec-c__identity">
-              <h1 class="mec-c__name">{{ myAssignment()?.economistName }}</h1>
-              <p class="mec-c__meta">Atanma Tarihi: {{ assignedSinceLabel() }}</p>
-              @if (myAssignment()?.notes) {
-                <p class="mec-c__notes">"{{ myAssignment()?.notes }}"</p>
-              }
-            </div>
-          </div>
-
-          <div class="mec-c__hero-actions">
-            <button class="mec-c__remove-btn" (click)="removeEconomist()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6l-1 14H6L5 6"/>
-                <path d="M10 11v6M14 11v6"/>
-                <path d="M9 6V4h6v2"/>
-              </svg>
-              Ekonomisti Kaldır
-            </button>
-          </div>
+      @else if (!hasEconomist() && !isDefaultPlan()) {
+        <div class="mec__state mec__state--empty">
+          <i class="fa-solid fa-user-plus mec__state-icon"></i>
+          <h2>Ekonomist Seçin</h2>
+          <p>Planınız ekonomist seçimine izin veriyor. "Ekonomist Ekle" ile başlayın.</p>
         </div>
+        <div class="mec__header-actions mec__header-actions--center">
+          <button class="mec__btn-primary" (click)="showAddModal.set(true)">
+            <i class="fa-solid fa-plus"></i>
+            Ekonomist Ekle
+          </button>
+        </div>
+      }
 
-        <!-- Tabs -->
-        <div class="mec-c__tabs">
+      @else {
+
+        <!-- ── KPI Strip ───────────────────────────────────────────────────────── -->
+        <section class="mec__kpis">
+          <app-kpi-card
+            [compact]="true"
+            label="Aktif Ekonomist"
+            [value]="activeAssignments().length.toString()"
+            subtitle="Atanmış danışman"
+          />
+          <app-kpi-card
+            [compact]="true"
+            label="Plan Limiti"
+            [value]="maxEconomists() >= 999 ? 'Sınırsız' : maxEconomists().toString()"
+            subtitle="Maksimum ekonomist"
+          />
+          <app-kpi-card
+            [compact]="true"
+            label="İlk Atanma"
+            [value]="formatDate(activeAssignments()[0].assignedAtUtc)"
+            subtitle="Danışmanlık başlangıcı"
+          />
+        </section>
+
+        <!-- ── Tabs ───────────────────────────────────────────────────────────── -->
+        <div class="mec__tabs" role="tablist">
           @for (tab of tabs; track tab.id) {
             <button
-              class="mec-c__tab"
-              [class.mec-c__tab--active]="activeTab() === tab.id"
+              class="mec__tab"
+              [class.mec__tab--active]="activeTab() === tab.id"
+              role="tab"
               (click)="setTab(tab.id)">
               {{ tab.label }}
             </button>
           }
+          @if (activeTab() === 'tickets' && myTickets().length > 0) {
+            <div class="mec__summary-stats" aria-label="Talep özeti">
+              <span><b>{{ myTickets().length }}</b> toplam</span>
+              <span><b>{{ openTicketsCount() }}</b> açık</span>
+              <span><b>{{ answeredTicketsCount() }}</b> yanıtlı</span>
+            </div>
+          }
         </div>
 
-        <!-- Tab: Overview -->
+        <!-- ── Tab: Overview ─────────────────────────────────────────────────── -->
         @if (activeTab() === 'overview') {
-          <div class="mec-c__panel">
-            <div class="mec-c__info-grid">
-              <div class="mec-c__info-card">
-                <span class="mec-c__info-label">Ekonomist ID</span>
-                <span class="mec-c__info-value mec-c__info-value--mono">{{ myAssignment()?.economistId }}</span>
+          <div class="mec__grid-2col">
+            @for (a of activeAssignments(); track a.id) {
+              <div class="mec__econ-detail-card">
+                <div class="mec__econ-detail-avatar">{{ getAssignmentInitials(a) }}</div>
+                <div class="mec__econ-detail-body">
+                  <span class="mec__econ-detail-name">{{ a.economistName }}</span>
+                  <span class="mec__econ-detail-since">
+                    <i class="fa-regular fa-calendar"></i>
+                    {{ formatDate(a.assignedAtUtc) }}'den beri
+                  </span>
+                  @let rating = getEconomistRating(a.economistId);
+                  <div class="mec__econ-rating">
+                    @for (star of getRatingStars(rating.average); track $index) {
+                      <i class="fa-solid fa-star mec__econ-rating-star"
+                         [class.mec__econ-rating-star--filled]="star.filled"></i>
+                    }
+                    @if (rating.average != null) {
+                      <span class="mec__econ-rating-text">{{ rating.average }} ({{ rating.total }})</span>
+                    } @else {
+                      <span class="mec__econ-rating-text mec__econ-rating-text--none">Henüz değerlendirme yok</span>
+                    }
+                  </div>
+                </div>
+                <span class="mec__status-chip mec__status-chip--active">Aktif</span>
               </div>
-              <div class="mec-c__info-card">
-                <span class="mec-c__info-label">Atanma Tarihi</span>
-                <span class="mec-c__info-value">{{ assignedSinceLabel() }}</span>
-              </div>
-              <div class="mec-c__info-card">
-                <span class="mec-c__info-label">Durum</span>
-                <span class="mec-c__info-value">
-                  <span class="mec-c__status-chip mec-c__status-chip--online">Aktif</span>
-                </span>
-              </div>
-            </div>
+            }
           </div>
         }
 
-        <!-- Tab: Tasks -->
-        @if (activeTab() === 'tasks') {
-          <div class="mec-c__panel mec-c__panel--coming-soon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-              <polyline points="10 9 9 9 8 9"/>
-            </svg>
-            <p>Taleplerinizi görmek için <strong>Talepler</strong> sayfasını kullanın.</p>
-          </div>
+        <!-- ── Tab: Tickets ───────────────────────────────────────────────────── -->
+        @if (activeTab() === 'tickets') {
+          @if (isLoadingTickets()) {
+            <div class="mec__state">
+              <div class="mec__spinner"></div>
+            </div>
+          } @else if (myTickets().length === 0) {
+            <div class="mec__state mec__state--empty">
+              <i class="fa-regular fa-folder-open mec__state-icon"></i>
+              <h2>Talep Bulunmuyor</h2>
+              <p>Henüz bir değişiklik talebiniz yok.</p>
+            </div>
+          } @else {
+            <div class="mec__ticket-list">
+              @for (ticket of myTickets(); track ticket.id) {
+                @let target = getChangeRequestTarget(ticket);
+                <div class="mec__ticket">
+                  <div class="mec__ticket-head">
+                    <div class="mec__ticket-icon">
+                      <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <div class="mec__ticket-meta">
+                      <div class="mec__ticket-title-row">
+                        <span class="mec__ticket-subject">{{ ticket.subject }}</span>
+                        <span class="mec__status-chip mec__status-chip--{{ getStatusClass(ticket.status) }}">
+                          {{ getStatusLabel(ticket.status) }}
+                        </span>
+                      </div>
+                      <div class="mec__ticket-subline">
+                        <span class="mec__ticket-date">
+                          <i class="fa-regular fa-clock"></i>
+                          {{ formatDateTime(ticket.createdAtUtc) }}
+                        </span>
+                        @if (target) {
+                          <span class="mec__ticket-target">
+                            <i class="fa-solid fa-user-tie"></i>
+                            {{ target.name }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                    <div class="mec__ticket-controls">
+                      @if (ticket.status === SupportTicketStatus.Open) {
+                        <button
+                          class="mec__icon-btn mec__icon-btn--danger"
+                          title="Sil"
+                          [disabled]="isDeletingTicket() === ticket.id"
+                          (click)="deleteTicket(ticket.id)">
+                          @if (isDeletingTicket() === ticket.id) {
+                            <span class="mec__btn-spinner mec__btn-spinner--xs"></span>
+                          } @else {
+                            <i class="fa-solid fa-trash-can"></i>
+                          }
+                        </button>
+                      }
+                    </div>
+                  </div>
+
+                </div>
+              }
+            </div>
+          }
         }
+
       }
 
     </div>
   </div>
 </section>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL: Ekonomist Ekle
+══════════════════════════════════════════════════════════════════════════ -->
+@if (showAddModal()) {
+  <div class="mec__modal-overlay" (click)="showAddModal.set(false)">
+    <div class="mec__modal-content" (click)="$event.stopPropagation()">
+      <div class="mec__modal-header">
+        <h2 class="mec__modal-title">Ekonomist Ekle</h2>
+        <button class="mec__icon-btn" (click)="showAddModal.set(false)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      @if (availableToAdd().length > 0) {
+        <div class="mec__modal-economist-list">
+          @for (e of availableToAdd(); track e.id) {
+            <div class="mec__modal-econ-row">
+              <div class="mec__econ-avatar">{{ getInitials(e) }}</div>
+              <div class="mec__econ-info">
+                <span class="mec__econ-name">{{ getAvailableEconomistDisplayName(e) }}</span>
+                <span class="mec__econ-email">{{ e.email }}</span>
+                <div class="mec__econ-rating mec__econ-rating--sm">
+                  @for (star of getRatingStars(e.averageRating ?? null); track $index) {
+                    <i class="fa-solid fa-star mec__econ-rating-star"
+                       [class.mec__econ-rating-star--filled]="star.filled"></i>
+                  }
+                  @if (e.averageRating != null) {
+                    <span class="mec__econ-rating-text">{{ e.averageRating }} ({{ e.totalRatings }})</span>
+                  } @else {
+                    <span class="mec__econ-rating-text mec__econ-rating-text--none">—</span>
+                  }
+                </div>
+              </div>
+              <button
+                class="mec__btn-primary mec__btn-primary--sm"
+                [disabled]="isAssigning()"
+                (click)="assignEconomist(e.id)">
+                @if (assigningEconomistId() === e.id) { <span class="mec__btn-spinner"></span> } @else { Seç }
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="mec__modal-empty">Eklenebilecek başka ekonomist bulunmuyor.</p>
+      }
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL: Değişiklik Talebi
+══════════════════════════════════════════════════════════════════════════ -->
+@if (showChangeReqModal()) {
+  <div class="mec__modal-overlay" (click)="closeChangeRequestModal()">
+    <div class="mec__modal-content mec__modal-content--sm" (click)="$event.stopPropagation()">
+      <div class="mec__modal-header">
+        <h2 class="mec__modal-title">Ekonomist Değişiklik Talebi</h2>
+        <button class="mec__icon-btn" (click)="closeChangeRequestModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p class="mec__modal-desc">Değiştirmek istediğiniz ekonomisti seçin ve gerekçenizi açıklayın.</p>
+
+      <div class="mec__select-shell">
+        <button
+          type="button"
+          class="mec__select-trigger"
+          [class.mec__select-trigger--open]="isChangeDropdownOpen()"
+          (click)="toggleChangeDropdown()">
+          @if (selectedChangeAssignment(); as selectedAssignment) {
+            <span class="mec__target-avatar">{{ getAssignmentInitials(selectedAssignment) }}</span>
+            <span class="mec__target-info">
+              <span class="mec__target-name">{{ selectedAssignment.economistName }}</span>
+              <span class="mec__target-meta">{{ formatDate(selectedAssignment.assignedAtUtc) }}'den beri aktif</span>
+            </span>
+          } @else {
+            <span class="mec__target-info">
+              <span class="mec__target-name">Ekonomist seçin</span>
+              <span class="mec__target-meta">Aktif ekonomistlerinizden biri</span>
+            </span>
+          }
+          <i class="fa-solid fa-chevron-down mec__select-chevron"></i>
+        </button>
+
+        @if (isChangeDropdownOpen()) {
+          <div class="mec__select-menu">
+            @for (a of activeAssignments(); track a.id) {
+              <button
+                type="button"
+                class="mec__select-option"
+                [class.mec__select-option--selected]="selectedChangeAssignmentId() === a.id"
+                (click)="selectChangeAssignment(a.id)">
+                <span class="mec__target-avatar">{{ getAssignmentInitials(a) }}</span>
+                <span class="mec__target-info">
+                  <span class="mec__target-name">{{ a.economistName }}</span>
+                  <span class="mec__target-meta">{{ formatDate(a.assignedAtUtc) }}'den beri aktif</span>
+                </span>
+                @if (selectedChangeAssignmentId() === a.id) {
+                  <i class="fa-solid fa-check mec__target-check"></i>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <textarea
+        class="mec__textarea"
+        rows="5"
+        placeholder="Bu ekonomisti neden değiştirmek istiyorsunuz?"
+        [ngModel]="changeReqMessage()"
+        (ngModelChange)="changeReqMessage.set($event)">
+      </textarea>
+      <div class="mec__modal-footer">
+        <button class="mec__btn-secondary" (click)="closeChangeRequestModal()">Vazgeç</button>
+        <button
+          class="mec__btn-primary"
+          [disabled]="isSubmittingReq() || !selectedChangeAssignment() || !changeReqMessage().trim()"
+          (click)="submitChangeRequest()">
+          @if (isSubmittingReq()) { <span class="mec__btn-spinner"></span> Gönderiliyor... }
+          @else { <i class="fa-solid fa-paper-plane"></i> Gönder }
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -10,5 +10,7 @@ namespace FinTreX.Core.DTOs.Economist
         public string LastName { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+        public double? AverageRating { get; set; }
+        public int TotalRatings { get; set; }
     }
 }

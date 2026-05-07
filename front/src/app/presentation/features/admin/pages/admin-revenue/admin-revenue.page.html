@@ -1,0 +1,447 @@
+<section class="rev" aria-label="Admin gelir paneli">
+  <div class="rev__shell">
+    <header class="rev__header">
+      <div class="rev__title-block">
+        <span class="rev__eyebrow">Genel bakış</span>
+        <h1 class="rev__title">Gelir Paneli</h1>
+      </div>
+
+      <div class="rev__header-actions">
+        @if (loadingSummary()) {
+          <span class="rev__summary-count">Gelir verisi</span>
+        } @else if (summary(); as s) {
+          <span class="rev__summary-count">{{ formatNumber(s.totalSalesCount) }} satış</span>
+        }
+      </div>
+    </header>
+
+    @if (isPageLoading()) {
+      <div class="rev__loading-state">
+        <div class="rev__spinner" aria-hidden="true"></div>
+        <p>Gelir verileri yükleniyor...</p>
+      </div>
+    } @else {
+    <section class="rev__kpis" aria-label="Gelir metrikleri">
+      @if (loadingSummary()) {
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <app-kpi-card
+            [compact]="true"
+            [loading]="true"
+            label="Yükleniyor"
+            value="Bekleniyor"
+            subtitle="Gelir verisi"
+          />
+        }
+      } @else if (summary(); as s) {
+        <app-kpi-card
+          [compact]="true"
+          label="Brüt Gelir"
+          [value]="formatCurrency(s.grossRevenue)"
+          [secondaryValue]="formatNumber(s.totalSalesCount) + ' satış'"
+          subtitle="Toplam tahsilat"
+        />
+
+        <app-kpi-card
+          [compact]="true"
+          label="Net Gelir"
+          [value]="formatCurrency(s.netRevenue)"
+          [changeValue]="netMarginRate()"
+          subtitle="Net / brüt oran"
+        />
+
+        <app-kpi-card
+          [compact]="true"
+          label="Toplam İade"
+          [value]="formatCurrency(s.totalRefunded)"
+          [changeValue]="refundRate()"
+          subtitle="İade oranı"
+        />
+
+        <app-kpi-card
+          [compact]="true"
+          label="Aktif Abone"
+          [value]="formatNumber(s.activeSubscriberCount)"
+          [secondaryValue]="formatNumber(s.totalCustomerCount) + ' müşteri'"
+          subtitle="Abonelik tabanı"
+        />
+
+        <app-kpi-card
+          [compact]="true"
+          label="MRR"
+          [value]="formatCurrency(s.mrr)"
+          [changeValue]="latestNetRevenueChange()"
+          [subtitle]="latestRevenueLabel() + ' net gelir'"
+        >
+          <span kpiFooter class="rev__kpi-note">
+            ARR {{ formatCurrency(s.arr) }} · ARPU {{ formatCurrency(s.arpu) }}
+          </span>
+        </app-kpi-card>
+      } @else {
+        <div class="rev__state rev__state--inline">
+          <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+          <strong>Gelir özeti yok</strong>
+        </div>
+      }
+    </section>
+
+    <div class="rev__grid">
+      <section class="rev__panel rev__panel--chart">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Performans</span>
+            <h2 class="rev__panel-title">Aylık gelir eğrisi</h2>
+          </div>
+          <span class="rev__panel-badge">Son 12 ay</span>
+        </div>
+
+        <div class="rev__chart-wrap">
+          @if (loadingTrends()) {
+            <div class="rev__skeleton rev__skeleton--chart"></div>
+          } @else if (hasRevenueTrend()) {
+            <app-line-chart [data]="revenueLineData()" [height]="260" />
+          } @else {
+            <div class="rev__empty-state rev__empty-state--chart">
+              <i class="fa-solid fa-chart-area" aria-hidden="true"></i>
+              <strong>Gelir trendi yok</strong>
+              <span>Ödeme geçmişi oluştuğunda aylık brüt, net ve iade çizgileri burada görünür.</span>
+            </div>
+          }
+        </div>
+
+        @if (!loadingTrends() && latestMonthlyRows().length > 0) {
+          <div class="rev__month-rail" aria-label="Son ay gelirleri">
+            @for (month of latestMonthlyRows(); track month.label) {
+              <div class="rev__month-chip">
+                <span>{{ month.label }}</span>
+                <strong>{{ formatCurrency(month.netRevenue) }}</strong>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--status">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Ödemeler</span>
+            <h2 class="rev__panel-title">Durum dağılımı</h2>
+          </div>
+        </div>
+
+        @if (loadingSummary()) {
+          <div class="rev__skeleton rev__skeleton--chart"></div>
+        } @else if (statusDoughnutItems().length > 0) {
+          <app-doughnut-chart [items]="statusDoughnutItems()" [height]="170" />
+          <div class="rev__status-list">
+            @for (status of statusRows(); track status.status) {
+              <div class="rev__status-row">
+                <span class="rev__status-main">
+                  <span class="rev__status-dot" [ngClass]="'rev__status-dot--' + status.tone"></span>
+                  <span>{{ status.label }}</span>
+                </span>
+                <span class="rev__status-value">{{ status.count }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="rev__empty-state rev__empty-state--compact">
+            <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+            <strong>Durum verisi yok</strong>
+            <span>Ödeme kayıtları geldiğinde dağılım burada listelenir.</span>
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--plan-chart">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Paketler</span>
+            <h2 class="rev__panel-title">Paket bazlı gelir</h2>
+          </div>
+        </div>
+
+        @if (loadingSummary()) {
+          <div class="rev__skeleton rev__skeleton--chart"></div>
+        } @else if (summary()?.planBreakdowns?.length) {
+          <app-bar-chart
+            [data]="planBarData()"
+            [height]="270"
+            barSize="md"
+            [showAxisPointer]="true"
+            axisPointerType="shadow"
+          />
+        } @else {
+          <div class="rev__empty-state rev__empty-state--chart">
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+            <strong>Paket geliri yok</strong>
+            <span>Paket satışları oluştuğunda aylık ve yıllık gelir kırılımı burada görünür.</span>
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--plans">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Kırılım</span>
+            <h2 class="rev__panel-title">En yüksek paketler</h2>
+          </div>
+        </div>
+
+        @if (loadingSummary()) {
+          <div class="rev__skeleton-list"></div>
+        } @else {
+          <div class="rev__plan-list">
+            @for (plan of topPlanBreakdowns(); track plan.planId) {
+              <div class="rev__plan-row">
+                <div class="rev__plan-top">
+                  <span class="rev__tier">{{ plan.planTier }}</span>
+                  <strong>{{ plan.planDisplayName }}</strong>
+                </div>
+                <div class="rev__plan-bar" [style.--bar-width]="planRevenueShare(plan) + '%'"></div>
+                <div class="rev__plan-meta">
+                  <span>{{ formatCurrency(plan.totalRevenue) }}</span>
+                  <span>{{ plan.totalSalesCount }} satış</span>
+                  <span>{{ plan.activeSubscriberCount }} aktif</span>
+                </div>
+              </div>
+            } @empty {
+              <div class="rev__empty-state rev__empty-state--compact">
+                <i class="fa-solid fa-box-open" aria-hidden="true"></i>
+                <strong>Paket kırılımı yok</strong>
+                <span>Satış yapılan paketler burada sıralanır.</span>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--subscriptions">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Abonelik</span>
+            <h2 class="rev__panel-title">Plan durumu</h2>
+          </div>
+        </div>
+
+        @if (loadingTrends()) {
+          <div class="rev__skeleton-list"></div>
+        } @else {
+          <div class="rev__metric-list">
+            @for (metric of subscriptionMetrics(); track metric.label) {
+              <div class="rev__metric-row">
+                <span class="rev__metric-label">{{ metric.label }}</span>
+                <strong class="rev__metric-value" [ngClass]="'rev-tone--' + metric.tone">
+                  {{ metric.value }}
+                </strong>
+              </div>
+            } @empty {
+              <div class="rev__empty-state rev__empty-state--compact">
+                <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+                <strong>Abonelik verisi yok</strong>
+                <span>Aktif ve iptal metrikleri geldiğinde burada görünür.</span>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--stripe">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Stripe</span>
+            <h2 class="rev__panel-title">Bakiye ve komisyon</h2>
+          </div>
+        </div>
+
+        @if (loadingLive()) {
+          <div class="rev__skeleton-list"></div>
+        } @else if (live(); as l) {
+          <div class="rev__balance-grid">
+            <div class="rev__balance-item">
+              <span>Kullanılabilir</span>
+              <strong>{{ formatCurrency(l.balance.available, l.balance.currency) }}</strong>
+            </div>
+            <div class="rev__balance-item rev__balance-item--pending">
+              <span>Bekleyen</span>
+              <strong>{{ formatCurrency(l.balance.pending, l.balance.currency) }}</strong>
+            </div>
+          </div>
+
+          <div class="rev__fee-list">
+            <div class="rev__fee-row">
+              <span>Brüt işlem</span>
+              <strong>{{ formatCurrency(l.fees.totalGross) }}</strong>
+            </div>
+            <div class="rev__fee-row">
+              <span>Komisyon</span>
+              <strong class="rev-tone--danger">-{{ formatCurrency(l.fees.totalFeePaid) }}</strong>
+            </div>
+            <div class="rev__fee-row rev__fee-row--net">
+              <span>Net kalan</span>
+              <strong class="rev-tone--success">{{ formatCurrency(l.fees.totalNet) }}</strong>
+            </div>
+          </div>
+        } @else {
+          <div class="rev__empty-state rev__empty-state--compact">
+            <i class="fa-brands fa-stripe-s" aria-hidden="true"></i>
+            <strong>Stripe verisi yok</strong>
+            <span>Canlı bakiye bilgisi alınamadı.</span>
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--cards">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Risk</span>
+            <h2 class="rev__panel-title">Kartlar ve itirazlar</h2>
+          </div>
+        </div>
+
+        @if (loadingLive()) {
+          <div class="rev__skeleton rev__skeleton--chart"></div>
+        } @else if (live(); as l) {
+          @if (cardBrandDoughnutItems().length > 0) {
+            <app-doughnut-chart [items]="cardBrandDoughnutItems()" [height]="150" />
+          } @else {
+            <div class="rev__empty-state rev__empty-state--compact">
+              <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+              <strong>Kart kırılımı yok</strong>
+              <span>Ödeme kartı dağılımı henüz oluşmadı.</span>
+            </div>
+          }
+
+          <div class="rev__dispute-grid">
+            <div>
+              <strong class="rev-tone--warning">{{ l.disputes.openCount }}</strong>
+              <span>Açık</span>
+            </div>
+            <div>
+              <strong class="rev-tone--success">{{ l.disputes.wonCount }}</strong>
+              <span>Kazanılan</span>
+            </div>
+            <div>
+              <strong class="rev-tone--danger">{{ l.disputes.lostCount }}</strong>
+              <span>Kaybedilen</span>
+            </div>
+            <div>
+              <strong>{{ formatPercent(l.disputes.disputeRatePercent) }}</strong>
+              <span>Oran</span>
+            </div>
+          </div>
+        } @else {
+          <div class="rev__empty-state rev__empty-state--compact">
+            <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+            <strong>Risk verisi yok</strong>
+            <span>Stripe canlı verisi alınamadığı için kart ve itiraz kırılımı gösterilemiyor.</span>
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--failures">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Başarısız ödeme</span>
+            <h2 class="rev__panel-title">Hata analizi</h2>
+          </div>
+          @if (live()?.failureAnalysis?.totalFailedCount) {
+            <span class="rev__panel-badge rev__panel-badge--danger">
+              {{ live()?.failureAnalysis?.totalFailedCount }} hata
+            </span>
+          }
+        </div>
+
+        @if (loadingLive()) {
+          <div class="rev__skeleton-list"></div>
+        } @else if (live(); as l) {
+          @if (l.failureAnalysis.totalFailedCount > 0) {
+            <div class="rev__failure-summary">
+              <div class="rev__metric-row">
+                <span class="rev__metric-label">Başarısız tutar</span>
+                <strong class="rev__metric-value rev-tone--danger">
+                  {{ formatCurrency(l.failureAnalysis.totalFailedAmount) }}
+                </strong>
+              </div>
+              <div class="rev__metric-row">
+                <span class="rev__metric-label">Başarı oranı</span>
+                <strong class="rev__metric-value rev-tone--success">
+                  {{ formatPercent(l.failureAnalysis.successRatePercent) }}
+                </strong>
+              </div>
+              <div class="rev__metric-row">
+                <span class="rev__metric-label">Tahsil edilemez</span>
+                <strong class="rev__metric-value">
+                  {{ l.failureAnalysis.uncollectibleCount }}
+                  ({{ formatCurrency(l.failureAnalysis.uncollectibleAmount) }})
+                </strong>
+              </div>
+            </div>
+
+            <div class="rev__failure-list">
+              @for (code of topFailureCodes(); track code.code) {
+                <div class="rev__failure-code">
+                  <code>{{ code.code }}</code>
+                  <span>{{ code.message }}</span>
+                  <strong>{{ code.count }}x</strong>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="rev__empty-state rev__empty-state--compact">
+              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+              <strong>Başarısız ödeme yok</strong>
+              <span>Son Stripe verisinde hata kodu bulunmuyor.</span>
+            </div>
+          }
+        } @else {
+          <div class="rev__empty-state rev__empty-state--compact">
+            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+            <strong>Hata analizi yok</strong>
+            <span>Stripe canlı verisi alınamadığı için başarısız ödeme analizi gösterilemiyor.</span>
+          </div>
+        }
+      </section>
+
+      <section class="rev__panel rev__panel--payouts">
+        <div class="rev__panel-header">
+          <div>
+            <span class="rev__panel-kicker">Transferler</span>
+            <h2 class="rev__panel-title">Son banka transferleri</h2>
+          </div>
+        </div>
+
+        @if (loadingLive()) {
+          <div class="rev__skeleton-list"></div>
+        } @else if (recentPayouts().length > 0) {
+          <div class="rev__table" role="table" aria-label="Son banka transferleri">
+            <div class="rev__table-row rev__table-row--head" role="row">
+              <span>Tarih</span>
+              <span>Tutar</span>
+              <span>Durum</span>
+              <span>Varış</span>
+              <span>Yöntem</span>
+            </div>
+            @for (payout of recentPayouts(); track payout.id) {
+              <div class="rev__table-row" role="row">
+                <span>{{ formatDate(payout.created) }}</span>
+                <strong>{{ formatCurrency(payout.amount, payout.currency) }}</strong>
+                <span class="rev-status" [ngClass]="getStatusClass(payout.status)">
+                  {{ translatePayoutStatus(payout.status) }}
+                </span>
+                <span>{{ formatDate(payout.arrivalDate) }}</span>
+                <span>{{ payout.method === 'instant' ? 'Anında' : 'Standart' }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="rev__empty-state rev__empty-state--compact">
+            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+            <strong>Transfer kaydı yok</strong>
+            <span>Stripe transferleri geldiğinde son kayıtlar burada listelenir.</span>
+          </div>
+        }
+      </section>
+    </div>
+    }
+  </div>
+</section>

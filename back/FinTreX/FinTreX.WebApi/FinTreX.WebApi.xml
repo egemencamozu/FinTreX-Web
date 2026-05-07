@@ -28,6 +28,18 @@
         <member name="M:FinTreX.WebApi.Controllers.AccountController.ResetPasswordAsync(FinTreX.Core.DTOs.Account.ResetPasswordRequest)">
             <summary>Reset password using a valid reset token.</summary>
         </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.ChangePasswordAsync(FinTreX.Core.DTOs.Account.ChangePasswordRequest)">
+            <summary>Change password while authenticated (requires current password).</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.GetSessionsAsync">
+            <summary>List the current user's active sessions.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.RevokeSessionAsync(System.Int32)">
+            <summary>Revoke a specific session by id.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.AccountController.RevokeOtherSessionsAsync">
+            <summary>Revoke every active session except the current one.</summary>
+        </member>
         <member name="T:FinTreX.WebApi.Controllers.BaseApiController">
             <summary>
             Base controller providing common utilities for authenticated API controllers.
@@ -91,7 +103,7 @@
             <summary>Get total unread message count across all conversations.</summary>
         </member>
         <member name="M:FinTreX.WebApi.Controllers.v1.EconomistClientsController.GetAvailableEconomists">
-            <summary>Returns all users with the Economist role — used by clients when hiring an economist.</summary>
+            <summary>Returns approved economists — used by clients when hiring an economist.</summary>
         </member>
         <member name="T:FinTreX.WebApi.Controllers.v1.MeController">
             <summary>
@@ -100,8 +112,47 @@
             </summary>
         </member>
         <member name="M:FinTreX.WebApi.Controllers.v1.MeController.GetMyProfile">
+            <summary>Returns the currently authenticated user's profile.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.MeController.RequestDeletionCode(FinTreX.Core.DTOs.Account.RequestDeletionCodeDto)">
             <summary>
-            Returns the currently authenticated user's profile.
+            Step 1 of account deletion: verify password and send a 6-digit OTP to the user's email.
+            </summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.MeController.DeleteMyAccount(FinTreX.Core.DTOs.Account.DeleteAccountRequest)">
+            <summary>
+            Step 2 of account deletion: verify OTP, cancel subscriptions, permanently delete account.
+            </summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.GetMyHistory(System.Int32,System.Int32)">
+            <summary>USER: paged payment history for the authenticated user.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.GetMyPayment(System.Int32)">
+            <summary>USER: single payment detail. Must belong to the authenticated user.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.GetAllHistoryForAdmin(System.Int32,System.Int32)">
+            <summary>ADMIN: paged payment history across all users. Card details excluded.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.GetPaymentForAdmin(System.Int32)">
+            <summary>ADMIN: single payment detail. Card details excluded.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.BackfillFromStripe(System.String)">
+            <summary>ADMIN: import historical Stripe invoices into the local PaymentTransactions table.</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.GetDashboardSummary">
+            <summary>ADMIN: KPI cards, plan breakdown, status distribution (DB-sourced, fast).</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.GetDashboardTrends">
+            <summary>ADMIN: monthly revenue trends (12 months) and subscription analytics (DB-sourced, fast).</summary>
+        </member>
+        <member name="M:FinTreX.WebApi.Controllers.v1.PaymentsController.GetDashboardStripeLive">
+            <summary>ADMIN: live Stripe balance, payouts, fees, disputes + card/failure analytics.</summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Hubs.AlertsHub">
+            <summary>
+            Kullanıcının kendi alarm tetiklemelerini canlı almasını sağlar.
+            Bağlanan kullanıcı otomatik olarak kendi user-id grubuna eklenir;
+            sunucu tarafından <c>AlertTriggered</c> eventi sadece o gruba gönderilir.
             </summary>
         </member>
         <member name="T:FinTreX.WebApi.Hubs.ChatConnectionTracker">
@@ -130,6 +181,12 @@
         <member name="M:FinTreX.WebApi.Hubs.ChatHub.NotifyTyping(System.Int32)">
             <summary>Notify that the current user is typing in a conversation.</summary>
         </member>
+        <member name="T:FinTreX.WebApi.Hubs.IAlertsClient">
+            <summary>
+            AlertsHub'a bağlı client'ların uygulaması gereken metodlar.
+            Strongly-typed hub client desenini takip eder.
+            </summary>
+        </member>
         <member name="T:FinTreX.WebApi.Hubs.IChatClient">
             <summary>
             Strongly-typed SignalR client interface for chat events.
@@ -138,6 +195,12 @@
         <member name="T:FinTreX.WebApi.Hubs.MarketDataSubscriptionTracker">
             <summary>
             Tracks active SignalR subscriptions per connection and cache key.
+            </summary>
+        </member>
+        <member name="T:FinTreX.WebApi.Services.AlertsBroadcaster">
+            <summary>
+            Application katmanındaki <see cref="T:FinTreX.Core.Interfaces.IAlertsBroadcaster"/> arayüzünü
+            SignalR üzerinden gerçekleştirir. Sadece alarmı kuran kullanıcıya gider.
             </summary>
         </member>
         <member name="T:FinTreX.WebApi.Services.CurrentUserService">

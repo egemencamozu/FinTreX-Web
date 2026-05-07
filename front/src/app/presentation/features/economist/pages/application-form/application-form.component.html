@@ -1,0 +1,365 @@
+<section class="eaf" aria-label="Ekonomist başvuru formu">
+  <div class="eaf__shell">
+
+    <!-- HEADER -->
+    <header class="eaf__header">
+      <div class="eaf__title-block">
+        <span class="eaf__eyebrow">Ekonomist Başvurusu</span>
+        <h1 class="eaf__title">Başvuru Formu</h1>
+      </div>
+      <p class="eaf__subtitle">
+        Başvurunuz admin ekibi tarafından incelenecek; onaylandıktan sonra müvekkil atama ve danışmanlık özelliklerine erişebileceksiniz.
+      </p>
+    </header>
+
+    <!-- STEP INDICATOR -->
+    <nav class="eaf__steps" aria-label="Form adımları">
+      <div class="eaf__step eaf__step--active">
+        <div class="eaf__step-dot">
+          <i class="fa-solid fa-id-card" aria-hidden="true"></i>
+        </div>
+        <span class="eaf__step-label">Kişisel</span>
+      </div>
+      <div class="eaf__step-line" aria-hidden="true"></div>
+      <div class="eaf__step eaf__step--active">
+        <div class="eaf__step-dot">
+          <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+        </div>
+        <span class="eaf__step-label">Uzmanlık</span>
+      </div>
+      <div class="eaf__step-line" aria-hidden="true"></div>
+      <div class="eaf__step eaf__step--active">
+        <div class="eaf__step-dot">
+          <i class="fa-solid fa-link" aria-hidden="true"></i>
+        </div>
+        <span class="eaf__step-label">Platformlar</span>
+      </div>
+    </nav>
+
+    <!-- NOTICES -->
+    @if (errorMessage()) {
+      <div class="eaf__notice eaf__notice--error" role="alert">
+        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div class="eaf__notice eaf__notice--success" role="status">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- ═══ PANEL 1: Kişisel Bilgiler ═══ -->
+      <section class="eaf__panel">
+        <div class="eaf__panel-header">
+          <div>
+            <span class="eaf__panel-kicker">Adım 1</span>
+            <h2 class="eaf__panel-title">Kişisel Bilgiler</h2>
+          </div>
+          <div class="eaf__panel-icon">
+            <i class="fa-solid fa-id-card" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <div class="eaf__field-grid">
+          <!-- Ad Soyad -->
+          <div class="eaf__field">
+            <label class="eaf__label" for="fullName">
+              Ad Soyad <span class="eaf__required">*</span>
+            </label>
+            <div class="eaf__input-wrap">
+              <i class="fa-solid fa-user eaf__input-icon" aria-hidden="true"></i>
+              <input
+                id="fullName"
+                type="text"
+                formControlName="fullName"
+                class="eaf__input eaf__input--has-icon"
+                [class.eaf__input--error]="isInvalid(form.get('fullName'))"
+                placeholder="Adınız ve soyadınız"
+                autocomplete="name"
+                aria-required="true"
+              />
+            </div>
+            @if (isInvalid(form.get('fullName'))) {
+              <span class="eaf__error" role="alert">
+                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Ad Soyad zorunludur.
+              </span>
+            }
+          </div>
+
+          <!-- Telefon -->
+          <div class="eaf__field">
+            <label class="eaf__label" for="phone">Telefon</label>
+            <div class="eaf__input-wrap">
+              <i class="fa-solid fa-phone eaf__input-icon" aria-hidden="true"></i>
+              <input
+                id="phone"
+                type="tel"
+                formControlName="phone"
+                class="eaf__input eaf__input--has-icon"
+                placeholder="+90 5xx xxx xx xx"
+                autocomplete="tel"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="eaf__field-grid">
+          <!-- Mevcut Ünvan -->
+          <div class="eaf__field">
+            <label class="eaf__label" for="currentTitle">Mevcut Ünvan</label>
+            <div class="eaf__input-wrap">
+              <i class="fa-solid fa-user-tag eaf__input-icon" aria-hidden="true"></i>
+              <input
+                id="currentTitle"
+                type="text"
+                formControlName="currentTitle"
+                class="eaf__input eaf__input--has-icon"
+                placeholder="Örn. Başekonomist, Bağımsız Analist"
+              />
+            </div>
+          </div>
+
+          <!-- Kurum -->
+          <div class="eaf__field">
+            <label class="eaf__label" for="institution">Çalıştığı Kurum</label>
+            <div class="eaf__input-wrap">
+              <i class="fa-solid fa-building eaf__input-icon" aria-hidden="true"></i>
+              <input
+                id="institution"
+                type="text"
+                formControlName="institution"
+                class="eaf__input eaf__input--has-icon"
+                placeholder="Örn. X Yatırım A.Ş. veya Bağımsız"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Biyografi -->
+        <div class="eaf__field">
+          <div class="eaf__label-row">
+            <label class="eaf__label" for="biography">
+              Biyografi <span class="eaf__required">*</span>
+            </label>
+            <span class="eaf__char-count"
+              [class.eaf__char-count--warn]="(form.get('biography')?.value?.length ?? 0) > 1800">
+              {{ form.get('biography')?.value?.length ?? 0 }}<span class="eaf__char-count-max"> / 2000</span>
+            </span>
+          </div>
+          <textarea
+            id="biography"
+            formControlName="biography"
+            class="eaf__textarea"
+            [class.eaf__textarea--error]="isInvalid(form.get('biography'))"
+            rows="5"
+            placeholder="Kendinizi tanıtın: uzmanlık alanlarınız, kariyer yolculuğunuz ve kullanıcılara nasıl değer katacağınız..."
+            aria-required="true"
+          ></textarea>
+          @if (isInvalid(form.get('biography'))) {
+            <span class="eaf__error" role="alert">
+              <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Biyografi zorunludur.
+            </span>
+          }
+        </div>
+      </section>
+
+      <!-- ═══ PANEL 2: Uzmanlık ve Deneyim ═══ -->
+      <section class="eaf__panel">
+        <div class="eaf__panel-header">
+          <div>
+            <span class="eaf__panel-kicker">Adım 2</span>
+            <h2 class="eaf__panel-title">Uzmanlık ve Deneyim</h2>
+          </div>
+          <div class="eaf__panel-icon">
+            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <!-- Uzmanlık Alanları -->
+        <div class="eaf__field">
+          <div class="eaf__label-row">
+            <label class="eaf__label">
+              Uzmanlık Alanları <span class="eaf__required">*</span>
+            </label>
+            <span class="eaf__field-hint">
+              <i class="fa-solid fa-circle-info" aria-hidden="true"></i> En az 1 seçin
+            </span>
+          </div>
+          <div class="eaf__chip-grid" formArrayName="expertiseAreas">
+            @for (option of expertiseOptions; track option; let i = $index) {
+              <label
+                class="eaf__chip"
+                [class.eaf__chip--selected]="expertiseArray.at(i).value"
+              >
+                <input type="checkbox" [formControlName]="i" class="eaf__chip-input" />
+                <i class="fa-solid fa-check eaf__chip-check" aria-hidden="true"></i>
+                <span>{{ EXPERTISE_AREA_LABELS[option] }}</span>
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="eaf__field-grid">
+          <!-- Deneyim Yılı -->
+          <div class="eaf__field">
+            <label class="eaf__label" for="yearsOfExperience">
+              Deneyim Yılı <span class="eaf__required">*</span>
+            </label>
+            <div class="eaf__input-wrap">
+              <i class="fa-solid fa-briefcase eaf__input-icon" aria-hidden="true"></i>
+              <input
+                id="yearsOfExperience"
+                type="number"
+                formControlName="yearsOfExperience"
+                class="eaf__input eaf__input--has-icon"
+                min="0" max="60"
+                placeholder="0"
+                aria-required="true"
+              />
+            </div>
+          </div>
+
+          <!-- Eğitim -->
+          <div class="eaf__field">
+            <label class="eaf__label" for="education">Eğitim / Kurum</label>
+            <div class="eaf__input-wrap">
+              <i class="fa-solid fa-graduation-cap eaf__input-icon" aria-hidden="true"></i>
+              <input
+                id="education"
+                type="text"
+                formControlName="education"
+                class="eaf__input eaf__input--has-icon"
+                placeholder="Üniversite, bölüm veya sertifikasyon"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Lisanslar / Sertifikalar -->
+        <div class="eaf__field">
+          <div class="eaf__label-row">
+            <label class="eaf__label">Sahip Olunan Lisanslar / Sertifikalar</label>
+            <span class="eaf__field-hint">
+              <i class="fa-solid fa-circle-info" aria-hidden="true"></i> İsteğe bağlı
+            </span>
+          </div>
+          <div class="eaf__chip-grid" formArrayName="licensesAndCertificates">
+            @for (cert of certificateOptions; track cert; let i = $index) {
+              <label
+                class="eaf__chip eaf__chip--cert"
+                [class.eaf__chip--selected]="certificatesArray.at(i).value"
+              >
+                <input type="checkbox" [formControlName]="i" class="eaf__chip-input" />
+                <i class="fa-solid fa-check eaf__chip-check" aria-hidden="true"></i>
+                <span>{{ cert }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PANEL 3: Yayın Platformları ═══ -->
+      <section class="eaf__panel">
+        <div class="eaf__panel-header">
+          <div>
+            <span class="eaf__panel-kicker">Adım 3</span>
+            <h2 class="eaf__panel-title">Yayın Platformları</h2>
+          </div>
+          <div class="eaf__panel-icon">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <p class="eaf__helper">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          LinkedIn, YouTube, Twitter, Substack veya kişisel sitenizi ekleyin
+        </p>
+
+        <datalist id="platform-suggestions">
+          <option value="LinkedIn"></option>
+          <option value="YouTube"></option>
+          <option value="Twitter / X"></option>
+          <option value="Substack"></option>
+          <option value="Medium"></option>
+          <option value="Website"></option>
+          <option value="Instagram"></option>
+          <option value="TikTok"></option>
+        </datalist>
+
+        <div formArrayName="links" class="eaf__links-list">
+          @for (link of linksArray.controls; track link; let i = $index) {
+            <div [formGroupName]="i" class="eaf__link-row">
+              <div class="eaf__link-index" aria-hidden="true">{{ i + 1 }}</div>
+              <div class="eaf__link-fields">
+                <div class="eaf__input-wrap">
+                  <i class="fa-solid fa-globe eaf__input-icon" aria-hidden="true"></i>
+                  <input
+                    type="text"
+                    formControlName="platform"
+                    class="eaf__input eaf__input--has-icon"
+                    placeholder="Platform adı"
+                    [attr.aria-label]="'Link ' + (i + 1) + ' platform adı'"
+                    list="platform-suggestions"
+                  />
+                </div>
+                <div class="eaf__input-wrap">
+                  <i class="fa-solid fa-arrow-up-right-from-square eaf__input-icon" aria-hidden="true"></i>
+                  <input
+                    type="url"
+                    formControlName="url"
+                    class="eaf__input eaf__input--has-icon"
+                    placeholder="https://..."
+                    [attr.aria-label]="'Link ' + (i + 1) + ' URL'"
+                  />
+                </div>
+              </div>
+              @if (linksArray.length > 1) {
+                <button
+                  type="button"
+                  class="eaf__btn-remove"
+                  (click)="removeLink(i)"
+                  [attr.aria-label]="'Link ' + (i + 1) + ' kaldır'"
+                >
+                  <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <button type="button" class="eaf__btn-add-link" (click)="addLink()">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          <span>Yeni Link Ekle</span>
+        </button>
+      </section>
+
+      <!-- ═══ ACTIONS ═══ -->
+      <div class="eaf__actions">
+        <p class="eaf__submit-note">
+          <i class="fa-solid fa-lock" aria-hidden="true"></i>
+          Bilgileriniz şifreli bağlantı üzerinden güvenle iletilir
+        </p>
+        <button
+          type="submit"
+          class="eaf__btn-submit"
+          [disabled]="isSubmitting()"
+          [attr.aria-busy]="isSubmitting()"
+        >
+          @if (isSubmitting()) {
+            <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+            <span>Gönderiliyor...</span>
+          } @else {
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+            <span>Başvuruyu Gönder</span>
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>

@@ -13,13 +13,19 @@ namespace FinTreX.WebApi.Controllers.v1
     public class PaymentsController : BaseApiController
     {
         private readonly IStripePaymentService _stripePaymentService;
+        private readonly IPaymentHistoryService _paymentHistoryService;
+        private readonly IAdminRevenueDashboardService _dashboardService;
         private readonly IConfiguration _configuration;
 
         public PaymentsController(
             IStripePaymentService stripePaymentService,
+            IPaymentHistoryService paymentHistoryService,
+            IAdminRevenueDashboardService dashboardService,
             IConfiguration configuration)
         {
             _stripePaymentService = stripePaymentService;
+            _paymentHistoryService = paymentHistoryService;
+            _dashboardService = dashboardService;
             _configuration = configuration;
         }
 
@@ -133,6 +139,94 @@ namespace FinTreX.WebApi.Controllers.v1
         {
             var subscription = await _stripePaymentService.VerifyCheckoutSessionAsync(sessionId);
             return Ok(subscription);
+        }
+
+        // ── Payment history ──────────────────────────────────────────────────
+
+        /// <summary>USER: paged payment history for the authenticated user.</summary>
+        [HttpGet("history")]
+        public async Task<IActionResult> GetMyHistory([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+        {
+            var result = await _paymentHistoryService.GetMyPaymentsAsync(pageNumber, pageSize);
+            return Ok(result);
+        }
+
+        /// <summary>USER: single payment detail. Must belong to the authenticated user.</summary>
+        [HttpGet("history/{id:int}")]
+        public async Task<IActionResult> GetMyPayment(int id)
+        {
+            try
+            {
+                var dto = await _paymentHistoryService.GetMyPaymentByIdAsync(id);
+                return Ok(dto);
+            }
+            catch (System.Collections.Generic.KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>ADMIN: paged payment history across all users. Card details excluded.</summary>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin/history")]
+        public async Task<IActionResult> GetAllHistoryForAdmin([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+        {
+            var result = await _paymentHistoryService.GetAllPaymentsAsync(pageNumber, pageSize);
+            return Ok(result);
+        }
+
+        /// <summary>ADMIN: single payment detail. Card details excluded.</summary>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin/history/{id:int}")]
+        public async Task<IActionResult> GetPaymentForAdmin(int id)
+        {
+            try
+            {
+                var dto = await _paymentHistoryService.GetPaymentByIdForAdminAsync(id);
+                return Ok(dto);
+            }
+            catch (System.Collections.Generic.KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>ADMIN: import historical Stripe invoices into the local PaymentTransactions table.</summary>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("admin/backfill")]
+        public async Task<IActionResult> BackfillFromStripe([FromQuery] string? userId = null)
+        {
+            var summary = await _paymentHistoryService.BackfillFromStripeAsync(userId);
+            return Ok(summary);
+        }
+
+        // ── Revenue Dashboard ────────────────────────────────────────────────
+
+        /// <summary>ADMIN: KPI cards, plan breakdown, status distribution (DB-sourced, fast).</summary>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin/dashboard/summary")]
+        public async Task<IActionResult> GetDashboardSummary()
+        {
+            var result = await _dashboardService.GetSummaryAsync();
+            return Ok(result);
+        }
+
+        /// <summary>ADMIN: monthly revenue trends (12 months) and subscription analytics (DB-sourced, fast).</summary>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin/dashboard/trends")]
+        public async Task<IActionResult> GetDashboardTrends()
+        {
+            var result = await _dashboardService.GetTrendsAsync();
+            return Ok(result);
+        }
+
+        /// <summary>ADMIN: live Stripe balance, payouts, fees, disputes + card/failure analytics.</summary>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin/dashboard/stripe-live")]
+        public async Task<IActionResult> GetDashboardStripeLive()
+        {
+            var result = await _dashboardService.GetStripeLiveAsync();
+            return Ok(result);
         }
 
         [HttpPost("webhook")]

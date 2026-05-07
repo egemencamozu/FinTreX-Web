@@ -1,0 +1,211 @@
+<section class="eco-audit">
+  <div class="eco-audit__container">
+
+    <header class="eco-audit__header">
+      <div class="eco-audit__title-block">
+        <span class="eco-audit__eyebrow">Admin Panel</span>
+        <h1 class="eco-audit__title">Ekonomist Performansı</h1>
+      </div>
+
+      @if (!isLoading() && economists().length > 0) {
+        <div class="eco-audit__sort">
+          <span class="eco-audit__sort-label">Sırala:</span>
+          <button class="eco-audit__sort-btn" [class.eco-audit__sort-btn--active]="sortBy() === 'rating'" (click)="sortBy.set('rating')">
+            Puana Göre
+          </button>
+          <button class="eco-audit__sort-btn" [class.eco-audit__sort-btn--active]="sortBy() === 'totalRatings'" (click)="sortBy.set('totalRatings')">
+            Değerlendirme Sayısı
+          </button>
+          <button class="eco-audit__sort-btn" [class.eco-audit__sort-btn--active]="sortBy() === 'name'" (click)="sortBy.set('name')">
+            İsim
+          </button>
+        </div>
+      }
+    </header>
+
+    @if (errorMessage()) {
+      <div class="eco-audit__notice eco-audit__notice--error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="eco-audit__state">
+        <div class="eco-audit__spinner"></div>
+        <p>Yükleniyor...</p>
+      </div>
+    } @else if (economists().length === 0) {
+      <div class="eco-audit__state eco-audit__state--empty">
+        <i class="fa-solid fa-user-tie eco-audit__state-icon"></i>
+        <h2>Ekonomist Bulunamadı</h2>
+        <p>Sistemde kayıtlı ekonomist bulunmuyor.</p>
+      </div>
+    } @else {
+
+      <!-- KPI Strip -->
+      <section class="eco-audit__kpis">
+        <app-kpi-card
+          [compact]="true"
+          label="Toplam Ekonomist"
+          [value]="totalEconomists().toString()"
+          subtitle="Aktif danışman"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Değerlendirilen"
+          [value]="ratedCount().toString()"
+          subtitle="Rating almış ekonomist"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Genel Ortalama"
+          [value]="overallAverage() != null ? overallAverage()!.toString() + ' / 5' : '—'"
+          subtitle="Tüm ekonomistler"
+        />
+        @if (topEconomist(); as top) {
+          <app-kpi-card
+            [compact]="true"
+            label="En İyi Ekonomist"
+            [value]="getDisplayName(top)"
+            [subtitle]="(top.averageRating ?? 0) + ' puan · ' + top.totalRatings + ' değerlendirme'"
+          />
+        }
+      </section>
+
+      <!-- Economist Table -->
+      <div class="eco-audit__table-wrap">
+        <div class="eco-audit__table-head">
+          <span>Ekonomist</span>
+          <span>E-posta</span>
+          <span>Puan</span>
+          <span>Değerlendirme</span>
+          <span>Durum</span>
+        </div>
+
+        @for (e of sorted(); track e.id) {
+          <div
+            class="eco-audit__row"
+            role="button"
+            tabindex="0"
+            (click)="openDetail(e)"
+            (keydown.enter)="openDetail(e)"
+            (keydown.space)="openDetail(e)"
+          >
+            <div class="eco-audit__econ-cell">
+              <div class="eco-audit__avatar">{{ getInitials(e) }}</div>
+              <div class="eco-audit__econ-info">
+                <span class="eco-audit__econ-name">{{ getDisplayName(e) }}</span>
+                <span class="eco-audit__econ-username">@{{ e.userName }}</span>
+              </div>
+            </div>
+
+            <span class="eco-audit__email">{{ e.email }}</span>
+
+            <div class="eco-audit__rating-cell">
+              <div class="eco-audit__stars">
+                @for (star of getStars(e.averageRating); track $index) {
+                  <i class="fa-solid fa-star eco-audit__star"
+                     [class.eco-audit__star--filled]="star.filled"></i>
+                }
+              </div>
+              @if (e.averageRating != null) {
+                <span class="eco-audit__rating-val">{{ e.averageRating }}</span>
+              } @else {
+                <span class="eco-audit__rating-none">—</span>
+              }
+            </div>
+
+            <span class="eco-audit__count">
+              @if (e.totalRatings > 0) {
+                {{ e.totalRatings }} değerlendirme
+              } @else {
+                <em class="eco-audit__count--none">Henüz yok</em>
+              }
+            </span>
+
+            <span class="eco-audit__badge"
+                  [class.eco-audit__badge--gold]="e.averageRating != null && e.averageRating >= 4.5"
+                  [class.eco-audit__badge--good]="e.averageRating != null && e.averageRating >= 3.5 && e.averageRating < 4.5"
+                  [class.eco-audit__badge--avg]="e.averageRating != null && e.averageRating < 3.5"
+                  [class.eco-audit__badge--none]="e.averageRating == null">
+              @if (e.averageRating == null) { Değerlendirme Yok }
+              @else if (e.averageRating >= 4.5) { Mükemmel }
+              @else if (e.averageRating >= 3.5) { İyi }
+              @else { Geliştirilmeli }
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</section>
+
+@if (selectedEconomist(); as economist) {
+  <div class="eco-detail" role="dialog" aria-modal="true" aria-label="Ekonomist degerlendirmeleri" (click)="closeDetail()">
+    <aside class="eco-detail__panel" (click)="$event.stopPropagation()">
+      <header class="eco-detail__header">
+        <div class="eco-detail__identity">
+          <div class="eco-audit__avatar">{{ getInitials(economist) }}</div>
+          <div>
+            <span class="eco-audit__eyebrow">Rating Detayi</span>
+            <h2>{{ getDisplayName(economist) }}</h2>
+            <p>{{ economist.totalRatings }} degerlendirme</p>
+          </div>
+        </div>
+        <button type="button" class="eco-detail__close" (click)="closeDetail()" aria-label="Paneli kapat">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <section class="eco-detail__summary">
+        <div class="eco-detail__score">
+          <strong>{{ economist.averageRating != null ? economist.averageRating : '-' }}</strong>
+          <span>/ 5</span>
+        </div>
+        <div class="eco-audit__stars">
+          @for (star of getStars(economist.averageRating); track $index) {
+            <i class="fa-solid fa-star eco-audit__star"
+               [class.eco-audit__star--filled]="star.filled"></i>
+          }
+        </div>
+      </section>
+
+      @if (isLoadingRatings()) {
+        <div class="eco-detail__state">
+          <div class="eco-audit__spinner"></div>
+          <span>Degerlendirmeler yukleniyor...</span>
+        </div>
+      } @else if (ratings().length === 0) {
+        <div class="eco-detail__state">
+          <i class="fa-solid fa-star-half-stroke" aria-hidden="true"></i>
+          <span>Bu ekonomist icin henuz yorumlu degerlendirme yok.</span>
+        </div>
+      } @else {
+        <div class="eco-detail__ratings">
+          @for (rating of ratings(); track rating.taskId) {
+            <article class="eco-detail__rating">
+              <div class="eco-detail__rating-top">
+                <div>
+                  <strong>{{ rating.taskTitle }}</strong>
+                  <span>{{ rating.userName }} - {{ formatDate(rating.ratedAtUtc) }}</span>
+                </div>
+                <span class="eco-detail__rating-score">{{ rating.rating }} / 5</span>
+              </div>
+              <div class="eco-audit__stars">
+                @for (star of getStars(rating.rating); track $index) {
+                  <i class="fa-solid fa-star eco-audit__star"
+                     [class.eco-audit__star--filled]="star.filled"></i>
+                }
+              </div>
+              @if (rating.feedback) {
+                <blockquote>{{ rating.feedback }}</blockquote>
+              }
+            </article>
+          }
+        </div>
+      }
+    </aside>
+  </div>
+}

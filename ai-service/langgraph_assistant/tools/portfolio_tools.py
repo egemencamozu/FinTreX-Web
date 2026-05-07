@@ -54,5 +54,17 @@ async def get_client_portfolios(client_id: str, context: Dict[str, Any]) -> Dict
         return {"error": "Bu işlem için Ekonomist yetkisi gereklidir.", "_tool_failed": True}
         
     return await _call_backend(context, f"/api/v1/Portfolios/client/{client_id}")
+    
+@tool
+async def get_portfolio_overview(portfolio_id: int, context: Dict[str, Any], currency: Optional[str] = "TRY") -> Dict[str, Any]:
+    """
+    Belirli bir portföyün finansal özetini getirir (Toplam değer, maliyet, kâr/zarar, varlık dağılımı).
+    Ne zaman kullanılır: Kullanıcı portföyünün toplam değerini, kâr/zarar durumunu veya dağılımını sorduğunda.
+    Parametreler:
+        - portfolio_id (int): Özeti istene portföyün ID'si.
+        - currency (str): Para birimi (varsayılan "TRY", opsiyonel "USD").
+    """
+    params = {"currency": currency}
+    return await _call_backend(context, f"/api/v1/Portfolios/{portfolio_id}/overview", params=params)
 
-PORTFOLIO_TOOLS = [get_user_portfolios, get_portfolio_detail, get_client_portfolios]
+PORTFOLIO_TOOLS = [get_user_portfolios, get_portfolio_detail, get_client_portfolios, get_portfolio_overview]

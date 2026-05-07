@@ -2,6 +2,7 @@ using FinTreX.Core.DTOs.Account;
 using FinTreX.Core.Enums;
 using FinTreX.Core.Exceptions;
 using FinTreX.Core.Interfaces;
+using FinTreX.Infrastructure.Contexts;
 using FinTreX.Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,17 @@ namespace FinTreX.Infrastructure.Services
     public class UserManagementService : IUserManagementService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IAlertsBroadcaster _alertsBroadcaster;
 
-        public UserManagementService(UserManager<ApplicationUser> userManager)
+        public UserManagementService(
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext dbContext,
+            IAlertsBroadcaster alertsBroadcaster)
         {
             _userManager = userManager;
+            _dbContext = dbContext;
+            _alertsBroadcaster = alertsBroadcaster;
         }
 
         public async Task<IReadOnlyList<UserSummaryDto>> GetAllUsersAsync()
@@ -55,9 +63,33 @@ namespace FinTreX.Infrastructure.Services
             return MapToSummary(user, role);
         }
 
+        public async Task<UserSummaryDto> UpdateMyProfileAsync(string userId, UpdateMyProfileDto request)
+        {
+            if (request == null)
+                throw new ApiException("Update payload is required.");
+
+            var user = await _userManager.FindByIdAsync(userId)
+                       ?? throw new ApiException($"User with ID '{userId}' was not found.");
+
+            user.FirstName = request.FirstName?.Trim();
+            user.LastName = request.LastName?.Trim();
+            user.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber)
+                ? null
+                : request.PhoneNumber.Trim();
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                throw new ApiException(string.Join(" ", updateResult.Errors.Select(e => e.Description)));
+
+            var role = await GetSingleRoleAsync(user);
+            return MapToSummary(user, role);
+        }
+
         public async Task<string> DeactivateUserAsync(string userId, string durationKey)
         {
-            var user = await _userManager.FindByIdAsync(userId)
+            var user = await _dbContext.Users
+                       .Include(u => u.RefreshTokens)
+                       .SingleOrDefaultAsync(u => u.Id == userId)
                        ?? throw new ApiException($"User with ID '{userId}' was not found.");
 
             var targetRole = await GetSingleRoleAsync(user);
@@ -73,6 +105,10 @@ namespace FinTreX.Infrastructure.Services
             var setLockoutEndResult = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
             if (!setLockoutEndResult.Succeeded)
                 throw new ApiException(string.Join(" ", setLockoutEndResult.Errors.Select(e => e.Description)));
+
+            RevokeActiveRefreshTokens(user, "admin-deactivate");
+            await _dbContext.SaveChangesAsync();
+            await _alertsBroadcaster.PushSessionRevokedAsync(user.Id);
 
             var durationText = lockoutEnd >= DateTimeOffset.MaxValue.AddDays(-1)
                 ? "suresiz"
@@ -199,7 +235,9 @@ namespace FinTreX.Infrastructure.Services
                 IsActive = !user.LockoutEnd.HasValue || user.LockoutEnd.Value <= DateTimeOffset.UtcNow,
                 DeactivatedUntil = user.LockoutEnd >= DateTimeOffset.MaxValue.AddDays(-1)
                     ? null
-                    : user.LockoutEnd
+                    : user.LockoutEnd,
+                CreatedAt = user.CreatedAt,
+                LastLoginAt = user.LastLoginAt
             };
         }
 
@@ -210,6 +248,17 @@ namespace FinTreX.Infrastructure.Services
                 throw new ApiException($"User '{user.Email}' must have exactly one role. Found: {roles.Count}.");
 
             return roles[0];
+        }
+
+        public async Task UpdateEconomistStatusAsync(string userId, FinTreX.Core.Enums.EconomistStatus status)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) throw new ApiException($"User '{userId}' not found.");
+
+            user.EconomistStatus = status;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                throw new ApiException($"Failed to update economist status: {string.Join(", ", result.Errors.Select(e => e.Description))}");
         }
 
         private static DateTimeOffset ResolveLockoutEnd(string durationKey)
@@ -226,6 +275,16 @@ namespace FinTreX.Infrastructure.Services
                 "ONE_MONTH" => now.AddMonths(1),
                 _ => throw new ApiException($"Unsupported deactivation duration '{durationKey}'.")
             };
+        }
+
+        private static void RevokeActiveRefreshTokens(ApplicationUser user, string revokedBy)
+        {
+            var now = DateTime.UtcNow;
+            foreach (var token in user.RefreshTokens.Where(t => t.Revoked == null && t.Expires > now))
+            {
+                token.Revoked = now;
+                token.RevokedByIp = revokedBy;
+            }
         }
     }
 }

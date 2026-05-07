@@ -26,12 +26,12 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--glass-white-5);
       border-radius: 10px;
     }
 
     &:hover::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--glass-white-10);
     }
   }
 
@@ -42,9 +42,9 @@
   }
 
   &__load-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #64748b;
+    background: var(--glass-white-5);
+    border: 1px solid var(--glass-white-10);
+    color: var(--text-tertiary);
     padding: 0.4rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -52,8 +52,8 @@
     transition: all 0.2s;
 
     &:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.05);
-      color: #94a3b8;
+      background: var(--glass-white-10);
+      color: var(--text-secondary);
     }
 
     &:disabled {
@@ -87,9 +87,9 @@
     margin: 1rem 0;
 
     span {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #94a3b8;
+      background: var(--glass-white-5);
+      border: 1px solid var(--glass-white-10);
+      color: var(--text-secondary);
       padding: 0.25rem 0.75rem;
       border-radius: 12px;
       font-size: 0.75rem;
@@ -105,10 +105,10 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--color-navy-500, #3b82f6);
-    color: white;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-lg);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -120,7 +120,7 @@
 
     &:hover {
       transform: scale(1.1);
-      background: var(--color-navy-600, #2563eb);
+      background: var(--btn-primary-bg-hover);
     }
   }
 }
@@ -132,7 +132,7 @@
   span {
     width: 5px;
     height: 5px;
-    background: var(--color-navy-400);
+    background: var(--text-tertiary);
     border-radius: var(--radius-full);
     animation: bounce 1.4s infinite ease-in-out both;
 

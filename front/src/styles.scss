@@ -34,6 +34,12 @@
 // ─── 1. FONTS ───────────────────────────────────────────────────────────────
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+// ─── Shared component styles ────────────────────────────────────────────────
+// Piyasa Verileri tablosu (mk__list, mk__cell, …) — bu kurallar birden fazla
+// sayfada (markets, watchlist) kullanılan <app-market-*-table> komponentleri
+// tarafından paylaşılır, bu yüzden global import edilir.
+@import './styles/market-list';
+
 
 // ─── 16. BREAKPOINTS (SCSS variables — used in @media queries) ──────────────
 $breakpoint-mobile:   480px;
@@ -190,6 +196,20 @@ $breakpoint-ultra:    1536px;
   --bg-info-subtle:      var(--color-info-50);
   --bg-gold-subtle:      var(--color-gold-50);
   --bg-navy-subtle:      var(--color-navy-50);
+
+  // ─── 5.1 GLASSMORPHISM & OVERLAYS ─────────────────────────────────────
+  // Used for white/dark transparent layers on top of backgrounds
+  --glass-white-5:       rgba(255, 255, 255, 0.05);
+  --glass-white-10:      rgba(255, 255, 255, 0.10);
+  --glass-white-20:      rgba(255, 255, 255, 0.20);
+  --glass-white-40:      rgba(255, 255, 255, 0.40);
+  --glass-white-60:      rgba(255, 255, 255, 0.60);
+  --glass-white-80:      rgba(255, 255, 255, 0.80);
+
+  --glass-black-5:       rgba(0, 0, 0, 0.05);
+  --glass-black-10:      rgba(0, 0, 0, 0.10);
+  --glass-black-20:      rgba(0, 0, 0, 0.20);
+  --glass-black-40:      rgba(0, 0, 0, 0.40);
 
 
   // ─── 6. TEXT COLORS ─────────────────────────────────────────────────────
@@ -436,10 +456,11 @@ $breakpoint-ultra:    1536px;
   --z-dropdown:    10;
   --z-sticky:      20;
   --z-sidebar:     30;
-  --z-overlay:     40;
-  --z-modal:       50;
-  --z-toast:       60;
-  --z-tooltip:     70;
+  --z-topbar:      40;
+  --z-overlay:     50;
+  --z-modal:       60;
+  --z-toast:       70;
+  --z-tooltip:     80;
   --z-max:       9999;
 
 
@@ -500,6 +521,20 @@ $breakpoint-ultra:    1536px;
   --bg-info-subtle:      rgba(37, 99, 235, 0.12);
   --bg-gold-subtle:      rgba(184, 134, 11, 0.12);
   --bg-navy-subtle:      rgba(72, 101, 129, 0.12);
+
+  // ─── 5.1 GLASSMORPHISM & OVERLAYS (Dark Mode) ─────────────────────────
+  // Note: In dark mode, white glass usually becomes more transparent or shifts to dark glass
+  --glass-white-5:       rgba(255, 255, 255, 0.02);
+  --glass-white-10:      rgba(255, 255, 255, 0.05);
+  --glass-white-20:      rgba(255, 255, 255, 0.08);
+  --glass-white-40:      rgba(255, 255, 255, 0.15);
+  --glass-white-60:      rgba(255, 255, 255, 0.25);
+  --glass-white-80:      rgba(255, 255, 255, 0.40);
+
+  --glass-black-5:       rgba(0, 0, 0, 0.10);
+  --glass-black-10:      rgba(0, 0, 0, 0.20);
+  --glass-black-20:      rgba(0, 0, 0, 0.30);
+  --glass-black-40:      rgba(0, 0, 0, 0.50);
 
 
   // ─── Text ───────────────────────────────────────────────────────────────

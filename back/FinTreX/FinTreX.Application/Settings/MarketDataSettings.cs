@@ -30,6 +30,7 @@ namespace FinTreX.Core.Settings
         public int CryptoEnrichmentPlatformRefreshHours { get; set; } = 24;
         public int CryptoEnrichmentMaxSymbols { get; set; } = 500;
         public int CryptoEnrichmentBinanceParallelism { get; set; } = 8;
+        public int PortfolioSnapshotIntervalSeconds { get; set; } = 60;
         public int CoinGeckoMarketsPerPage { get; set; } = 250;
         public int CoinGeckoMarketsPages { get; set; } = 6;
 
@@ -51,5 +52,6 @@ namespace FinTreX.Core.Settings
 
         public List<string> CryptoUsdtPairs { get; set; } = new();
         public List<string> CryptoTryPairs { get; set; } = new();
+        public List<string> PreciousMetalSymbols { get; set; } = new() { "XAU", "XAG", "XPT" };
     }
 }

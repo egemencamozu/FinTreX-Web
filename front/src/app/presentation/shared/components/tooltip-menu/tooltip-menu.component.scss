@@ -19,7 +19,7 @@
   background: var(--bg-sidebar);
   color: var(--text-sidebar);
   border-radius: var(--radius-lg, 12px);
-  box-shadow: var(--shadow-lg, 0 10px 30px rgba(0, 0, 0, 0.25));
+  box-shadow: var(--shadow-lg);
   padding: var(--space-2, 8px) 0;
   animation: tooltipFadeIn var(--duration-fast, 150ms) var(--ease-out, ease-out);
   pointer-events: auto;
@@ -91,7 +91,7 @@
   font-size: var(--font-size-sm, 14px);
   font-weight: var(--font-weight-bold, 700);
   color: var(--text-inverse);
-  border-bottom: 1px solid var(--border-sidebar-subtle, rgba(255, 255, 255, 0.1));
+  border-bottom: 1px solid var(--border-sidebar-subtle, var(--glass-white-10));
   margin-bottom: var(--space-1, 4px);
 }
 

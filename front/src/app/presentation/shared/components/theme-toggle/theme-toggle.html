@@ -1,0 +1,16 @@
+<button class="theme-btn" 
+        (click)="themeService.toggleTheme()" 
+        [attr.title]="'Switch to ' + (themeService.theme() === 'light' ? 'dark' : 'light') + ' mode'"
+        [class.theme-btn--dark]="themeService.theme() === 'dark'">
+  
+  <div class="theme-btn__content">
+    <div class="theme-btn__icon theme-btn__icon--sun">
+      <i class="fa-solid fa-sun"></i>
+    </div>
+    <div class="theme-btn__icon theme-btn__icon--moon">
+      <i class="fa-solid fa-moon"></i>
+    </div>
+  </div>
+
+  <div class="theme-btn__glow"></div>
+</button>

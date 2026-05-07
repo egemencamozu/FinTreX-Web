@@ -1,0 +1,382 @@
+<section class="st-admin">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="st-admin__header">
+    <div class="st-admin__header-left">
+      <h1 class="st-admin__page-title">
+        <i class="fa-solid fa-headset" aria-hidden="true"></i>
+        Destek Talepleri
+      </h1>
+      <p class="st-admin__page-desc">Kullanıcı ve ekonomist taleplerini yönet, yanıtla, durum güncelle.</p>
+    </div>
+    <div class="st-admin__header-right">
+      <button
+        type="button"
+        class="st-admin__pill-btn"
+        [class.st-admin__pill-btn--active]="unansweredOnly()"
+        (click)="toggleUnanswered()"
+      >
+        <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+        Cevaplanmamış
+        @if (openCount() > 0) {
+          <span class="st-admin__pill-count">{{ openCount() }}</span>
+        }
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ FILTERS ═══ -->
+  <div class="st-admin__filters">
+    <div class="st-admin__search">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <input
+        type="text"
+        placeholder="Konu, gönderen ara..."
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+      />
+    </div>
+
+    <select class="st-admin__select" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+      @for (opt of statusOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+
+    <select class="st-admin__select" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
+      @for (opt of typeOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+
+    <select class="st-admin__select" [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)">
+      @for (opt of roleOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+
+    <input
+      type="date"
+      class="st-admin__date-input"
+      [ngModel]="dateFrom()"
+      (ngModelChange)="dateFrom.set($event)"
+      aria-label="Başlangıç tarihi"
+    />
+    <input
+      type="date"
+      class="st-admin__date-input"
+      [ngModel]="dateTo()"
+      (ngModelChange)="dateTo.set($event)"
+      aria-label="Bitiş tarihi"
+    />
+
+    <button type="button" class="st-admin__text-btn" (click)="resetFilters()">
+      <i class="fa-solid fa-eraser" aria-hidden="true"></i> Temizle
+    </button>
+  </div>
+
+  <!-- ═══ TICKET LIST ═══ -->
+  @if (isLoading()) {
+    <div class="st-admin__state">
+      <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+      <span>Yükleniyor...</span>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="st-admin__state st-admin__state--error">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="st-admin__state">
+      <i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i>
+      <span>Filtrelerle eşleşen ticket yok.</span>
+    </div>
+  } @else {
+    <div class="st-admin__list">
+      @for (t of filtered(); track trackById($index, t)) {
+        <button
+          type="button"
+          class="st-admin__ticket-card"
+          [class.st-admin__ticket-card--selected]="selected()?.id === t.id"
+          (click)="openDetail(t)"
+        >
+          <div class="st-admin__ticket-top-row">
+            <div class="st-admin__ticket-badges">
+              <span class="st-admin__badge" [attr.data-tone]="getStatusTone(t.status)">
+                {{ getStatusLabel(t.status) }}
+              </span>
+              <span class="st-admin__badge st-admin__badge--sm" [attr.data-tone]="getTypeTone(t.type)">
+                {{ getTypeLabel(t.type) }}
+              </span>
+              <span class="st-admin__badge st-admin__badge--sm" [attr.data-tone]="getRoleTone(t.userRole)">
+                {{ getRoleLabel(t.userRole) }}
+              </span>
+            </div>
+            <span class="st-admin__ticket-id">#{{ t.id }}</span>
+          </div>
+          <h3 class="st-admin__ticket-subject">{{ t.subject }}</h3>
+          @if (getEconomistNameFromSubject(t); as economistName) {
+            <div class="st-admin__ticket-economist-hint">
+              <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+              <span>Hedef: <strong>{{ economistName }}</strong></span>
+            </div>
+          }
+          <div class="st-admin__ticket-meta-row">
+            <span class="st-admin__ticket-sender-name">
+              <i class="fa-regular fa-user" aria-hidden="true"></i>
+              {{ t.userName || '—' }}
+            </span>
+            <span class="st-admin__ticket-date">
+              <i class="fa-regular fa-clock" aria-hidden="true"></i>
+              {{ formatDate(t.createdAtUtc) }}
+            </span>
+          </div>
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ═══ SLIDE PANEL ═══ -->
+  @if (selected(); as sel) {
+    <div class="st-admin__overlay" (click)="closeDetail()" aria-hidden="true"></div>
+
+    <aside class="st-admin__slide" role="dialog" aria-modal="true" [attr.aria-label]="sel.subject">
+
+      <!-- Slide Header -->
+      <div class="st-admin__slide-header">
+        <div class="st-admin__slide-meta">
+          <div class="st-admin__slide-badges">
+            <span class="st-admin__badge" [attr.data-tone]="getStatusTone(sel.status)">
+              {{ getStatusLabel(sel.status) }}
+            </span>
+            <span class="st-admin__badge st-admin__badge--sm" [attr.data-tone]="getTypeTone(sel.type)">
+              {{ getTypeLabel(sel.type) }}
+            </span>
+            <span class="st-admin__ticket-id">#{{ sel.id }}</span>
+          </div>
+          <h2 class="st-admin__slide-title">{{ sel.subject }}</h2>
+          <div class="st-admin__slide-info-row">
+            <span class="st-admin__slide-info-item">
+              <i class="fa-regular fa-user" aria-hidden="true"></i>
+              {{ sel.userName || '—' }}
+              @if (sel.userEmail) { <span class="st-admin__slide-email">· {{ sel.userEmail }}</span> }
+            </span>
+            <span class="st-admin__slide-info-item">
+              <i class="fa-regular fa-clock" aria-hidden="true"></i>
+              {{ formatDate(sel.createdAtUtc) }}
+            </span>
+          </div>
+          @if (getEconomistNameFromSubject(sel); as economistName) {
+            <div class="st-admin__slide-economist-row">
+              <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+              <span>Değiştirilmek istenen ekonomist: <strong>{{ economistName }}</strong></span>
+            </div>
+          }
+        </div>
+        <button class="st-admin__close-btn" type="button" (click)="closeDetail()" aria-label="Kapat">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <!-- Slide Body (scrollable) -->
+      <div class="st-admin__slide-body">
+
+        <!-- Economist Change Target Card -->
+        @if (economistChangeTargetFromMessages(); as target) {
+          <div class="st-admin__target-card">
+            <div class="st-admin__target-icon-wrap">
+              <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+            </div>
+            <div class="st-admin__target-content">
+              <span class="st-admin__target-label">Değiştirilmek istenen ekonomist</span>
+              <strong class="st-admin__target-name">{{ target.name }}</strong>
+              <span class="st-admin__target-detail">
+                Ekonomist ID: {{ target.economistId }} · Atama #{{ target.assignmentId }}
+              </span>
+            </div>
+          </div>
+
+          <div class="st-admin__assignment-section">
+            <label class="st-admin__field-group">
+              <span class="st-admin__field-label">Yeni Ekonomist Ata</span>
+              <select
+                class="st-admin__select"
+                [ngModel]="selectedNewEconomistId()"
+                (ngModelChange)="onNewEconomistChange($event)"
+                [disabled]="isChangingAssignment()"
+              >
+                <option value="">Ekonomist seç</option>
+                @for (economist of getReplacementEconomists(target); track economist.id) {
+                  <option [value]="economist.id" [disabled]="isClientAssignedEconomist(economist)">
+                    {{ getEconomistAssignmentLabel(economist, target) }}
+                  </option>
+                }
+              </select>
+            </label>
+            <div class="st-admin__assignment-btns">
+              <button
+                type="button"
+                class="st-admin__assignment-badge st-admin__assignment-badge--change"
+                [class.st-admin__assignment-badge--active]="assignmentAction() === 'change'"
+                (click)="changeTargetAssignment()"
+                [disabled]="!selectedNewEconomistId()"
+                [attr.aria-pressed]="assignmentAction() === 'change'"
+              >
+                <i class="fa-solid fa-right-left" aria-hidden="true"></i> Değiştir
+              </button>
+              <button
+                type="button"
+                class="st-admin__assignment-badge st-admin__assignment-badge--remove"
+                [class.st-admin__assignment-badge--active]="assignmentAction() === 'remove'"
+                (click)="removeTargetAssignment()"
+                [attr.aria-pressed]="assignmentAction() === 'remove'"
+              >
+                <i class="fa-solid fa-user-minus" aria-hidden="true"></i> Kaldır
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Chat Thread -->
+        <div class="st-admin__chat">
+          @if (messagesLoading()) {
+            <div class="st-admin__chat-spinner">
+              <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+            </div>
+          } @else {
+            @for (msg of messages(); track msg.id) {
+              <div
+                class="st-admin__bubble"
+                [class.st-admin__bubble--user]="msg.senderRole === 'User'"
+                [class.st-admin__bubble--admin]="msg.senderRole === 'Admin'"
+              >
+                @if (msg.senderRole === 'Admin') {
+                  <span class="st-admin__bubble-sender">
+                    <i class="fa-solid fa-headset" aria-hidden="true"></i>
+                    {{ msg.senderName || 'Destek Ekibi' }}
+                  </span>
+                }
+                <p class="st-admin__bubble-body">{{ msg.body }}</p>
+                <span class="st-admin__bubble-time">{{ formatDate(msg.sentAtUtc) }}</span>
+              </div>
+            }
+
+            @if (messages().length === 0) {
+              <div class="st-admin__chat-empty">
+                <i class="fa-regular fa-comment-dots" aria-hidden="true"></i>
+                <span>Henüz mesaj yok.</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Slide Footer -->
+      <div class="st-admin__slide-footer">
+
+        <!-- Status Stepper -->
+        @if (sel.status !== 'Closed') {
+          <div class="st-admin__status-section">
+            <span class="st-admin__field-label">
+              <i class="fa-solid fa-stamp" aria-hidden="true"></i> Durum Güncelle
+            </span>
+            <p class="st-admin__hint-text">Açık → İnceleniyor → Çözüldü → Kapalı. Geri dönülemez.</p>
+            <div class="st-admin__status-stepper">
+              @for (opt of statusOptions.slice(1); track opt.value; let i = $index) {
+                <div
+                  class="st-admin__step"
+                  [class.st-admin__step--current]="draftStatus() === opt.value"
+                  [class.st-admin__step--done]="isStatusDone($any(opt.value))"
+                  [class.st-admin__step--disabled]="isStatusDisabledInDraft($any(opt.value))"
+                >
+                  <label class="st-admin__step-inner">
+                    <input
+                      type="radio"
+                      name="draft-status"
+                      [value]="opt.value"
+                      [checked]="draftStatus() === opt.value"
+                      [disabled]="isStatusDisabledInDraft($any(opt.value))"
+                      (change)="onStatusDraftChange($any(opt.value))"
+                    />
+                    <span class="st-admin__step-dot">
+                      @if (isStatusDone($any(opt.value))) {
+                        <i class="fa-solid fa-check" aria-hidden="true"></i>
+                      } @else {
+                        {{ i + 1 }}
+                      }
+                    </span>
+                    <span class="st-admin__step-label">{{ opt.label }}</span>
+                  </label>
+                  @if (i < statusOptions.length - 2) {
+                    <div class="st-admin__step-connector"
+                      [class.st-admin__step-connector--done]="isStatusDone($any(opt.value))"
+                    ></div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (sel.status !== 'Closed') {
+          <div class="st-admin__chat-compose">
+            <textarea
+              class="st-admin__chat-input"
+              rows="2"
+              placeholder="Mesaj yaz... (Enter ile gönder)"
+              [ngModel]="newMessage()"
+              (ngModelChange)="newMessage.set($event)"
+              (keydown)="onMessageKeydown($event)"
+              [disabled]="isSendingMessage()"
+            ></textarea>
+            <button
+              type="button"
+              class="st-admin__chat-send-btn"
+              (click)="sendMessage()"
+              [disabled]="!newMessage().trim() || isSendingMessage()"
+              aria-label="Gönder"
+            >
+              @if (isSendingMessage()) {
+                <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+              } @else {
+                <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+              }
+            </button>
+          </div>
+          <div class="st-admin__footer-actions">
+            <button
+              type="button"
+              class="st-admin__action-btn"
+              (click)="closeDetail()"
+              [disabled]="isSaving()"
+            >
+              İptal
+            </button>
+            <button
+              type="button"
+              class="st-admin__action-btn st-admin__action-btn--primary"
+              (click)="save()"
+              [disabled]="!canSave() || isSaving()"
+            >
+              @if (isSaving()) {
+                <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                Kaydediliyor...
+              } @else {
+                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                Durumu Güncelle
+              }
+            </button>
+          </div>
+        } @else {
+          <div class="st-admin__chat-closed">
+            <i class="fa-solid fa-lock" aria-hidden="true"></i>
+            <span>Bu talep kapalı.</span>
+            <button type="button" class="st-admin__action-btn" (click)="closeDetail()">Kapat</button>
+          </div>
+        }
+      </div>
+
+    </aside>
+  }
+
+</section>

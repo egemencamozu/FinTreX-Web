@@ -46,6 +46,10 @@ export class MarketDataApiRepository extends MarketDataRepository {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
+  getUsdTryRate(): Observable<MarketForexRate> {
+    return this.http.get<MarketForexRate>('/v1/forex/usdtry');
+  }
+
   getSnapshot(): Observable<MarketSnapshot> {
     return forkJoin({
       bist30: this.http.get<StocksBist30Response>('/v1/stocks/bist').pipe(

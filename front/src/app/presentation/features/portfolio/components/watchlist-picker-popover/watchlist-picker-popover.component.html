@@ -1,0 +1,105 @@
+@if (visible) {
+  <div #panel class="wlp-portal">
+    <div class="wlp-backdrop" (click)="onBackdrop()"></div>
+
+    <div
+      class="wlp"
+      role="dialog"
+      aria-modal="true"
+      aria-label="İzleme listelerine ekle">
+
+      <header class="wlp__head">
+        <div>
+          <div class="wlp__head-title">İzleme Listelerine Ekle</div>
+          <div class="wlp__head-symbol">{{ symbol }}</div>
+        </div>
+        <button type="button" class="wlp__close" (click)="close()" title="Kapat" aria-label="Kapat">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <div class="wlp__body">
+        @if (watchlists().length === 0) {
+          <div class="wlp__empty">Henüz bir izleme listen yok.</div>
+        } @else {
+          <ul class="wlp__list">
+            @for (wl of watchlists(); track wl.id) {
+              <li>
+                <label class="wlp__item">
+                  <input
+                    type="checkbox"
+                    [checked]="isChecked(wl.id)"
+                    (change)="toggleList(wl.id)" />
+                  <span class="wlp__item-name">{{ wl.name }}</span>
+                  @if (wl.isDefault) {
+                    <span class="wlp__item-badge">Ana</span>
+                  }
+                  <span class="wlp__item-count">{{ wl.itemCount }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        }
+
+        <div class="wlp__new-row">
+          @if (!showNewInput()) {
+            <button type="button" class="wlp__new-btn" (click)="openNewListInput()">
+              <i class="fa-solid fa-plus"></i>
+              Yeni liste oluştur
+            </button>
+          } @else {
+            <div class="wlp__new-form">
+              <input
+                type="text"
+                class="wlp__new-input"
+                placeholder="Liste adı"
+                maxlength="40"
+                autofocus
+                [ngModel]="newListName()"
+                (ngModelChange)="newListName.set($event)"
+                (keydown.enter)="createAndToggle()"
+                (keydown.escape)="cancelNewList()" />
+              <button
+                type="button"
+                class="wlp__new-confirm"
+                (click)="createAndToggle()"
+                [disabled]="creating() || !newListName().trim()"
+                title="Oluştur">
+                @if (creating()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-check"></i>
+                }
+              </button>
+              <button
+                type="button"
+                class="wlp__new-cancel"
+                (click)="cancelNewList()"
+                title="İptal">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <footer class="wlp__foot">
+        <button type="button" class="wlp__btn wlp__btn--ghost" (click)="close()">
+          Vazgeç
+        </button>
+        <button
+          type="button"
+          class="wlp__btn wlp__btn--primary"
+          (click)="saveAndClose()"
+          [disabled]="saving()">
+          @if (saving()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Kaydediliyor…
+          } @else {
+            Kaydet
+          }
+        </button>
+      </footer>
+    </div>
+  </div>
+}

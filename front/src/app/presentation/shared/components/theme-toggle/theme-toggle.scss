@@ -1,0 +1,98 @@
+.theme-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-default);
+  box-shadow: var(--shadow-sm);
+
+  &:hover {
+    background: var(--state-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+  }
+
+  &__content {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all var(--duration-normal) var(--ease-out);
+
+    &--sun {
+      color: #eab308; // Gold/Sun color
+      transform: scale(1) rotate(0);
+      opacity: 1;
+    }
+
+    &--moon {
+      color: #94a3b8; // Slate color
+      transform: scale(0.5) rotate(-90deg);
+      opacity: 0;
+    }
+  }
+
+  &--dark {
+    background: var(--color-navy-800);
+    border-color: var(--color-navy-600);
+
+    .theme-btn__icon--sun {
+      transform: scale(0.5) rotate(90deg);
+      opacity: 0;
+    }
+
+    .theme-btn__icon--moon {
+      transform: scale(1) rotate(0);
+      opacity: 1;
+      color: #cbd5e1;
+    }
+
+    &:hover {
+      background: var(--color-navy-700);
+      .theme-btn__glow {
+        opacity: 0.2;
+      }
+    }
+  }
+
+  &__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, var(--color-brand-400), transparent 70%);
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--ease-default);
+    pointer-events: none;
+  }
+}
+
+// Micro-animation for the icon switch
+@keyframes iconMorph {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+
+.theme-btn:active .theme-btn__content {
+  animation: iconMorph 0.2s ease;
+}

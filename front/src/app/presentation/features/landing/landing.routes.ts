@@ -21,5 +21,5 @@ export const LANDING_ROUTES: Routes = [
   {
     path: 'trial',
     loadComponent: () => import('./pages/trial/trial').then((m) => m.Trial),
-  },
+  }
 ];

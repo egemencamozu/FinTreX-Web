@@ -1,0 +1,2 @@
+"""FinTreX MCP demonstration package."""
+

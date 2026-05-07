@@ -1,0 +1,79 @@
+<div class="mk__list mk__list--assets">
+  <div class="mk__list-header">
+    <span></span>
+    <span class="center">#</span>
+    <span>İsim</span>
+    <span class="right">Fiyat</span>
+    <span class="right">Miktarı</span>
+    <span class="right">Avg. Cost</span>
+    <span class="right">P&amp;L</span>
+    <span class="right">P&amp;L %</span>
+    <span class="center">İşlem</span>
+  </div>
+
+  @for (asset of assets; track trackByAssetId($index, asset); let i = $index) {
+    <div class="mk__list-row">
+      <div class="mk__cell mk__cell--star"></div>
+
+      <div class="mk__cell mk__cell--rank">{{ i + 1 }}</div>
+
+      <div class="mk__cell mk__cell--name">
+        <div class="mk__asset">
+          <div class="mk__asset-icon" [attr.data-type]="asset.assetType">
+            <i [class]="getAssetIcon(asset.assetType)"></i>
+          </div>
+          <div class="mk__asset-info">
+            <span class="mk__asset-sym">{{ asset.symbol }}</span>
+            <span class="mk__asset-sub">{{ asset.assetName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono">
+        {{ (asset.currentValue || asset.averageCost) | currency:asset.currency }}
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono">
+        {{ asset.quantity | number:'1.2-4' }}
+      </div>
+
+      <div class="mk__cell mk__cell--right mk__cell--mono">
+        {{ asset.averageCost | currency:asset.currency }}
+      </div>
+
+      <div class="mk__cell mk__cell--right">
+        <span class="mk__change" [ngClass]="getPnLChangeClass(asset)">
+          {{ getPnLValue(asset) >= 0 ? '+' : '' }}{{ getPnLValue(asset) | currency:asset.currency }}
+        </span>
+      </div>
+
+      <div class="mk__cell mk__cell--right">
+        <span class="mk__change" [ngClass]="getPnLChangeClass(asset)">
+          <i class="fa-solid" [class.fa-caret-up]="getPnLPercentValue(asset) >= 0" [class.fa-caret-down]="getPnLPercentValue(asset) < 0"></i>
+          {{ getPnLPercentValue(asset) | number:'1.2-2' }}%
+        </span>
+      </div>
+
+      <div class="mk__cell mk__cell--center">
+        <div class="mk__row-actions">
+          <button
+            class="mk__action-btn mk__action-btn--edit"
+            title="Edit asset"
+            aria-label="Edit asset"
+            (click)="onEdit?.(asset)"
+          >
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button
+            class="mk__action-btn mk__action-btn--delete"
+            title="Delete asset"
+            aria-label="Delete asset"
+            (click)="onDelete?.(asset.id)"
+          >
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

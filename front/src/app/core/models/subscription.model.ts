@@ -13,6 +13,8 @@ export interface SubscriptionPlan {
   description: string;
   monthlyPriceTRY: number;
   yearlyPriceTRY: number;
+  maxPortfolios: number;
+  maxDailyChatMessages: number;
   maxEconomists: number;
   canChangeEconomist: boolean;
   hasPrioritySupport: boolean;
@@ -39,6 +41,8 @@ export interface UpdateSubscriptionPlanDto {
   description: string;
   monthlyPriceTRY: number;
   yearlyPriceTRY: number;
+  maxPortfolios: number;
+  maxDailyChatMessages: number;
   maxEconomists: number;
   canChangeEconomist: boolean;
   hasPrioritySupport: boolean;

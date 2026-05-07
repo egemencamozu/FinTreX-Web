@@ -34,6 +34,16 @@ import { AiAssistantRepository } from './core/interfaces/ai-assistant.repository
 import { AiAssistantApiRepository } from './data/repositories/ai-assistant-api.repository';
 import { AdminStatsRepository } from './core/interfaces/admin-stats.repository';
 import { AdminStatsApiRepository } from './data/repositories/admin-stats.repository.impl';
+import { PaymentHistoryRepository } from './core/interfaces/payment-history.repository';
+import { PaymentHistoryApiRepository } from './data/repositories/payment-history-api.repository';
+import { SupportTicketRepository } from './core/interfaces/support-ticket.repository';
+import { SupportTicketApiRepository } from './data/repositories/support-ticket-api.repository';
+import { AccountRepository } from './core/interfaces/account.repository';
+import { AccountApiRepository } from './data/repositories/account-api.repository';
+import { AdminRevenueDashboardRepository } from './core/interfaces/admin-revenue-dashboard.repository';
+import { AdminRevenueDashboardApiRepository } from './data/repositories/admin-revenue-dashboard-api.repository';
+import { EconomistApplicationRepository } from './core/interfaces/economist-application.repository';
+import { EconomistApplicationApiRepository } from './data/repositories/economist-application-api.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -65,5 +75,10 @@ export const appConfig: ApplicationConfig = {
     { provide: ChatRepository, useClass: ChatApiRepository },
     { provide: AiAssistantRepository, useClass: AiAssistantApiRepository },
     { provide: AdminStatsRepository, useClass: AdminStatsApiRepository },
+    { provide: PaymentHistoryRepository, useClass: PaymentHistoryApiRepository },
+    { provide: AccountRepository, useClass: AccountApiRepository },
+    { provide: SupportTicketRepository, useClass: SupportTicketApiRepository },
+    { provide: AdminRevenueDashboardRepository, useClass: AdminRevenueDashboardApiRepository },
+    { provide: EconomistApplicationRepository, useClass: EconomistApplicationApiRepository },
   ],
 };

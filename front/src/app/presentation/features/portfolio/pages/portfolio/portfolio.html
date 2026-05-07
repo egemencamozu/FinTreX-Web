@@ -1,75 +1,201 @@
-<section class="pf-c">
+<section class="pf-c" [class.pf-c--privacy]="isPrivacyMode()">
   <div class="pf-c__wrapper">
     <div class="pf-c__container">
 
       <!-- =========== HEADER PANEL =========== -->
       <header class="pf-c__header-panel">
-        <div class="pf-c__title-row">
-          <h1 class="pf-c__page-title">My Portfolios</h1>
-          <div class="pf-c__selector-group">
-            <div class="pf-c__dropdown" [class.pf-c__dropdown--open]="isPortfolioDropdownOpen()">
-              <button
-                class="pf-c__dropdown-trigger"
-                (click)="togglePortfolioDropdown()"
-                data-testid="portfolio-dropdown-trigger"
-              >
-                <span class="pf-c__dropdown-trigger-text text-truncate">
-                  {{ currentPortfolio()?.name || (isLoading() ? 'Loading...' : 'Select Portfolio') }}
-                </span>
-                <i class="fa-solid fa-chevron-down pf-c__dropdown-chevron"></i>
-              </button>
+        <div class="pf-c__header-shell">
+          <div class="pf-c__header-main">
+            <div class="pf-c__header-value-stack">
+              @if (!isLoading() && portfolios().length > 0) {
+                @if (isRateReady()) {
+                  @let displayValue   = isOverviewSelected() ? overviewTotalValue()      : totalValue();
+                  @let displayPnL     = isOverviewSelected() ? overviewTotalPnL()        : totalPnL();
+                  @let displayPnLPct  = isOverviewSelected() ? overviewTotalPnLPercent() : totalPnLPercent();
+                  <div class="pf-c__header-balance-row">
+                    <span class="pf-c__header-balance">
+                      {{ maskVal(formatSummaryAmount(displayValue)) }}
+                    </span>
+                  </div>
 
-              @if (isPortfolioDropdownOpen()) {
-                <div class="pf-c__dropdown-backdrop" (click)="isPortfolioDropdownOpen.set(false)"></div>
-                <div class="pf-c__dropdown-menu animate-pop">
-                  @for (pf of portfolios(); track pf.id; let i = $index) {
-                    <button
-                      class="pf-c__dropdown-item"
-                      [class.pf-c__dropdown-item--active]="activePortfolioIndex() === i"
-                      (click)="selectPortfolio(i)"
-                    >
-                      <span class="pf-c__dropdown-item-text">{{ pf.name }}</span>
-                      @if (activePortfolioIndex() === i) {
-                        <i class="fa-solid fa-check pf-c__dropdown-item-check"></i>
-                      }
-                    </button>
-                  }
-                  @if (portfolios().length === 0 && !isLoading()) {
-                    <div class="pf-c__dropdown-empty">No portfolios found</div>
-                  }
-                </div>
+                  <div
+                    class="pf-c__header-change-line"
+                    [class.pf-c__header-change-line--up]="displayPnL >= 0"
+                    [class.pf-c__header-change-line--down]="displayPnL < 0"
+                  >
+                    <span class="pf-c__header-change-value">
+                      {{ maskVal(formatSummaryAmount(displayPnL)) }}
+                    </span>
+                    <span class="pf-c__header-change-percent">
+                      <i class="fa-solid" [class.fa-caret-up]="displayPnL >= 0" [class.fa-caret-down]="displayPnL < 0"></i>
+                      {{ isPrivacyMode() ? '••••' : (displayPnLPct | number:'1.2-2') }}%
+                    </span>
+                    <span class="pf-c__header-change-period">(tüm zamanlar)</span>
+                  </div>
+                } @else {
+                  <div class="pf-c__header-balance-row">
+                    <span class="pf-c__header-balance pf-c__header-balance--loading">—</span>
+                  </div>
+                }
               }
             </div>
 
+            <div class="pf-c__header-actions">
+              @if (isReadOnly()) {
+                <button
+                  class="pf-c__btn-secondary"
+                  type="button"
+                  (click)="goBackToCustomers()"
+                  data-testid="btn-back-to-customers"
+                >
+                  <i class="fa-solid fa-arrow-left"></i>
+                  <span>Müşterilere Dön</span>
+                </button>
+              }
+
+              <div class="pf-c__header-chart-controls">
+                <app-segmented-control
+                  [options]="historyCurrencyOptions"
+                  [value]="historyCurrency()"
+                  (valueChange)="setHistoryCurrency($event)"
+                />
+              </div>
+
+              @if (isReadOnly()) {
+                <span class="pf-c__readonly-chip">
+                  <i class="fa-solid fa-lock"></i>
+                  Salt okuma
+                </span>
+              }
+
+              @if (!isReadOnly()) {
+              <button
+                class="pf-c__btn-primary"
+                (click)="openAddAssetModal()"
+                data-testid="btn-add-asset"
+              >
+                <i class="fa-solid fa-plus"></i>
+                <span>Varlık Ekle</span>
+              </button>
+              }
+
+              <button
+                class="pf-c__icon-btn"
+                [class.pf-c__icon-btn--active]="isPrivacyMode()"
+                (click)="isPrivacyMode.set(!isPrivacyMode())"
+                [title]="isPrivacyMode() ? 'Değerleri göster' : 'Değerleri gizle'"
+                data-testid="btn-privacy-toggle"
+              >
+                <i class="fa-solid" [class.fa-eye-slash]="!isPrivacyMode()" [class.fa-eye]="isPrivacyMode()"></i>
+              </button>
+
+              <button
+                class="pf-c__btn-secondary"
+                (click)="exportCsv()"
+                title="CSV olarak dışa aktar"
+                data-testid="btn-export"
+              >
+                <i class="fa-solid fa-arrow-down-to-bracket"></i>
+                <span>Dışa Aktar</span>
+              </button>
+
+              @if (!isReadOnly()) {
+              <div class="pf-c__actions-menu" [class.pf-c__actions-menu--open]="isActionsMenuOpen()">
+                <button
+                  class="pf-c__icon-btn"
+                  (click)="isActionsMenuOpen.set(!isActionsMenuOpen())"
+                  title="Daha fazla işlem"
+                  data-testid="btn-more-actions"
+                >
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                @if (isActionsMenuOpen()) {
+                  <div class="pf-c__dropdown-backdrop" (click)="isActionsMenuOpen.set(false)"></div>
+                  <div class="pf-c__actions-menu-panel animate-pop">
+                    @if (currentPortfolio()) {
+                      <button
+                        class="pf-c__actions-menu-item"
+                        (click)="openRenameModal()"
+                        data-testid="btn-rename-portfolio"
+                      >
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Düzenle</span>
+                      </button>
+
+                      <button
+                        class="pf-c__actions-menu-item"
+                        [class.pf-c__actions-menu-item--active]="currentPortfolio()!.isHiddenFromEconomists"
+                        (click)="toggleEconomistVisibility()"
+                        data-testid="btn-toggle-economist-visibility"
+                      >
+                        @if (currentPortfolio()!.isHiddenFromEconomists) {
+                          <i class="fa-solid fa-eye"></i>
+                          <span>Ekonomiste Aç</span>
+                        } @else {
+                          <i class="fa-solid fa-eye-slash"></i>
+                          <span>Ekonomistten Gizle</span>
+                        }
+                      </button>
+
+                      <button
+                        class="pf-c__actions-menu-item pf-c__actions-menu-item--danger"
+                        (click)="deleteCurrentPortfolio(); isActionsMenuOpen.set(false)"
+                        data-testid="btn-delete-portfolio"
+                      >
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Portföyü Sil</span>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="pf-c__header-chip-row">
             <button
-              class="pf-c__icon-btn"
-              title="New Portfolio"
-              (click)="showNewPortfolioModal.set(true)"
-              data-testid="btn-new-portfolio"
+              class="pf-c__header-chip pf-c__header-chip--badge pf-c__header-chip--portfolio pf-c__header-chip--overview"
+              type="button"
+              (click)="focusOverview()"
+              [class.pf-c__header-chip--active]="isOverviewSelected()"
             >
-              <i class="fa-solid fa-circle-plus"></i>
+              <span class="pf-c__header-chip-text">Genel Bakış</span>
             </button>
 
-            @if (currentPortfolio()) {
-              <button
-                class="pf-c__icon-btn pf-c__icon-btn--danger"
-                title="Delete Portfolio"
-                (click)="deleteCurrentPortfolio()"
-                data-testid="btn-delete-portfolio"
-              >
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
+            @if (isLoading()) {
+              <span class="pf-c__portfolio-tabs-loading">Portföyler yükleniyor...</span>
+            } @else if (portfolios().length === 0) {
+              <span class="pf-c__portfolio-tabs-empty">Portföy yok</span>
+            } @else {
+              @for (pf of portfolios(); track pf.id; let i = $index) {
+                <button
+                  class="pf-c__header-chip pf-c__header-chip--badge pf-c__header-chip--portfolio"
+                  [class.pf-c__header-chip--active]="activePortfolioIndex() === i && !isOverviewSelected()"
+                  (click)="selectPortfolio(i)"
+                  [attr.data-testid]="'portfolio-chip-' + i"
+                >
+                  <span class="pf-c__header-chip-text">{{ pf.name }}</span>
+                  @if (!isReadOnly() && pf.isHiddenFromEconomists) {
+                    <i class="fa-solid fa-eye-slash pf-c__chip-hidden-icon" title="Ekonomistlerden gizli"></i>
+                  }
+                </button>
+              }
+            }
+
+            @if (!isReadOnly()) {
+            <button
+              class="pf-c__header-chip pf-c__header-chip--add"
+              type="button"
+              (click)="showNewPortfolioModal.set(true)"
+              title="Portföy oluştur"
+              aria-label="Portföy oluştur"
+              data-testid="btn-new-portfolio-inline"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </button>
             }
           </div>
-        </div>
-        <div class="pf-c__header-actions">
-          <button
-            class="pf-c__btn-primary"
-            (click)="showAddAssetModal.set(true)"
-            data-testid="btn-add-asset"
-          >
-            <i class="fa-solid fa-plus"></i> Add Asset
-          </button>
         </div>
       </header>
 
@@ -77,258 +203,739 @@
       @if (isLoading()) {
         <div class="pf-c__loading-state">
           <div class="pf-c__spinner"></div>
-          <p>Loading your investments...</p>
+          <p>Yatırımların yükleniyor...</p>
         </div>
       } @else if (portfolios().length === 0) {
         <div class="pf-c__empty-state">
           <i class="fa-solid fa-briefcase pf-c__empty-icon"></i>
-          <h3 class="pf-c__empty-title">No portfolios found</h3>
-          <p class="pf-c__empty-text">Start your investment journey by creating your first portfolio.</p>
+          <h3 class="pf-c__empty-title">Portföy bulunamadı</h3>
+          <p class="pf-c__empty-text">İlk portföyünü oluşturarak yatırım yolculuğuna başla.</p>
+          @if (!isReadOnly()) {
           <button
             class="pf-c__btn-primary"
             (click)="showNewPortfolioModal.set(true)"
             data-testid="btn-create-first-portfolio"
           >
-            Create Portfolio
+            Portföy Oluştur
           </button>
+          }
         </div>
       } @else {
         <!-- KPI PANEL -->
-        <section class="pf-c__kpi-panel">
+        <section class="pf-c__kpi-panel" id="portfolio-overview">
           <app-kpi-card
-            label="Total Value"
-            [value]="(totalValue() | currency) || '0'"
-            data-testid="kpi-total-value"
-          />
-          <app-kpi-card
-            label="Total P&L"
-            [value]="(totalPnL() | currency) || '0'"
-            [changeValue]="totalPnLPercent()"
+            label="Tüm Zamanlar Kâr/Zarar"
+            [value]="isRateReady() ? maskVal(formatSummaryAmount(isOverviewSelected() ? overviewTotalPnL() : totalPnL())) : '—'"
+            [changeValue]="isPrivacyMode() ? 0 : (isRateReady() ? (isOverviewSelected() ? overviewTotalPnLPercent() : totalPnLPercent()) : 0)"
             data-testid="kpi-total-pnl"
           />
           <app-kpi-card
-            label="Assets"
-            [value]="assetCount().toString()"
-            data-testid="kpi-asset-count"
+            label="Maliyet Tabanı"
+            [value]="isRateReady() ? maskVal(formatSummaryAmount(isOverviewSelected() ? overviewTotalCost() : totalCost())) : '—'"
+            data-testid="kpi-total-cost"
           />
-          <app-kpi-card
-            label="Active Portfolio"
-            [value]="currentPortfolio()?.name || 'None'"
-            data-testid="kpi-portfolio-name"
-          />
+
+          <div class="pf-c__kpi-performers-card">
+            <div class="pf-c__performers-top">
+              <div class="pf-c__performers-filter">
+                @for (opt of performerFilterOptions; track opt.id) {
+                  <button
+                    class="pf-c__performers-filter-btn"
+                    [class.pf-c__performers-filter-btn--active]="performerFilter() === opt.id"
+                    (click)="setPerformerFilter(opt.id)"
+                    [attr.data-testid]="'performer-filter-' + opt.id"
+                  >
+                    {{ opt.label }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div class="pf-c__performers-card-content">
+              <div class="pf-c__performer-section">
+                <h3 class="pf-c__performer-section-title">Best Performer</h3>
+                @if ((isOverviewSelected() ? overviewBestPerformer() : bestPerformer()); as best) {
+                  <div class="pf-c__performer-item pf-c__performer-item--best">
+                    <div class="pf-c__performer-head">
+                      <app-market-asset-cell
+                        class="pf-c__performer-asset-cell"
+                        [symbol]="best.symbol"
+                        [avatarKey]="best.symbol"
+                        [showLogo]="best.assetType === 'Crypto'"
+                        [isGold]="best.assetType === 'PreciousMetal'"
+                        [showSubLabel]="false"
+                      />
+                    </div>
+                    <div class="pf-c__performer-stats">
+                      <span
+                        class="pf-c__performer-value"
+                        [class.pf-c__performer-value--up]="isPositivePerformer(best.change)"
+                        [class.pf-c__performer-value--down]="isNegativePerformer(best.change)"
+                      >
+                        {{ maskVal(formatPerformerValue(best.value, best.change)) }}
+                      </span>
+                      <span
+                        class="pf-c__performer-change"
+                        [class.pf-c__performer-change--up]="isPositivePerformer(best.change)"
+                        [class.pf-c__performer-change--down]="isNegativePerformer(best.change)"
+                      >
+                        <i
+                          class="fa-solid"
+                          [class.fa-caret-up]="isPositivePerformer(best.change)"
+                          [class.fa-caret-down]="isNegativePerformer(best.change)"
+                          [class.fa-minus]="!isPositivePerformer(best.change) && !isNegativePerformer(best.change)"
+                        ></i>
+                        {{ best.change | number:'1.2-2' }}%
+                      </span>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="pf-c__performer-item pf-c__performer-item--empty">Varlık yok</div>
+                }
+              </div>
+
+              <div class="pf-c__performers-divider"></div>
+
+              <div class="pf-c__performer-section">
+                <h3 class="pf-c__performer-section-title">Worst Performer</h3>
+                @if ((isOverviewSelected() ? overviewWorstPerformer() : worstPerformer()); as worst) {
+                  <div class="pf-c__performer-item pf-c__performer-item--worst">
+                    <div class="pf-c__performer-head">
+                      <app-market-asset-cell
+                        class="pf-c__performer-asset-cell"
+                        [symbol]="worst.symbol"
+                        [avatarKey]="worst.symbol"
+                        [showLogo]="worst.assetType === 'Crypto'"
+                        [isGold]="worst.assetType === 'PreciousMetal'"
+                        [showSubLabel]="false"
+                      />
+                    </div>
+                    <div class="pf-c__performer-stats">
+                      <span
+                        class="pf-c__performer-value"
+                        [class.pf-c__performer-value--up]="isPositivePerformer(worst.change)"
+                        [class.pf-c__performer-value--down]="isNegativePerformer(worst.change)"
+                      >
+                        {{ maskVal(formatPerformerValue(worst.value, worst.change)) }}
+                      </span>
+                      <span
+                        class="pf-c__performer-change"
+                        [class.pf-c__performer-change--up]="isPositivePerformer(worst.change)"
+                        [class.pf-c__performer-change--down]="isNegativePerformer(worst.change)"
+                      >
+                        <i
+                          class="fa-solid"
+                          [class.fa-caret-up]="isPositivePerformer(worst.change)"
+                          [class.fa-caret-down]="isNegativePerformer(worst.change)"
+                          [class.fa-minus]="!isPositivePerformer(worst.change) && !isNegativePerformer(worst.change)"
+                        ></i>
+                        {{ worst.change | number:'1.2-2' }}%
+                      </span>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="pf-c__performer-item pf-c__performer-item--empty">Varlık yok</div>
+                }
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- CHART PANEL -->
         <section class="pf-c__chart-panel">
-          <app-holdings-card
-            #card="holdingsCard"
-            [heading]="currentPortfolio()?.name || 'Holdings'"
-            [viewOptions]="viewOptions"
-          >
-            <div cardControls>
-              @if (card.activeView() === 'history') {
-                <app-segmented-control
-                  [options]="rangeOptions"
-                  [value]="activeRange()"
-                  (valueChange)="setRange($event)"
-                />
+          <div class="pf-c__chart-main">
+            @if (isOverviewSelected()) {
+              <app-holdings-card [heading]="'Tüm Portföyler'" [defaultView]="'history'">
+                <div cardControls>
+                  <div class="pf-c__chart-controls-inline">
+                    <app-segmented-control
+                      [options]="rangeOptions"
+                      [value]="activeRange()"
+                      (valueChange)="setRange($event)"
+                    />
+                  </div>
+                </div>
+                <ng-template cardView="history">
+                  <app-line-chart [data]="overviewHistoryChartData()" />
+                </ng-template>
+              </app-holdings-card>
+            } @else {
+              <app-holdings-card
+                #card="holdingsCard"
+                [heading]="currentPortfolio()?.name || 'Varlıklar'"
+                [viewOptions]="chartViewOptions"
+                (activeViewChange)="onChartViewChange($event)"
+              >
+                <div cardControls>
+                  @if (card.activeView() === 'history' || card.activeView() === 'performance') {
+                    <div class="pf-c__chart-controls-inline">
+                      <app-segmented-control
+                        [options]="rangeOptions"
+                        [value]="activeRange()"
+                        (valueChange)="setRange($event)"
+                      />
+                    </div>
+                  }
+                </div>
+
+                <ng-template cardView="history">
+                  <app-line-chart [data]="historyChartData()" />
+                </ng-template>
+
+                <ng-template cardView="performance">
+                  <app-line-chart [data]="performanceChartData()" />
+                </ng-template>
+              </app-holdings-card>
+            }
+          </div>
+
+          <div class="pf-c__chart-side">
+            <app-holdings-card [heading]="'Dağılım'" [defaultView]="'default'">
+              @if (isOverviewSelected()) {
+                <div cardControls>
+                  <app-segmented-control
+                    [options]="overviewDoughnutFilterOptions"
+                    [value]="overviewDoughnutFilter()"
+                    (valueChange)="setOverviewDoughnutFilter($event)"
+                  />
+                </div>
               }
-            </div>
-
-            <ng-template cardView="history">
-              <app-line-chart [data]="activeChartData()" />
-            </ng-template>
-
-            <ng-template cardView="allocation">
-              <app-doughnut-chart [items]="allocationItems()" />
-            </ng-template>
-          </app-holdings-card>
+              <ng-template cardView="default">
+                <app-doughnut-chart
+                  [items]="isOverviewSelected() ? overviewAllocationItems() : allocationItems()"
+                />
+              </ng-template>
+            </app-holdings-card>
+          </div>
         </section>
 
         <!-- ASSETS TABLE PANEL -->
         <section class="pf-c__assets-panel">
           <div class="pf-c__assets-header">
-            <h2 class="pf-c__assets-title">Assets</h2>
-            <span class="pf-c__assets-badge">
-              {{ currentPortfolio()?.assets?.length || 0 }} items
-            </span>
+            <div class="pf-c__assets-title-group">
+              <app-segmented-control
+                [options]="assetsPanelViewOptions"
+                [value]="assetsPanelView()"
+                (valueChange)="setAssetsPanelView($event)"
+              />
+              <span class="pf-c__assets-badge">
+                @if (assetsPanelView() === 'assets') {
+                  {{ (isOverviewSelected() ? overviewFilteredAssets() : filteredAssets()).length || 0 }} adet
+                } @else {
+                  {{ (isOverviewSelected() ? overviewAllTransactions() : filteredTransactions()).length || 0 }} adet
+                }
+              </span>
+            </div>
+            <app-segmented-control
+              [options]="assetViewFilterOptions"
+              [value]="assetViewFilter()"
+              (valueChange)="setAssetViewFilter($event)"
+            />
           </div>
 
-          <div class="pf-c__table-wrapper">
-            <table class="pf-c__table">
-              <thead>
-                <tr>
-                  <th>Asset</th>
-                  <th>Quantity</th>
-                  <th>Avg. Cost</th>
-                  <th>Total Value</th>
-                  <th class="pf-c__th-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (asset of currentPortfolio()?.assets; track asset.id) {
-                  <tr class="pf-c__asset-row">
-                    <td>
-                      <div class="pf-c__asset-info">
-                        <div
-                          class="pf-c__asset-icon"
-                          [attr.data-type]="asset.assetType"
-                        >
-                          <i [class]="getAssetIcon(asset.assetType)"></i>
-                        </div>
-                        <div class="pf-c__asset-names">
-                          <span class="pf-c__asset-symbol">{{ asset.symbol }}</span>
-                          <span class="pf-c__asset-name">{{ asset.assetName }}</span>
-                        </div>
+          @if (assetsPanelView() === 'assets') {
+            @let activeAssets = isOverviewSelected() ? overviewFilteredAssets() : filteredAssets();
+            @let activeSortedAssets = isOverviewSelected() ? pagedOverviewSortedAssets() : pagedSortedAssets();
+            <div class="mk__body">
+              @if (activeAssets.length === 0) {
+                <div class="mk__empty"><span>Bu portföyde henüz varlık yok.</span></div>
+              } @else {
+                <div
+                  class="mk__list"
+                  [class.mk__list--assets-intraday]="showIntradayColumns()"
+                  [class.mk__list--assets-basic]="showSingleChangeColumn()"
+                  [class.mk__list--no-actions]="isOverviewSelected()"
+                >
+                  <div class="mk__list-header">
+                    <span>İsim</span>
+                    <span class="right sortable">Fiyat
+                      <span class="mk__sort-icons">
+                        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('price','desc')" (click)="sortAssetByDir('price','desc')"></i>
+                        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('price','asc')" (click)="sortAssetByDir('price','asc')"></i>
+                      </span>
+                    </span>
+                    @if (showIntradayColumns()) {
+                      <span class="right sortable">1s %
+                        <span class="mk__sort-icons">
+                          <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('change1h','desc')" (click)="sortAssetByDir('change1h','desc')"></i>
+                          <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('change1h','asc')" (click)="sortAssetByDir('change1h','asc')"></i>
+                        </span>
+                      </span>
+                      <span class="right sortable">24s %
+                        <span class="mk__sort-icons">
+                          <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('change24h','desc')" (click)="sortAssetByDir('change24h','desc')"></i>
+                          <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('change24h','asc')" (click)="sortAssetByDir('change24h','asc')"></i>
+                        </span>
+                      </span>
+                      <span class="right sortable">4s %
+                        <span class="mk__sort-icons">
+                          <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('change4h','desc')" (click)="sortAssetByDir('change4h','desc')"></i>
+                          <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('change4h','asc')" (click)="sortAssetByDir('change4h','asc')"></i>
+                        </span>
+                      </span>
+                    } @else {
+                      <span class="right sortable">24s %
+                        <span class="mk__sort-icons">
+                          <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('change24h','desc')" (click)="sortAssetByDir('change24h','desc')"></i>
+                          <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('change24h','asc')" (click)="sortAssetByDir('change24h','asc')"></i>
+                        </span>
+                      </span>
+                    }
+                    <span class="right sortable">Varlık Değeri
+                      <span class="mk__sort-icons">
+                        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('holdings','desc')" (click)="sortAssetByDir('holdings','desc')"></i>
+                        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('holdings','asc')" (click)="sortAssetByDir('holdings','asc')"></i>
+                      </span>
+                    </span>
+                    <span class="right sortable">Ortalama Alış
+                      <span class="mk__sort-icons">
+                        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('avgBuyPrice','desc')" (click)="sortAssetByDir('avgBuyPrice','desc')"></i>
+                        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('avgBuyPrice','asc')" (click)="sortAssetByDir('avgBuyPrice','asc')"></i>
+                      </span>
+                    </span>
+                    <span class="right sortable">Kâr/Zarar
+                      <span class="mk__sort-icons">
+                        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isAssetSortActive('profitLoss','desc')" (click)="sortAssetByDir('profitLoss','desc')"></i>
+                        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isAssetSortActive('profitLoss','asc')" (click)="sortAssetByDir('profitLoss','asc')"></i>
+                      </span>
+                    </span>
+                    @if (!isOverviewSelected() && !isReadOnly()) {
+                      <span class="center">İşlemler</span>
+                    }
+                  </div>
+
+                  @for (asset of activeSortedAssets; track asset.id) {
+                    <div class="mk__list-row">
+                      <div class="mk__cell mk__cell--name">
+                        <app-market-asset-cell
+                          [symbol]="asset.symbol"
+                          [subLabel]="asset.assetName"
+                          [avatarKey]="asset.symbol"
+                          [showLogo]="asset.assetType === 'Crypto'"
+                          [showSubLabel]="false"
+                        />
                       </div>
-                    </td>
-                    <td class="pf-c__cell-mono">{{ asset.quantity | number:'1.2-4' }}</td>
-                    <td class="pf-c__cell-mono">{{ asset.averageCost | currency:asset.currency }}</td>
-                    <td class="pf-c__cell-value">{{ (asset.quantity * asset.averageCost) | currency:asset.currency }}</td>
-                    <td class="pf-c__th-center">
-                      <div class="pf-c__row-actions">
-                        <button
-                          class="pf-c__action-btn pf-c__action-btn--edit"
-                          title="Edit asset"
-                          aria-label="Edit asset"
-                          (click)="editAsset(asset)"
-                          data-testid="btn-edit-asset"
-                        >
-                          <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button
-                          class="pf-c__action-btn pf-c__action-btn--delete"
-                          title="Delete asset"
-                          aria-label="Delete asset"
-                          (click)="deleteAsset(asset.id)"
-                          data-testid="btn-delete-asset"
-                        >
-                          <i class="fa-solid fa-trash-can"></i>
-                        </button>
+
+                      <div class="mk__cell mk__cell--right mk__cell--mono">
+                        {{ maskVal(formatCurrencyAmount(getAssetUnitPrice(asset), historyCurrency())) }}
                       </div>
-                    </td>
-                  </tr>
-                }
-                @if (!currentPortfolio()?.assets?.length) {
-                  <tr>
-                    <td colspan="5" class="pf-c__empty-table">
-                      No assets in this portfolio yet.
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+
+                      @if (showIntradayColumns()) {
+                        @let live = liveChanges().get(asset.symbol);
+                        <div class="mk__cell mk__cell--right">
+                          @if (live?.change1h !== null && live?.change1h !== undefined) {
+                            <span class="mk__change" [ngClass]="live!.change1h! > 0 ? 'mk__up' : live!.change1h! < 0 ? 'mk__down' : 'mk__flat'">
+                              {{ live!.change1h! | number:'1.2-2' }}%
+                            </span>
+                          } @else {
+                            <span class="mk__cell--muted">—</span>
+                          }
+                        </div>
+                        <div class="mk__cell mk__cell--right">
+                          @if (live?.change24h !== null && live?.change24h !== undefined) {
+                            <span class="mk__change" [ngClass]="live!.change24h! > 0 ? 'mk__up' : live!.change24h! < 0 ? 'mk__down' : 'mk__flat'">
+                              {{ live!.change24h! | number:'1.2-2' }}%
+                            </span>
+                          } @else {
+                            <span class="mk__cell--muted">—</span>
+                          }
+                        </div>
+                        <div class="mk__cell mk__cell--right">
+                          @if (live?.change4h !== null && live?.change4h !== undefined) {
+                            <span class="mk__change" [ngClass]="live!.change4h! > 0 ? 'mk__up' : live!.change4h! < 0 ? 'mk__down' : 'mk__flat'">
+                              {{ live!.change4h! | number:'1.2-2' }}%
+                            </span>
+                          } @else {
+                            <span class="mk__cell--muted">—</span>
+                          }
+                        </div>
+                      } @else {
+                        @let live24 = liveChanges().get(asset.symbol);
+                        <div class="mk__cell mk__cell--right">
+                          @if (live24?.change24h !== null && live24?.change24h !== undefined) {
+                            <span class="mk__change" [ngClass]="live24!.change24h! > 0 ? 'mk__up' : live24!.change24h! < 0 ? 'mk__down' : 'mk__flat'">
+                              {{ live24!.change24h! | number:'1.2-2' }}%
+                            </span>
+                          } @else {
+                            <span class="mk__cell--muted">—</span>
+                          }
+                        </div>
+                      }
+
+                      <div class="mk__cell mk__cell--right mk__cell--vol">
+                        <span class="mk__cell--mono">
+                          {{ maskVal(formatCurrencyAmount(getAssetHoldingValue(asset), historyCurrency())) }}
+                        </span>
+                        <span class="mk__vol-sub">{{ asset.quantity | number:'1.2-4' }} {{ asset.symbol }}</span>
+                      </div>
+
+                      <div class="mk__cell mk__cell--right mk__cell--mono">
+                        {{ maskVal(formatCurrencyAmount(getAssetAverageCost(asset), historyCurrency())) }}
+                      </div>
+
+                      <div class="mk__cell mk__cell--right mk__cell--vol">
+                        <span
+                          class="mk__change"
+                          [ngClass]="{ 'mk__up': getAssetProfitLoss(asset) >= 0, 'mk__down': getAssetProfitLoss(asset) < 0 }"
+                        >
+                          {{ isPrivacyMode() ? '••••••' : ((getAssetProfitLoss(asset) >= 0 ? '+' : '') + formatCurrencyAmount(getAssetProfitLoss(asset), historyCurrency())) }}
+                        </span>
+                        <span
+                          class="mk__vol-sub"
+                          [ngClass]="{ 'mk__up': getAssetProfitLoss(asset) >= 0, 'mk__down': getAssetProfitLoss(asset) < 0 }"
+                        >
+                          <i class="fa-solid" [class.fa-caret-up]="getAssetProfitLoss(asset) >= 0" [class.fa-caret-down]="getAssetProfitLoss(asset) < 0"></i>{{ isPrivacyMode() ? '••••' : ((getAssetProfitLossPercent(asset) >= 0 ? getAssetProfitLossPercent(asset) : -getAssetProfitLossPercent(asset)) | number:'1.2-2') }}%
+                        </span>
+                      </div>
+
+                      @if (!isOverviewSelected() && !isReadOnly()) {
+                        <div class="mk__cell mk__cell--center">
+                          <div class="mk__row-actions">
+                            <button
+                              class="mk__action-btn mk__action-btn--edit"
+                              title="Varlığı düzenle"
+                              aria-label="Varlığı düzenle"
+                              (click)="editAsset(asset)"
+                              data-testid="btn-edit-asset"
+                            >
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              class="mk__action-btn mk__action-btn--delete"
+                              title="Varlığı sil"
+                              aria-label="Varlığı sil"
+                              (click)="deleteAsset(asset.id)"
+                              data-testid="btn-delete-asset"
+                            >
+                              <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            @if (activeAssets.length > ASSETS_PAGE_SIZE) {
+              <app-paginator
+                [page]="assetsPage()"
+                [total]="activeAssets.length"
+                [pageSize]="ASSETS_PAGE_SIZE"
+                (pageChange)="assetsPage.set($event)"
+              />
+            }
+          }
+
+          @if (assetsPanelView() === 'transactions') {
+            @let activeTxs = isOverviewSelected() ? overviewAllTransactions() : filteredTransactions();
+            @let pagedActiveTxs = isOverviewSelected() ? pagedOverviewAllTransactions() : pagedSortedTransactions();
+            <div class="mk__body">
+              @if (activeTxs.length === 0) {
+                <div class="mk__empty"><span>Henüz işlem yok.</span></div>
+              } @else {
+                <div class="mk__list mk__list--tx" [class.mk__list--no-actions]="isOverviewSelected()">
+                  <div class="mk__list-header">
+                    <span>İsim</span>
+                    <span class="center">Tür</span>
+                    <span class="center sortable">Tarih
+                      <span class="mk__sort-icons">
+                        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isTxSortActive('date','desc')" (click)="sortTxByDir('date','desc')"></i>
+                        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isTxSortActive('date','asc')" (click)="sortTxByDir('date','asc')"></i>
+                      </span>
+                    </span>
+                    <span class="right sortable">Fiyat
+                      <span class="mk__sort-icons">
+                        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isTxSortActive('price','desc')" (click)="sortTxByDir('price','desc')"></i>
+                        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isTxSortActive('price','asc')" (click)="sortTxByDir('price','asc')"></i>
+                      </span>
+                    </span>
+                    <span class="right sortable">Miktar
+                      <span class="mk__sort-icons">
+                        <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isTxSortActive('amount','desc')" (click)="sortTxByDir('amount','desc')"></i>
+                        <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isTxSortActive('amount','asc')" (click)="sortTxByDir('amount','asc')"></i>
+                      </span>
+                    </span>
+                    <span class="center mk__tx-notes-col">Notlar</span>
+                    @if (!isOverviewSelected() && !isReadOnly()) {
+                      <span class="center">İşlemler</span>
+                    }
+                  </div>
+
+                  @for (tx of pagedActiveTxs; track tx.id) {
+                    <div class="mk__list-row">
+                      <div class="mk__cell mk__cell--name">
+                        <app-market-asset-cell
+                          [symbol]="tx.symbol"
+                          [avatarKey]="tx.symbol"
+                          [showLogo]="tx.assetType === 'Crypto'"
+                          [showSubLabel]="false"
+                        />
+                      </div>
+
+                      <div class="mk__cell mk__cell--center">
+                        @if (tx.type === 'Buy') {
+                          <span class="pf-c__tx-type pf-c__tx-type--buy">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            Alış
+                          </span>
+                        } @else {
+                          <span class="pf-c__tx-type pf-c__tx-type--sell">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                            Satış
+                          </span>
+                        }
+                      </div>
+
+                      <div class="mk__cell mk__cell--center mk__cell--mono">
+                        {{ formatTxDate(tx.date) }}
+                      </div>
+
+                      <div class="mk__cell mk__cell--right mk__cell--mono">
+                        {{ maskVal(formatTxAmount(tx.price, tx.currency)) }}
+                      </div>
+
+                      <div class="mk__cell mk__cell--right mk__cell--vol">
+                        <span class="mk__cell--mono mk__up">+{{ tx.quantity | number:'1.2-8' }}</span>
+                        <span class="mk__vol-sub">{{ tx.symbol }}</span>
+                      </div>
+
+                      <div class="mk__cell mk__cell--center mk__cell--tx-notes">
+                        @if (shouldShowTxNotes(tx)) {
+                          <span class="pf-c__tx-notes" [title]="tx.notes!">{{ tx.notes }}</span>
+                        } @else {
+                          <span class="mk__cell--muted">—</span>
+                        }
+                      </div>
+
+                      @if (!isOverviewSelected() && !isReadOnly()) {
+                        <div class="mk__cell mk__cell--center">
+                          <div class="mk__row-actions">
+                            <button
+                              class="mk__action-btn mk__action-btn--edit"
+                              title="İşlemi düzenle"
+                              aria-label="İşlemi düzenle"
+                              (click)="editAsset({ id: tx.id, symbol: tx.symbol, assetName: tx.assetName, assetType: tx.assetType, currency: tx.currency, quantity: tx.quantity, averageCost: tx.price, acquiredAtUtc: tx.date, notes: tx.notes, portfolioId: currentPortfolio()!.id, createdAtUtc: tx.date })"
+                              data-testid="btn-edit-tx"
+                            >
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              class="mk__action-btn mk__action-btn--delete"
+                              title="İşlemi sil"
+                              aria-label="İşlemi sil"
+                              (click)="deleteTransaction(tx.id)"
+                              data-testid="btn-delete-tx"
+                            >
+                              <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            @if (activeTxs.length > ASSETS_PAGE_SIZE) {
+              <app-paginator
+                [page]="txPage()"
+                [total]="activeTxs.length"
+                [pageSize]="ASSETS_PAGE_SIZE"
+                (pageChange)="txPage.set($event)"
+              />
+            }
+          }
         </section>
       }
     </div>
   </div>
 </section>
 
+<!-- Rename Portfolio Modal -->
+@if (showRenameModal() && !isReadOnly()) {
+  <div class="pf-c__modal-overlay" (click)="showRenameModal.set(false)">
+    <div class="pf-c__modal-content pf-c__modal-content--sm animate-pop" (click)="$event.stopPropagation()">
+      <h3 class="pf-c__modal-title">Portföyü Düzenle</h3>
+      
+      <div class="pf-c__form-group">
+        <label class="pf-c__form-label">Portföy İsmi</label>
+        <input 
+          type="text" 
+          class="pf-c__form-input" 
+          [value]="renameValue()" 
+          (input)="renameValue.set($any($event.target).value)"
+          (keyup.enter)="renameCurrentPortfolio()"
+          placeholder="Portföy ismini girin..."
+          #renameInput
+        >
+      </div>
+
+      <div class="pf-c__form-actions" style="margin-top: var(--space-6); display: flex; justify-content: flex-end; gap: var(--space-3);">
+        <button class="pf-c__btn-text" (click)="showRenameModal.set(false)">Vazgeç</button>
+        <button class="pf-c__btn-primary" (click)="renameCurrentPortfolio()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+}
+
 <!-- =========== MODALS =========== -->
-@if (showNewPortfolioModal()) {
+@if (showNewPortfolioModal() && !isReadOnly()) {
   <div class="pf-c__modal-overlay" data-testid="modal-create-portfolio">
     <div class="pf-c__modal-content pf-c__modal-content--sm">
-      <h2 class="pf-c__modal-title">Create Portfolio</h2>
+      <h2 class="pf-c__modal-title">Portföy Oluştur</h2>
       <div class="pf-c__form-group">
-        <label class="pf-c__form-label">Name</label>
+        <label class="pf-c__form-label">Ad</label>
         <input
           type="text"
           #pfName
-          placeholder="Portfolio Name"
+          placeholder="Portföy Adı"
           class="pf-c__form-input"
           data-testid="input-portfolio-name"
         />
       </div>
       <div class="pf-c__form-group">
-        <label class="pf-c__form-label">Description <span class="pf-c__optional">(optional)</span></label>
+        <label class="pf-c__form-label">Açıklama <span class="pf-c__optional">(opsiyonel)</span></label>
         <textarea
           #pfDesc
-          placeholder="Brief description..."
+          placeholder="Kısa açıklama..."
           class="pf-c__form-input"
           rows="3"
           data-testid="input-portfolio-description"
         ></textarea>
       </div>
       <div class="pf-c__form-actions">
-        <button class="pf-c__btn-text" (click)="showNewPortfolioModal.set(false)">Cancel</button>
-        <button class="pf-c__btn-primary" (click)="createNewPortfolio(pfName.value, pfDesc.value)" data-testid="btn-confirm-create">Create</button>
+        <button class="pf-c__btn-text" (click)="showNewPortfolioModal.set(false)">Vazgeç</button>
+        <button class="pf-c__btn-primary" (click)="createNewPortfolio(pfName.value, pfDesc.value)" data-testid="btn-confirm-create">Oluştur</button>
       </div>
     </div>
   </div>
 }
 
-@if (showAddAssetModal()) {
+@if (showAddAssetModal() && !isReadOnly()) {
   <div class="pf-c__modal-overlay" (click)="closeAssetModal()" data-testid="modal-add-asset">
-    <div class="pf-c__modal-content" (click)="$event.stopPropagation()">
+    <div class="pf-c__modal-content" (click)="showAssetSelectModal.set(false); $event.stopPropagation()">
       <h2 class="pf-c__modal-title">
-        {{ editingAsset() ? 'Edit Asset' : ('Add Asset to ' + currentPortfolio()?.name) }}
+        {{ editingAsset() ? 'Varlığı Düzenle' : 'Varlık Ekle' }}
       </h2>
       <div class="pf-c__form-grid">
+
         <div class="pf-c__form-group pf-c__form-group--full">
-          <label class="pf-c__form-label">Symbol</label>
-          <input type="text" #aSymbol placeholder="BTC, THYAO..." class="pf-c__form-input"
-            [value]="editingAsset()?.symbol || ''"
-            [disabled]="!!editingAsset()"
-            data-testid="input-asset-symbol" />
+          <label class="pf-c__form-label">Varlık Türü</label>
+          <div class="pf-c__asset-type-tabs">
+            @for (opt of assetTypeOptions; track opt.value) {
+              <button
+                type="button"
+                class="pf-c__asset-type-tab"
+                [class.pf-c__asset-type-tab--active]="modalAssetType() === opt.value"
+                [disabled]="!!editingAsset()"
+                (click)="onModalAssetTypeChange(opt.value)"
+                [attr.data-testid]="'tab-type-' + opt.value"
+              >
+                <i [class]="opt.icon"></i>
+                {{ opt.label }}
+              </button>
+            }
+          </div>
         </div>
+
+        <!-- Sembol Seç -->
         <div class="pf-c__form-group pf-c__form-group--full">
-          <label class="pf-c__form-label">Asset Name</label>
-          <input type="text" #aName placeholder="Bitcoin, Türk Hava Yolları..." class="pf-c__form-input"
-            [value]="editingAsset()?.assetName || ''"
-            [disabled]="!!editingAsset()"
-            data-testid="input-asset-name" />
+          <label class="pf-c__form-label">Sembol</label>
+          @if (editingAsset()) {
+            <input type="text"
+              class="pf-c__form-input"
+              [value]="editingAsset()!.symbol"
+              disabled
+              data-testid="input-asset-symbol" />
+          } @else {
+            <div class="pf-c__asset-select-wrap" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                class="pf-c__asset-select-btn"
+                (click)="showAssetSelectModal.set(!showAssetSelectModal())"
+                data-testid="btn-select-asset"
+              >
+                @if (modalSelectedSymbol()) {
+                  <span class="pf-c__asset-select-value">{{ modalSelectedSymbol() }}</span>
+                  <span class="pf-c__asset-select-sub">{{ modalSelectedName() }}</span>
+                } @else {
+                  <span class="pf-c__asset-select-placeholder">
+                    {{ modalAssetType() === 'BIST' ? 'THYAO, GARAN...' : modalAssetType() === 'Crypto' ? 'BTC, ETH...' : 'Altın, Gümüş...' }}
+                  </span>
+                }
+                <i class="fa-solid pf-c__asset-select-arrow" [class.fa-chevron-up]="showAssetSelectModal()" [class.fa-chevron-down]="!showAssetSelectModal()"></i>
+              </button>
+
+              <app-asset-select-modal
+                class="pf-c__asset-select-dropdown"
+                [assetType]="modalAssetType()"
+                [visible]="showAssetSelectModal()"
+                [embedded]="true"
+                (selected)="onAssetSelected($event)"
+                (cancelled)="showAssetSelectModal.set(false)"
+              />
+            </div>
+          }
         </div>
+        <!-- hidden refs for addAsset() call -->
+        <input type="hidden" #aSymbol [value]="editingAsset()?.symbol || modalSelectedSymbol()" />
+        <input type="hidden" #aName [value]="editingAsset()?.assetName || modalSelectedName()" />
+
+        <!-- Miktar -->
         <div class="pf-c__form-group">
-          <label class="pf-c__form-label">Type</label>
-          <select #aType class="pf-c__form-input"
-            [value]="editingAsset()?.assetType || 'BIST'"
-            [disabled]="!!editingAsset()"
-            data-testid="select-asset-type">
-            <option value="BIST">BIST (Borsa İstanbul)</option>
-            <option value="Crypto">Crypto</option>
-            <option value="PreciousMetal">Precious Metal</option>
-          </select>
-        </div>
-        <div class="pf-c__form-group">
-          <label class="pf-c__form-label">Quantity</label>
-          <input type="number" #aQty placeholder="0.00" min="0.000001" class="pf-c__form-input"
+          <label class="pf-c__form-label">Miktar</label>
+          <input type="number" #aQty
+            placeholder="0.00"
+            min="0.000001"
+            step="any"
+            class="pf-c__form-input"
             [value]="editingAsset()?.quantity || ''"
             data-testid="input-asset-quantity" />
         </div>
+
+        <!-- Ortalama Alış -->
         <div class="pf-c__form-group">
-          <label class="pf-c__form-label">Avg. Cost</label>
-          <input type="number" #aCost placeholder="0.00" min="0" class="pf-c__form-input"
+          <label class="pf-c__form-label">
+            Ortalama Alış
+            <span class="pf-c__currency-badge">{{ modalCurrency() }}</span>
+          </label>
+          <input type="number" #aCost
+            placeholder="0.00"
+            min="0"
+            step="any"
+            class="pf-c__form-input"
             [value]="editingAsset()?.averageCost || ''"
             data-testid="input-asset-cost" />
         </div>
+
+        <!-- Alım Tarihi -->
         <div class="pf-c__form-group">
-          <label class="pf-c__form-label">Currency</label>
-          <input type="text" #aCur value="USD" maxlength="8" class="pf-c__form-input"
-            [value]="editingAsset()?.currency || 'USD'"
-            [disabled]="!!editingAsset()"
-            data-testid="input-asset-currency" />
-        </div>
-        <div class="pf-c__form-group">
-          <label class="pf-c__form-label">Acquired At</label>
-          <input type="date" #aDate class="pf-c__form-input"
+          <label class="pf-c__form-label">Alım Tarihi</label>
+          <input type="date" #aDate
+            class="pf-c__form-input"
             [value]="editingAsset()?.acquiredAtUtc ? (editingAsset()?.acquiredAtUtc | date:'yyyy-MM-dd') : ''"
             [disabled]="!!editingAsset()"
             data-testid="input-asset-date" />
         </div>
+
+        <!-- Notlar -->
         <div class="pf-c__form-group">
-          <label class="pf-c__form-label">Notes <span class="pf-c__optional">(optional)</span></label>
-          <input type="text" #aNotes placeholder="e.g. Long-term hold" class="pf-c__form-input"
+          <label class="pf-c__form-label">Notlar <span class="pf-c__optional">(opsiyonel)</span></label>
+          <input type="text" #aNotes
+            placeholder="örn. Uzun vadeli tut"
+            class="pf-c__form-input"
             [value]="editingAsset()?.notes || ''"
             data-testid="input-asset-notes" />
         </div>
+
       </div>
       <div class="pf-c__form-actions">
-        <button class="pf-c__btn-text" (click)="closeAssetModal()">Cancel</button>
+        <button class="pf-c__btn-text" (click)="closeAssetModal()">Vazgeç</button>
         <button class="pf-c__btn-primary"
-          (click)="addAsset(aSymbol.value, aName.value, aType.value, +aQty.value, +aCost.value, aCur.value, aDate.value, aNotes.value)"
+          (click)="addAsset(aSymbol.value.trim().toUpperCase(), aName.value, modalAssetType(), +aQty.value, +aCost.value, modalCurrency(), aDate.value, aNotes.value)"
           data-testid="btn-confirm-asset">
-          {{ editingAsset() ? 'Update Asset' : 'Add Asset' }}
+          {{ editingAsset() ? 'Güncelle' : 'Ekle' }}
         </button>
       </div>
     </div>

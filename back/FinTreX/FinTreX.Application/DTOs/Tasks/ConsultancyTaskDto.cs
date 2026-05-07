@@ -18,6 +18,10 @@ namespace FinTreX.Core.DTOs.Tasks
         public ConsultancyTaskStatus Status { get; set; }
         public DateTime CreatedAtUtc { get; set; }
         public DateTime? CompletedAtUtc { get; set; }
-        public PreAnalysisReportDto PreAnalysisReport { get; set; }
+        public string? EconomistReport { get; set; }
+        public PreAnalysisReportDto? PreAnalysisReport { get; set; }
+        public int? Rating { get; set; }
+        public string? RatingFeedback { get; set; }
+        public DateTime? RatedAtUtc { get; set; }
     }
 }

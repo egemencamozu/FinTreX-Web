@@ -144,6 +144,73 @@ namespace FinTreX.Infrastructure.Services
             return true;
         }
 
+        // ── Account Deletion OTP ─────────────────────────────────────────────
+
+        public async Task GenerateAndSendDeletionCodeAsync(string applicationUserId, string email)
+        {
+            if (string.IsNullOrWhiteSpace(applicationUserId))
+                throw new ApiException("User id is required.");
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ApiException("Email is required.");
+
+            await InvalidateActiveTokensAsync(applicationUserId);
+
+            var code = GenerateOtp();
+            var token = new EmailVerificationToken
+            {
+                ApplicationUserId = applicationUserId,
+                Email = email,
+                CodeHash = HashCode(code),
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.Add(OtpLifetime),
+                AttemptCount = 0,
+                IsUsed = false
+            };
+
+            _dbContext.Set<EmailVerificationToken>().Add(token);
+            await _dbContext.SaveChangesAsync();
+
+            await _mailService.SendAsync(email, "FinTreX - Hesap Silme Doğrulama Kodu", BuildDeletionHtmlBody(code));
+        }
+
+        public async Task VerifyDeletionCodeAsync(string applicationUserId, string code)
+        {
+            if (string.IsNullOrWhiteSpace(code) || code.Length != OtpLength || !code.All(char.IsDigit))
+                throw new ApiException("Doğrulama kodu 6 haneli rakam olmalıdır.");
+
+            var token = await _dbContext.Set<EmailVerificationToken>()
+                .Where(t => t.ApplicationUserId == applicationUserId && !t.IsUsed)
+                .OrderByDescending(t => t.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (token == null)
+                throw new ApiException("Geçerli bir doğrulama kodu bulunamadı. Yeniden kod isteyin.");
+
+            if (token.ExpiresAt <= DateTime.UtcNow)
+                throw new ApiException("Doğrulama kodunun süresi dolmuş. Yeniden kod isteyin.");
+
+            token.AttemptCount += 1;
+
+            if (token.AttemptCount > MaxAttempts)
+            {
+                token.IsUsed = true;
+                await _dbContext.SaveChangesAsync();
+                throw new ApiException("Çok fazla hatalı deneme. Yeniden kod isteyin.");
+            }
+
+            var providedHash = HashCode(code);
+            if (!FixedTimeEquals(providedHash, token.CodeHash))
+            {
+                await _dbContext.SaveChangesAsync();
+                var remaining = Math.Max(0, MaxAttempts - token.AttemptCount);
+                throw new ApiException($"Kod hatalı. Kalan deneme: {remaining}.");
+            }
+
+            token.IsUsed = true;
+            token.UsedAt = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+        }
+
         // ── Helpers ──────────────────────────────────────────────────────────
 
         private async Task InvalidateActiveTokensAsync(string userId)
@@ -194,6 +261,21 @@ namespace FinTreX.Infrastructure.Services
     {code}
   </div>
   <p style=""color:#64748b;font-size:13px;line-height:1.6;"">Kod 10 dakika boyunca geçerlidir. Bu işlemi sen başlatmadıysan bu maili dikkate almayabilirsin.</p>
+  <p style=""color:#94a3b8;font-size:12px;margin-top:24px;"">— FinTreX</p>
+</div>";
+        }
+
+        private static string BuildDeletionHtmlBody(string code)
+        {
+            return $@"
+<div style=""font-family:Arial,sans-serif;color:#0f172a;max-width:480px;margin:0 auto;padding:24px;"">
+  <h2 style=""color:#dc2626;margin:0 0 12px;"">FinTreX - Hesap Silme Onayı</h2>
+  <p style=""color:#475569;line-height:1.6;"">Merhaba,</p>
+  <p style=""color:#475569;line-height:1.6;"">Hesabını kalıcı olarak silmek için aşağıdaki 6 haneli doğrulama kodunu gir. Bu işlem <strong>geri alınamaz</strong>.</p>
+  <div style=""margin:24px 0;padding:16px 24px;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;text-align:center;font-size:28px;font-weight:700;letter-spacing:8px;color:#dc2626;"">
+    {code}
+  </div>
+  <p style=""color:#64748b;font-size:13px;line-height:1.6;"">Kod 10 dakika boyunca geçerlidir. Bu işlemi sen başlatmadıysan lütfen şifreni hemen değiştir.</p>
   <p style=""color:#94a3b8;font-size:12px;margin-top:24px;"">— FinTreX</p>
 </div>";
         }

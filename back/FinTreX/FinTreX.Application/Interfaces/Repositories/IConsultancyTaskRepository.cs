@@ -9,5 +9,7 @@ namespace FinTreX.Core.Interfaces.Repositories
         Task<IReadOnlyList<ConsultancyTask>> GetByUserIdAsync(string userId);
         Task<IReadOnlyList<ConsultancyTask>> GetByEconomistIdAsync(string economistId);
         Task<ConsultancyTask> GetWithPreAnalysisAsync(int taskId);
+        Task<Dictionary<string, (double Average, int Count)>> GetRatingStatsByEconomistIdsAsync(IEnumerable<string> economistIds);
+        Task<IReadOnlyList<ConsultancyTask>> GetRatedTasksByEconomistIdAsync(string economistId);
     }
 }

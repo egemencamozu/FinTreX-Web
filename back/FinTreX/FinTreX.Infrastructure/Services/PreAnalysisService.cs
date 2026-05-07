@@ -93,19 +93,38 @@ namespace FinTreX.Infrastructure.Services
                 var response = await _httpClient.PostAsJsonAsync("/analyze", payload, _jsonOptions);
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<PaaResponse>(_jsonOptions)
+                var rawResponse = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("PAA service response for task {TaskId}: {Response}", taskId, rawResponse);
+
+                var result = JsonSerializer.Deserialize<PaaResponse>(rawResponse, _jsonOptions)
                     ?? throw new InvalidOperationException("PAA service returned null response.");
+
+                // KeyFindings can be a string or a JSON array from the service
+                string keyFindingsStr = "[]";
+                if (result.KeyFindings != null)
+                {
+                    if (result.KeyFindings is JsonElement element)
+                    {
+                        keyFindingsStr = element.ValueKind == JsonValueKind.String 
+                            ? element.GetString() 
+                            : element.GetRawText();
+                    }
+                    else
+                    {
+                        keyFindingsStr = result.KeyFindings.ToString();
+                    }
+                }
 
                 return new PreAnalysisReport
                 {
                     ConsultancyTaskId = taskId,
-                    Summary = result.Summary ?? string.Empty,
-                    RiskLevel = result.RiskLevel ?? "Medium",
-                    MarketOutlook = result.MarketOutlook ?? string.Empty,
-                    KeyFindings = result.KeyFindings ?? "[]",
-                    RawContent = result.RawContent ?? string.Empty,
+                    Summary = Truncate(result.Summary ?? string.Empty, 1950),
+                    RiskLevel = Truncate(result.RiskLevel ?? "Medium", 20),
+                    MarketOutlook = Truncate(result.MarketOutlook ?? string.Empty, 1950),
+                    KeyFindings = keyFindingsStr,
+                    RawContent = result.RawContent ?? rawResponse,
                     IsSuccessful = result.IsSuccessful,
-                    ErrorMessage = result.ErrorMessage,
+                    ErrorMessage = Truncate(result.ErrorMessage ?? string.Empty, 950),
                     GeneratedAtUtc = DateTime.UtcNow,
                 };
             }
@@ -134,11 +153,17 @@ namespace FinTreX.Infrastructure.Services
             public string Summary { get; set; }
             public string RiskLevel { get; set; }
             public string MarketOutlook { get; set; }
-            public string KeyFindings { get; set; }
+            public object KeyFindings { get; set; } // Can be JsonElement or string
             public string RawContent { get; set; }
             public bool IsSuccessful { get; set; }
             public string ErrorMessage { get; set; }
             public string GeneratedAtUtc { get; set; }
+        }
+
+        private static string Truncate(string value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength);
         }
     }
 }

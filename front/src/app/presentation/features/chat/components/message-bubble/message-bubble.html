@@ -34,8 +34,8 @@
       </div>
 
       @if (isMe && !message.isDeleted && !isEditing()) {
-        <div class="message-bubble__actions">
-          <button class="message-bubble__actions-trigger" (click)="$event.stopPropagation()">
+        <div class="message-bubble__actions" [class.message-bubble__actions--open]="isMenuOpen()">
+          <button class="message-bubble__actions-trigger" (click)="toggleMenu($event)">
             <i class="fas fa-ellipsis-v"></i>
           </button>
           <div class="message-bubble__dropdown">

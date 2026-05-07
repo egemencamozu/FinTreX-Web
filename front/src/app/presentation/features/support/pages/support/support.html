@@ -1,0 +1,351 @@
+<section class="support-c" aria-label="Yardım ve destek">
+  <div class="support-c__shell">
+    @if (errorMessage()) {
+      <div class="support-c__notice" role="status">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <header class="support-c__header">
+      <div class="support-c__title-block">
+        <span class="support-c__eyebrow">Destek merkezi</span>
+        <h1 class="support-c__title">Yardım ve Destek</h1>
+        <p class="support-c__subtitle">
+          Taleplerinizi, yanıtları ve durum değişikliklerini buradan takip edebilirsiniz.
+        </p>
+      </div>
+
+      <div class="support-c__header-actions">
+        <button class="support-c__task-button support-c__task-button--primary" type="button" (click)="openForm()">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          Yeni Ticket
+        </button>
+      </div>
+    </header>
+
+    <section class="support-c__kpis" aria-label="Destek özeti">
+      <app-kpi-card
+        [compact]="true"
+        label="Toplam"
+        [value]="tickets().length.toString()"
+        subtitle="Tüm talepler"
+      />
+      <app-kpi-card
+        [compact]="true"
+        label="Açık / İncelemede"
+        [value]="openCount().toString()"
+        subtitle="Yanıt bekleyen"
+      />
+      <app-kpi-card
+        [compact]="true"
+        label="Çözüldü / Kapalı"
+        [value]="resolvedCount().toString()"
+        subtitle="Tamamlanan"
+      />
+
+      <section class="support-c__panel support-c__panel--contact" aria-label="Doğrudan destek e-postası">
+        <div class="support-c__contact-icon" aria-hidden="true">
+          <i class="fa-solid fa-envelope-open-text"></i>
+        </div>
+        <div class="support-c__contact-main">
+          <span class="support-c__panel-kicker">Doğrudan e-posta</span>
+          <a class="support-c__contact-mail" [href]="'mailto:' + SUPPORT_EMAIL">{{ SUPPORT_EMAIL }}</a>
+        </div>
+        <button
+          class="support-c__ghost-action"
+          type="button"
+          (click)="copyEmail()"
+          [class.support-c__ghost-action--done]="emailCopied()"
+          aria-label="E-posta adresini kopyala">
+          @if (emailCopied()) {
+            <i class="fa-solid fa-check" aria-hidden="true"></i>
+            Kopyalandı
+          } @else {
+            <i class="fa-regular fa-copy" aria-hidden="true"></i>
+            Kopyala
+          }
+        </button>
+      </section>
+    </section>
+
+    @if (showForm()) {
+      <div class="support-c__modal" role="dialog" aria-modal="true" (click)="closeForm()">
+        <div class="support-c__form-card" (click)="$event.stopPropagation()">
+          <div class="support-c__panel-header support-c__panel-header--modal">
+            <div>
+              <span class="support-c__panel-kicker">Yeni kayıt</span>
+              <h2 class="support-c__panel-title">Yeni Ticket</h2>
+            </div>
+            <button class="support-c__icon-btn" type="button" (click)="closeForm()" aria-label="Kapat">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <form class="support-c__form-body" [formGroup]="ticketForm" (ngSubmit)="submit()">
+            <div class="support-c__field">
+              <label class="support-c__label">Tip</label>
+              <div class="support-c__type-grid">
+                @for (opt of typeOptions; track opt.value) {
+                  <label
+                    class="support-c__type-chip"
+                    [class.support-c__type-chip--active]="ticketForm.get('type')?.value === opt.value">
+                    <input type="radio" formControlName="type" [value]="opt.value" hidden />
+                    <span>{{ opt.label }}</span>
+                  </label>
+                }
+              </div>
+              @if (isFieldInvalid('type')) {
+                <span class="support-c__error">{{ getFieldError('type') }}</span>
+              }
+            </div>
+
+            <div class="support-c__field">
+              <label class="support-c__label" for="subject">
+                Konu Başlığı
+                <span class="support-c__counter">{{ subjectLength() }} / {{ SUBJECT_MAX }}</span>
+              </label>
+              <input
+                id="subject"
+                class="support-c__input"
+                type="text"
+                formControlName="subject"
+                [maxlength]="SUBJECT_MAX"
+                placeholder="Örn: Ödeme işleminde hata"
+                [class.support-c__input--error]="isFieldInvalid('subject')" />
+              @if (isFieldInvalid('subject')) {
+                <span class="support-c__error">{{ getFieldError('subject') }}</span>
+              }
+            </div>
+
+            <div class="support-c__field">
+              <label class="support-c__label" for="message">
+                Mesaj
+                <span class="support-c__counter">{{ messageLength() }} / {{ MESSAGE_MAX }}</span>
+              </label>
+              <textarea
+                id="message"
+                class="support-c__textarea"
+                formControlName="message"
+                [maxlength]="MESSAGE_MAX"
+                rows="6"
+                placeholder="Yaşadığınız durumu detaylı şekilde anlatın..."
+                [class.support-c__input--error]="isFieldInvalid('message')"></textarea>
+              @if (isFieldInvalid('message')) {
+                <span class="support-c__error">{{ getFieldError('message') }}</span>
+              }
+            </div>
+
+            <div class="support-c__form-actions">
+              <button
+                class="support-c__secondary-action"
+                type="button"
+                (click)="closeForm()"
+                [disabled]="isSubmitting()">
+                Vazgeç
+              </button>
+              <button class="support-c__primary-action" type="submit" [disabled]="isSubmitting()">
+                @if (isSubmitting()) {
+                  <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                  Gönderiliyor...
+                } @else {
+                  <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                  Gönder
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
+    @if (tickets().length > 0) {
+      <section class="support-c__toolbar" aria-label="Ticket filtreleri">
+        <app-segmented-control
+          [options]="statusFilterOptions"
+          [value]="statusFilter()"
+          variant="outline"
+          (valueChange)="setStatusFilter($event)"
+        />
+      </section>
+    }
+
+    <section class="support-c__panel support-c__panel--tickets">
+      <div class="support-c__panel-header">
+        <div>
+          <span class="support-c__panel-kicker">Destek</span>
+          <h2 class="support-c__panel-title">Ticketlarım</h2>
+        </div>
+
+        @if (tickets().length > 0) {
+          <app-segmented-control
+            [options]="statusFilterOptions"
+            [value]="statusFilter()"
+            variant="outline"
+            (valueChange)="setStatusFilter($event)"
+          />
+        }
+      </div>
+
+      @if (isLoading()) {
+        <div class="support-c__state" aria-label="Ticketlar yükleniyor">
+          <div class="support-c__spinner" aria-hidden="true"></div>
+          <p>Ticketlarınız yükleniyor...</p>
+        </div>
+      } @else if (tickets().length === 0) {
+        <div class="support-c__empty-state">
+          <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+          <strong>Henüz ticket oluşturmadınız</strong>
+          <span>Sorun yaşıyorsanız ya da önerileriniz varsa yeni bir ticket oluşturun.</span>
+        </div>
+      } @else if (filteredTickets().length === 0) {
+        <div class="support-c__empty-state">
+          <i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i>
+          <strong>Bu filtreye uyan ticket yok</strong>
+          <span>Farklı bir durum filtresi seçebilirsiniz.</span>
+        </div>
+      } @else {
+        <div class="support-c__ticket-body">
+          <div class="support-c__ticket-list">
+            <div class="support-c__ticket-list-head">
+              <span>Durum</span>
+              <span>Talep</span>
+              <span>No</span>
+              <span></span>
+            </div>
+          @for (t of filteredTickets(); track t.id) {
+            <button
+              type="button"
+              class="support-c__ticket-row"
+              [class.support-c__ticket-row--selected]="selectedTicket()?.id === t.id"
+              (click)="selectTicket(t)">
+              <span
+                class="support-c__ticket-status"
+                [class]="'support-c__ticket-status support-c__ticket-status--' + getStatusColor(t.status)">
+                {{ getStatusLabel(t.status) }}
+              </span>
+
+              <span class="support-c__ticket-main">
+                <strong>{{ t.subject }}</strong>
+                <small>
+                  {{ getTypeLabel(t.type) }} · {{ formatDateTime(t.createdAtUtc) }}
+                </small>
+              </span>
+
+              <span class="support-c__ticket-id">#{{ t.id }}</span>
+              <span class="support-c__ticket-open">
+                Detayı Aç
+                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+              </span>
+            </button>
+          }
+          </div>
+        </div>
+      }
+    </section>
+  </div>
+
+  @if (selectedTicket(); as sel) {
+    <div class="support-c__overlay" (click)="closeDetail()" aria-hidden="true"></div>
+    <aside class="support-c__slide" role="dialog" aria-modal="true" [attr.aria-label]="sel.subject">
+      <div class="support-c__panel-header support-c__slide-header">
+        <div class="support-c__slide-title">
+          <div class="support-c__detail-badges">
+            <span
+              class="support-c__ticket-status"
+              [class]="'support-c__ticket-status support-c__ticket-status--' + getStatusColor(sel.status)">
+              {{ getStatusLabel(sel.status) }}
+            </span>
+            <span class="support-c__type-badge">{{ getTypeLabel(sel.type) }}</span>
+            <span class="support-c__ticket-id">#{{ sel.id }}</span>
+          </div>
+          <h2 class="support-c__panel-title">{{ sel.subject }}</h2>
+          <span class="support-c__detail-date">
+            <i class="fa-regular fa-clock" aria-hidden="true"></i>
+            {{ formatDateTime(sel.createdAtUtc) }}
+          </span>
+        </div>
+        <button class="support-c__icon-btn" type="button" (click)="closeDetail()" aria-label="Kapat">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="support-c__chat">
+        @if (messagesLoading()) {
+          <div class="support-c__chat-loading">
+            <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+          </div>
+        } @else {
+          @for (msg of messages(); track msg.id) {
+            <div
+              class="support-c__bubble"
+              [class.support-c__bubble--user]="msg.senderRole === 'User'"
+              [class.support-c__bubble--admin]="msg.senderRole === 'Admin'">
+              @if (msg.senderRole === 'Admin') {
+                <span class="support-c__bubble-sender">
+                  <i class="fa-solid fa-headset" aria-hidden="true"></i>
+                  {{ msg.senderName || 'Destek Ekibi' }}
+                </span>
+              }
+              <p class="support-c__bubble-body">{{ msg.body }}</p>
+              <span class="support-c__bubble-time">{{ formatDateTime(msg.sentAtUtc) }}</span>
+            </div>
+          }
+
+          @if (messages().length === 0) {
+            <div class="support-c__empty-state support-c__empty-state--chat">
+              <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+              <strong>Yanıt bekleniyor</strong>
+              <span>Destek ekibi en kısa sürede yanıtlayacaktır.</span>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="support-c__slide-footer">
+        @if (sel.status === 'Closed') {
+          <div class="support-c__chat-closed">
+            <i class="fa-solid fa-lock" aria-hidden="true"></i>
+            <span>Bu talep kapalı.</span>
+            <button
+              class="support-c__danger-action"
+              type="button"
+              (click)="deleteTicket(sel)"
+              [disabled]="isDeleting()"
+              data-testid="btn-delete-closed-ticket">
+              @if (isDeleting()) {
+                <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+              } @else {
+                <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+              }
+              Talebi Sil
+            </button>
+          </div>
+        } @else {
+          <div class="support-c__chat-input-row">
+            <textarea
+              class="support-c__chat-textarea"
+              rows="2"
+              placeholder="Mesajınızı yazın..."
+              [value]="newMessage()"
+              (input)="newMessage.set($any($event.target).value)"
+              (keydown)="onMessageKeydown($event)"
+              [disabled]="isSendingMessage()"></textarea>
+            <button
+              class="support-c__chat-send"
+              type="button"
+              (click)="sendMessage()"
+              [disabled]="!newMessage().trim() || isSendingMessage()"
+              aria-label="Gönder">
+              @if (isSendingMessage()) {
+                <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+              } @else {
+                <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+              }
+            </button>
+          </div>
+        }
+      </div>
+    </aside>
+  }
+</section>

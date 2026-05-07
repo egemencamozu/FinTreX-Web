@@ -37,6 +37,18 @@ namespace FinTreX.Core.Entities
         /// <summary>When the economist marked this task as completed.</summary>
         public DateTime? CompletedAtUtc { get; set; }
 
+        /// <summary>Detailed analysis report written by the economist upon task completion.</summary>
+        public string? EconomistReport { get; set; }
+
+        /// <summary>Star rating given by the user after task completion (1-5).</summary>
+        public int? Rating { get; set; }
+
+        /// <summary>Optional written feedback accompanying the rating.</summary>
+        public string? RatingFeedback { get; set; }
+
+        /// <summary>When the user submitted the rating.</summary>
+        public DateTime? RatedAtUtc { get; set; }
+
         // ── Navigation — 1:1 AI Report ───────────────────────────────────────
         public PreAnalysisReport PreAnalysisReport { get; set; }
     }

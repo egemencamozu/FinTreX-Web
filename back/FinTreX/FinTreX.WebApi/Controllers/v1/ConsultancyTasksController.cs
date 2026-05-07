@@ -67,7 +67,11 @@ namespace FinTreX.WebApi.Controllers.v1
                     Status = t.Status,
                     CreatedAtUtc = t.CreatedAtUtc,
                     CompletedAtUtc = t.CompletedAtUtc,
-                    PreAnalysisReport = t.PreAnalysisReport
+                    EconomistReport = t.EconomistReport,
+                    PreAnalysisReport = t.PreAnalysisReport,
+                    Rating = t.Rating,
+                    RatingFeedback = t.RatingFeedback,
+                    RatedAtUtc = t.RatedAtUtc
                 });
             }
 
@@ -99,6 +103,37 @@ namespace FinTreX.WebApi.Controllers.v1
         public async Task<IActionResult> GeneratePreAnalysis(int id)
         {
             var task = await _taskService.GeneratePreAnalysisAsync(id);
+            return Ok(task);
+        }
+
+        [HttpPost("{id}/report")]
+        [Authorize(Roles = "Economist")]
+        public async Task<IActionResult> SubmitReport(int id, SubmitReportRequest request)
+        {
+            var task = await _taskService.SubmitReportAsync(id, request);
+
+            // Enrich economist name from identity
+            var economist = await _userManager.FindByIdAsync(task.EconomistId);
+            if (economist != null)
+            {
+                task.EconomistName = $"{economist.FirstName} {economist.LastName}".Trim();
+            }
+
+            return Ok(task);
+        }
+
+        [HttpPost("{id}/rate")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> RateTask(int id, RateTaskRequest request)
+        {
+            var task = await _taskService.RateTaskAsync(id, request);
+
+            // Enrich names from identity
+            var user = await _userManager.FindByIdAsync(task.UserId);
+            var economist = await _userManager.FindByIdAsync(task.EconomistId);
+            if (user != null) task.UserName = $"{user.FirstName} {user.LastName}".Trim();
+            if (economist != null) task.EconomistName = $"{economist.FirstName} {economist.LastName}".Trim();
+
             return Ok(task);
         }
     }

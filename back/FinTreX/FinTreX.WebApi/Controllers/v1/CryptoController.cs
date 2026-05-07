@@ -1,6 +1,8 @@
 using FinTreX.Core.DTOs.MarketData;
 using FinTreX.Core.Interfaces;
+using FinTreX.Core.Settings;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 
@@ -11,10 +13,46 @@ namespace FinTreX.WebApi.Controllers.v1
     public class CryptoController : ControllerBase
     {
         private readonly IMarketDataCache _marketDataCache;
+        private readonly MarketDataSettings _settings;
 
-        public CryptoController(IMarketDataCache marketDataCache)
+        public CryptoController(IMarketDataCache marketDataCache, IOptions<MarketDataSettings> settings)
         {
             _marketDataCache = marketDataCache;
+            _settings = settings.Value;
+        }
+
+        [HttpGet("symbols")]
+        public IActionResult GetSymbols()
+        {
+            var cachedSymbols = _marketDataCache.GetAllCrypto()
+                .Select(item => item.Symbol)
+                .Where(symbol => !string.IsNullOrWhiteSpace(symbol));
+
+            var configuredSymbols = (_settings.CryptoUsdtPairs ?? Enumerable.Empty<string>())
+                .Where(pair => !string.IsNullOrWhiteSpace(pair))
+                .Select(pair => pair.Trim().ToUpperInvariant());
+
+            var symbols = cachedSymbols
+                .Concat(configuredSymbols)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(symbol =>
+                {
+                    var normalizedSymbol = symbol.Trim().ToUpperInvariant();
+                    var baseAsset = normalizedSymbol.EndsWith("USDT", StringComparison.Ordinal)
+                        ? normalizedSymbol[..^4]
+                        : normalizedSymbol;
+                    var cached = _marketDataCache.GetCrypto(normalizedSymbol);
+                    return new
+                    {
+                        symbol = normalizedSymbol,
+                        baseAsset,
+                        name = cached?.BaseAsset ?? baseAsset
+                    };
+                })
+                .OrderBy(x => x.baseAsset)
+                .ToList();
+
+            return Ok(symbols);
         }
 
         [HttpGet]

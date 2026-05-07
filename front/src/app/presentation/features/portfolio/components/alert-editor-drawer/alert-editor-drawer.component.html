@@ -1,0 +1,238 @@
+@if (visible) {
+  <div class="aed__backdrop" (click)="onBackdrop($event)">
+    <aside class="aed" role="dialog" aria-modal="true" [attr.aria-label]="symbol + ' için alarm kur'">
+
+      <!-- Header -->
+      <header class="aed__head">
+        <div class="aed__head-title">
+          <i class="fa-regular fa-bell aed__head-icon"></i>
+          <div>
+            <h3>{{ isEditing() ? 'Alarmı düzenle' : 'Alarm kur' }}</h3>
+            <div class="aed__head-sub">
+              <strong>{{ symbol }}</strong>
+              @if (assetName) { <span class="aed__head-name"> · {{ assetName }}</span> }
+            </div>
+          </div>
+        </div>
+        <button class="aed__close" (click)="close()" aria-label="Kapat">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <!-- Snapshot -->
+      @if (currentPrice > 0) {
+        <div class="aed__snapshot">
+          <span class="aed__snapshot-label">Güncel fiyat</span>
+          <span class="aed__snapshot-value">
+            {{ currentPrice | number:'1.2-6':'tr-TR' }} {{ currencySymbol() }}
+          </span>
+        </div>
+      }
+
+      <!-- Kind -->
+      <section class="aed__section">
+        <label class="aed__label">Tip</label>
+        <div class="aed__segmented" role="tablist">
+          <button
+            class="aed__seg"
+            [class.aed__seg--active]="kind() === 'PRICE'"
+            (click)="setKind('PRICE')">
+            Fiyat
+          </button>
+          <button
+            class="aed__seg"
+            [class.aed__seg--active]="kind() === 'PERCENT'"
+            (click)="setKind('PERCENT')">
+            % Değişim
+          </button>
+        </div>
+      </section>
+
+      <!-- Direction -->
+      <section class="aed__section">
+        <label class="aed__label">Yön</label>
+        <div class="aed__segmented" role="tablist">
+          <button
+            class="aed__seg aed__seg--up"
+            [class.aed__seg--active]="direction() === 'ABOVE'"
+            (click)="setDirection('ABOVE')">
+            <i class="fa-solid fa-arrow-up"></i>
+            {{ kind() === 'PRICE' ? 'Üstüne çıkarsa' : 'Yukarı hareket' }}
+          </button>
+          <button
+            class="aed__seg aed__seg--down"
+            [class.aed__seg--active]="direction() === 'BELOW'"
+            (click)="setDirection('BELOW')">
+            <i class="fa-solid fa-arrow-down"></i>
+            {{ kind() === 'PRICE' ? 'Altına düşerse' : 'Aşağı hareket' }}
+          </button>
+        </div>
+      </section>
+
+      <!-- Target value -->
+      <section class="aed__section">
+        <label class="aed__label" for="aed-target">
+          {{ kind() === 'PRICE' ? 'Hedef fiyat' : 'Yüzde eşiği' }}
+        </label>
+        <div class="aed__input-wrap">
+          <input
+            id="aed-target"
+            type="number"
+            class="aed__input"
+            [ngModel]="targetValue()"
+            (ngModelChange)="targetValue.set($event)"
+            step="any"
+            min="0"
+            placeholder="0" />
+          <span class="aed__input-suffix">
+            {{ kind() === 'PRICE' ? currencySymbol() : '%' }}
+          </span>
+        </div>
+
+        <div class="aed__chips">
+          <button class="aed__chip" (click)="applyChip(1)">±1%</button>
+          <button class="aed__chip" (click)="applyChip(5)">±5%</button>
+          <button class="aed__chip" (click)="applyChip(10)">±10%</button>
+          <button class="aed__chip" (click)="applyChip(15)">±15%</button>
+        </div>
+
+        @if (targetHint()) {
+          <p class="aed__hint">{{ targetHint() }}</p>
+        }
+      </section>
+
+      <!-- Watchlist -->
+      <section class="aed__section">
+        <label class="aed__label">İzleme listesi</label>
+
+        <div class="aed__watchlist-options">
+          @for (wl of watchlists(); track wl.id) {
+            <button
+              type="button"
+              class="aed__watchlist-option"
+              [class.aed__watchlist-option--active]="isWatchlistSelected(wl.id)"
+              (click)="selectWatchlistOption(wl.id)">
+              <div class="aed__watchlist-option-main">
+                <span class="aed__watchlist-option-title">{{ wl.name }}</span>
+                <span class="aed__watchlist-option-sub">
+                  {{ getWatchlistItemCount(wl.id) }} varlık izleniyor
+                </span>
+              </div>
+              <div class="aed__watchlist-option-meta">
+                @if (wl.isDefault) {
+                  <span class="aed__watchlist-pill">Ana Liste</span>
+                }
+                @if (isSymbolInWatchlist(wl.id)) {
+                  <span class="aed__watchlist-pill aed__watchlist-pill--ok">
+                    {{ symbol }} listede
+                  </span>
+                }
+              </div>
+            </button>
+          }
+        </div>
+
+        @if (isSymbolInSomeList() && watchlistId() && isSymbolInWatchlist(watchlistId()!)) {
+          <p class="aed__hint">
+            <i class="fa-solid fa-circle-check aed__hint-icon--ok"></i>
+            {{ symbol }} zaten seçtiğin listede.
+          </p>
+        } @else if (watchlistId() && !isEditing()) {
+          <label class="aed__check aed__check--inline">
+            <input type="checkbox"
+              [checked]="alsoAddToWatchlist()"
+              (change)="alsoAddToWatchlist.set($any($event.target).checked)" />
+            <span>
+              <i class="fa-solid fa-bookmark"></i>
+              Bu sembolü listeye de ekle
+            </span>
+          </label>
+        }
+      </section>
+
+      <!-- Note -->
+      <section class="aed__section">
+        <label class="aed__label" for="aed-note">Not (opsiyonel)</label>
+        <textarea
+          id="aed-note"
+          class="aed__textarea"
+          rows="2"
+          maxlength="200"
+          placeholder="örn. direnç kırılırsa"
+          [ngModel]="note()"
+          (ngModelChange)="note.set($event)"></textarea>
+      </section>
+
+      <!-- Behavior -->
+      <section class="aed__section">
+        <label class="aed__label">Davranış</label>
+        <div class="aed__radios">
+          <label class="aed__radio">
+            <input type="radio" name="repeat"
+              [checked]="repeat() === 'ONCE'"
+              (change)="repeat.set('ONCE')" />
+            <span>Tek seferlik</span>
+            <small>Tetiklendikten sonra beklemede kalır, yeniden ateşlemez.</small>
+          </label>
+          <label class="aed__radio">
+            <input type="radio" name="repeat"
+              [checked]="repeat() === 'RECURRING'"
+              (change)="repeat.set('RECURRING')" />
+            <span>Tekrarla</span>
+            <small>Koşul tekrar sağlandığında yeniden uyarır.</small>
+          </label>
+          <label class="aed__radio">
+            <input type="radio" name="repeat"
+              [checked]="repeat() === 'AUTO_DELETE'"
+              (change)="repeat.set('AUTO_DELETE')" />
+            <span>Otomatik sil</span>
+            <small>Tetiklendikten sonra alarm listenden düşer.</small>
+          </label>
+        </div>
+      </section>
+
+      <!-- Notification channels -->
+      <section class="aed__section">
+        <label class="aed__label">Bildirim</label>
+        <div class="aed__channels">
+          <label class="aed__check">
+            <input type="checkbox"
+              [checked]="channelInApp()"
+              (change)="channelInApp.set($any($event.target).checked)" />
+            <span><i class="fa-regular fa-bell"></i> Uygulama içi</span>
+          </label>
+          <label class="aed__check">
+            <input type="checkbox"
+              [checked]="channelEmail()"
+              (change)="channelEmail.set($any($event.target).checked)"
+              [disabled]="!userEmail" />
+            <span>
+              <i class="fa-regular fa-envelope"></i> E-posta
+              @if (userEmail) {
+                <small class="aed__check-meta">{{ userEmail }}</small>
+              } @else {
+                <small class="aed__check-meta aed__check-meta--warn">
+                  profilinde e-posta yok
+                </small>
+              }
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="aed__foot">
+        <button class="aed__btn aed__btn--ghost" (click)="close()" [disabled]="submitting()">
+          İptal
+        </button>
+        <button class="aed__btn aed__btn--primary" (click)="submit()" [disabled]="!canSubmit()">
+          @if (submitting()) {
+            <i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor…
+          } @else {
+            {{ isEditing() ? 'Güncelle' : 'Alarmı Kur' }}
+          }
+        </button>
+      </footer>
+    </aside>
+  </div>
+}

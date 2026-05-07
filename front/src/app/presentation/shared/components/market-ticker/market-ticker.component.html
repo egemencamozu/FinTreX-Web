@@ -1,0 +1,33 @@
+<section class="market-ticker" [attr.aria-label]="label() || 'Piyasa hareketleri'">
+  @if (label()) {
+    <div class="market-ticker__label">
+      <span class="market-ticker__label-dot" aria-hidden="true"></span>
+      <span>{{ label() }}</span>
+    </div>
+  }
+
+  <div class="market-ticker__viewport">
+    <div class="market-ticker__track">
+      @for (item of tickerItems(); track $index) {
+        <span
+          class="market-ticker__item"
+          [class.market-ticker__item--up]="(item.changePercent ?? 0) > 0"
+          [class.market-ticker__item--down]="(item.changePercent ?? 0) < 0"
+        >
+          @if (item.icon) {
+            <span class="market-ticker__icon" aria-hidden="true">
+              <i [class]="item.icon"></i>
+            </span>
+          }
+          <span class="market-ticker__symbol">{{ item.label }}</span>
+          <span class="market-ticker__value">{{ item.value }}</span>
+          @if (item.changePercent !== null) {
+            <span class="market-ticker__change">
+              {{ formatChange(item.changePercent) }}
+            </span>
+          }
+        </span>
+      }
+    </div>
+  </div>
+</section>

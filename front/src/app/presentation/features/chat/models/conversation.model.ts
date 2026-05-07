@@ -9,6 +9,7 @@ export interface Conversation {
   participants: ConversationParticipant[];
   lastMessage: ChatMessage | null;
   unreadCount: number;
+  isReadOnly: boolean;
 }
 
 export interface ConversationParticipant {

@@ -134,6 +134,8 @@ export class AdminSubscriptionsPage implements OnInit {
       description: plan.description,
       monthlyPriceTRY: plan.monthlyPriceTRY,
       yearlyPriceTRY: plan.yearlyPriceTRY,
+      maxPortfolios: plan.maxPortfolios,
+      maxDailyChatMessages: plan.maxDailyChatMessages,
       maxEconomists: plan.maxEconomists,
       canChangeEconomist: plan.canChangeEconomist,
       hasPrioritySupport: plan.hasPrioritySupport,

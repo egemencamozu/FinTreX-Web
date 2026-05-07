@@ -1,6 +1,6 @@
 import { Observable, map } from 'rxjs';
 import { UserRole } from '../enums/user-role.enum';
-import { UserSummary } from '../models/user-summary.model';
+import { UpdateMyProfileRequest, UserSummary } from '../models/user-summary.model';
 
 export type UserStatusFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
 
@@ -12,6 +12,7 @@ export interface UserListFilters {
 
 export abstract class UserManagementRepository {
   abstract getMyProfile(): Observable<UserSummary>;
+  abstract updateMyProfile(request: UpdateMyProfileRequest): Observable<UserSummary>;
   abstract getAllUsers(): Observable<UserSummary[]>;
   abstract getUserById(userId: string): Observable<UserSummary>;
   abstract deactivateUser(userId: string, durationKey: string): Observable<{ message: string }>;

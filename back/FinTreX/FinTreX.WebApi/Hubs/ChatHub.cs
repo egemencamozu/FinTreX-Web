@@ -4,6 +4,7 @@ using FinTreX.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,6 +41,10 @@ namespace FinTreX.WebApi.Hubs
                 // Notify all conversation partners that this user came online
                 await NotifyPresenceChangeAsync(userId, online: true);
             }
+
+            // Sync total unread count on connect
+            var unreadCount = await _chatService.GetTotalUnreadCountAsync(userId);
+            await Clients.Caller.UnreadCountUpdated(unreadCount);
 
             await base.OnConnectedAsync();
         }
@@ -79,37 +84,57 @@ namespace FinTreX.WebApi.Hubs
         /// <summary>Send a text message to a conversation.</summary>
         public async Task<ChatMessageDto> SendMessage(int conversationId, string content)
         {
-            var messageDto = await _chatService.SendMessageAsync(conversationId, content);
-
-            // Enrich with sender name
-            var sender = await _userManager.FindByIdAsync(messageDto.SenderId);
-            messageDto.SenderName = sender != null
-                ? $"{sender.FirstName} {sender.LastName}".Trim()
-                : "Bilinmeyen";
-
-            // 5. Broadcast to all members in the conversation group
-            await Clients.Group(ConversationGroup(conversationId)).ReceiveMessage(messageDto);
-
-            // 6. Update unread count for other participants (in background-like way to avoid blocking/crashing)
             try
             {
-                var conv = await _chatService.GetConversationAsync(conversationId);
-                if (conv?.Participants != null)
+                var userId = GetUserId();
+                // 1. Save message to DB
+                var messageDto = await _chatService.SendMessageAsync(conversationId, content, userId);
+
+                // 2. Enrich with sender name (Safe fallback)
+                try
                 {
-                    foreach (var participant in conv.Participants.Where(p => p.UserId != GetUserId()))
-                    {
-                        var unreadCount = await _chatService.GetTotalUnreadCountForUserAsync(participant.UserId);
-                        await Clients.User(participant.UserId).UnreadCountUpdated(unreadCount);
-                    }
+                    var sender = await _userManager.FindByIdAsync(messageDto.SenderId);
+                    messageDto.SenderName = sender != null
+                        ? $"{sender.FirstName} {sender.LastName}".Trim()
+                        : "Bilinmeyen";
                 }
+                catch { messageDto.SenderName = "Bilinmeyen"; }
+
+                // 3. Broadcast to the conversation group immediately
+                await Clients.Group(ConversationGroup(conversationId)).ReceiveMessage(messageDto);
+
+                // 4. Update unread counts for others in background
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        using var scope = Context.GetHttpContext()?.RequestServices.CreateScope();
+                        if (scope == null) return;
+                        
+                        var chatService = scope.ServiceProvider.GetRequiredService<IChatService>();
+                        var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<ChatHub, IChatClient>>();
+
+                        var conv = await chatService.GetConversationAsync(conversationId, userId);
+                        if (conv?.Participants != null)
+                        {
+                            foreach (var participant in conv.Participants.Where(p => p.UserId != messageDto.SenderId))
+                            {
+                                var unreadCount = await chatService.GetTotalUnreadCountForUserAsync(participant.UserId);
+                                await hubContext.Clients.User(participant.UserId).UnreadCountUpdated(unreadCount);
+                            }
+                        }
+                    }
+                    catch { }
+                });
+
+                return messageDto;
             }
             catch (Exception ex)
             {
-                // Log and continue, don't crash the SendMessage for the sender
-                Console.WriteLine($"[ChatHub] UnreadCount update failed: {ex.Message}");
+                Console.WriteLine($"[ChatHub] SendMessage Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                throw new HubException($"Mesaj gönderilirken bir hata oluştu: {ex.Message}");
             }
-
-            return messageDto;
         }
 
         /// <summary>Edit an existing message.</summary>
@@ -132,11 +157,15 @@ namespace FinTreX.WebApi.Hubs
         public async Task MarkAsRead(int conversationId, long lastReadMessageId)
         {
             var userId = GetUserId();
-            await _chatService.MarkAsReadAsync(conversationId, lastReadMessageId);
+            await _chatService.MarkAsReadAsync(conversationId, lastReadMessageId, userId);
 
             // Notify the other participant(s) about read receipt
             await Clients.OthersInGroup(ConversationGroup(conversationId))
                 .MessagesRead(conversationId, lastReadMessageId, DateTime.UtcNow);
+
+            // Sync total unread count for caller
+            var unreadCount = await _chatService.GetTotalUnreadCountAsync(userId);
+            await Clients.Caller.UnreadCountUpdated(unreadCount);
         }
 
         /// <summary>Notify that the current user is typing in a conversation.</summary>
@@ -164,7 +193,7 @@ namespace FinTreX.WebApi.Hubs
 
         private async Task NotifyPresenceChangeAsync(string userId, bool online)
         {
-            var conversations = await _chatService.GetMyConversationsAsync();
+            var conversations = await _chatService.GetMyConversationsAsync(userId);
             foreach (var conv in conversations)
             {
                 if (online)

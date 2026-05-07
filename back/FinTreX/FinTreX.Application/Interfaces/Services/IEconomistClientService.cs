@@ -8,7 +8,9 @@ namespace FinTreX.Core.Interfaces.Services
     {
         Task<IReadOnlyList<EconomistClientDto>> GetMyEconomistsAsync();
         Task<IReadOnlyList<EconomistClientDto>> GetMyClientsAsync();
+        Task<IReadOnlyList<EconomistClientDto>> AdminGetClientEconomistsAsync(string clientId);
         Task<EconomistClientDto> AssignEconomistAsync(string economistId, string notes = null);
-        Task<bool> RemoveEconomistAsync(int assignmentId);
+        Task<EconomistClientDto> AdminChangeAssignmentAsync(int assignmentId, string newEconomistId, string notes = null);
+        Task<EconomistClientDto> AdminRemoveAssignmentAsync(int assignmentId, string notes = null);
     }
 }

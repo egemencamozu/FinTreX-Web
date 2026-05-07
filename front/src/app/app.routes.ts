@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./presentation/features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
+  {
+    path: 'mcp-demo',
+    redirectTo: '/app/mcp',
+    pathMatch: 'full',
+  },
 
   // ── Authenticated (MainLayout shell) ──────────────────────────────────────
   {
@@ -59,6 +64,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'mcp',
+        loadComponent: () =>
+          import('./presentation/features/mcp-demo/pages/mcp-demo/mcp-demo.page').then(
+            (m) => m.McpDemoPage,
+          ),
+        title: 'MCP | FinTreX',
+      },
+      {
         path: 'subscription',
         loadChildren: () =>
           import('./presentation/features/subscription/subscription.routes').then(
@@ -94,11 +107,9 @@ export const routes: Routes = [
         data: { requiredRole: UserRole.ADMIN },
       },
       {
-        path: 'test',
+        path: 'support',
         loadChildren: () =>
-          import('./presentation/features/test-page/test-page.routes').then(
-            (m) => m.TEST_PAGE_ROUTES,
-          ),
+          import('./presentation/features/support/support.routes').then((m) => m.SUPPORT_ROUTES),
       },
       {
         path: 'forbidden',

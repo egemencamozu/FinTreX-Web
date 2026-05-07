@@ -39,22 +39,27 @@ async def synthesizer_node(state: AssistantState) -> AssistantState:
                 messages.append(AIMessage(content=msg.get("content")))
 
         # Add tool data context
-        tool_data_prompt = "\n\n=== VERİ KAYNAKLARI (Tool Sonuçları) ===\n"
         tool_results = state.get("tool_results", {})
-        if tool_results:
-            for name, result in tool_results.items():
-                tool_data_prompt += f"\n- {name}: {json.dumps(result, ensure_ascii=False)}"
-        else:
-            tool_data_prompt += "\n(Veri çekilmedi veya veri bulunamadı)"
-
         tool_errors = state.get("tool_errors", {})
-        if tool_errors:
-            tool_data_prompt += "\n\n=== VERİ ERİŞİM HATALARI ===\n"
-            for name, error in tool_errors.items():
-                tool_data_prompt += f"\n- {name}: {error}"
+        tool_calls = state.get("tool_calls", [])
 
-        # Combine everything for the final user message in this turn
-        user_message_with_data = f"{state.get('current_user_message', '')}\n\n{tool_data_prompt}"
+        if tool_calls or tool_results or tool_errors:
+            tool_data_prompt = "\n\n=== VERİ KAYNAKLARI (Tool Sonuçları) ===\n"
+            if tool_results:
+                for name, result in tool_results.items():
+                    tool_data_prompt += f"\n- {name}: {json.dumps(result, ensure_ascii=False)}"
+            elif not tool_errors:
+                tool_data_prompt += "\n(İstenen veriler için sonuç bulunamadı)"
+
+            if tool_errors:
+                tool_data_prompt += "\n\n=== VERİ ERİŞİM HATALARI ===\n"
+                for name, error in tool_errors.items():
+                    tool_data_prompt += f"\n- {name}: {error}"
+            
+            user_message_with_data = f"{state.get('current_user_message', '')}\n\n{tool_data_prompt}"
+        else:
+            user_message_with_data = state.get('current_user_message', '')
+
         messages.append(HumanMessage(content=user_message_with_data))
 
         # 2. Call LLM

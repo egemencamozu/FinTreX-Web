@@ -2,10 +2,9 @@
   <aside class="sidebar">
     <div class="sidebar__header">
       <a class="sidebar__brand" routerLink="/app/dashboard">
-        <span class="sidebar__logo" aria-hidden="true">FT</span>
-        @if (!sidebarCollapsed()) {
-          <span class="sidebar__brand-text">FinTreX</span>
-        }
+        <div class="sidebar__logo-container">
+          <img src="/imgi_4_with_padding.svg" alt="FinTreX Logo" class="sidebar__logo-img">
+        </div>
       </a>
     </div>
 
@@ -100,6 +99,9 @@
             <span class="sidebar__label">{{ item.label }}</span>
             @if (item.label === 'Mesajlar' && chatSignalR.totalUnreadCount() > 0) {
               <span class="nav-unread-badge">{{ chatSignalR.totalUnreadCount() }}</span>
+            }
+            @if (item.label === 'Destek Talepleri' && supportOpenCount() > 0) {
+              <span class="nav-unread-badge">{{ supportOpenCount() }}</span>
             }
           </a>
         }
@@ -241,12 +243,7 @@
       </div>
 
       <div class="topbar__actions">
-        <button class="topbar__icon-btn" type="button" aria-label="Tema değiştir" title="Tema">
-          <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
-        </button>
-        <button class="topbar__icon-btn" type="button" aria-label="Bildirimler" title="Bildirimler">
-          <i class="fa-solid fa-bell" aria-hidden="true"></i>
-        </button>
+        <app-theme-toggle></app-theme-toggle>
         <button
           class="topbar__logout"
           type="button"

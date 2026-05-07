@@ -39,3 +39,24 @@ logs/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Secrets and credentials
+**/appsettings.Production.json
+**/appsettings.Staging.json
+
+# Test tokens and temporary test scripts at solution root
+test_token.txt
+*_token.txt
+provision_identity.py
+check_db_*.py
+find_user.cs
+integration_test.py
+
+# Swagger/Postman request payload files
+authenticate.json
+register.json
+
+# Error and build log dumps
+build_errors.txt
+errors.log
+*.errors.txt

@@ -3,7 +3,7 @@
     <span></span>
     <span class="center">#</span>
     <span>Endeks</span>
-    <span class="right">Değer</span>
+    <span class="right">Değer ({{ currency }})</span>
     <span class="right">Değişim %</span>
   </div>
 
@@ -31,7 +31,7 @@
       </div>
 
       <div class="mk__cell mk__cell--right mk__cell--mono">
-        {{ item.price | compactNumber }}
+        {{ getPrice(item) | marketPrice: currency }}
       </div>
 
       <div class="mk__cell mk__cell--right">

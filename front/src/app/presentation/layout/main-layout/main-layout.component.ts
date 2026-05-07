@@ -10,10 +10,16 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
+import { EconomistStatus } from '../../../core/enums/economist-status.enum';
 import { UserRole } from '../../../core/enums/user-role.enum';
 import { AuthService, type AuthenticatedUser } from '../../../core/services/auth.service';
 import { ChatSignalRService } from '../../../core/services/chat-signalr.service';
+import { AlertsSignalRService } from '../../../core/services/alerts-signalr.service';
+import { PriceAlertApiService } from '../../../core/services/price-alert-api.service';
+import { WatchlistApiService } from '../../../core/services/watchlist-api.service';
+import { SupportTicketRepository } from '../../../core/interfaces/support-ticket.repository';
 import { TooltipMenuComponent } from '../../shared/components/tooltip-menu/tooltip-menu.component';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle';
 
 interface SidebarItem {
   label: string;
@@ -112,6 +118,7 @@ const SIDEBAR_MAP: Record<UserRole, SidebarItem[]> = {
         },
         { label: 'Mesajlar', icon: 'fa-solid fa-envelope', route: '/app/chat' },
         { label: 'AI Asistan', icon: 'fa-solid fa-robot', route: '/app/ai-assistant' },
+        { label: 'MCP', icon: 'fa-solid fa-diagram-project', route: '/app/mcp' },
       ],
     },
     {
@@ -130,48 +137,61 @@ const SIDEBAR_MAP: Record<UserRole, SidebarItem[]> = {
         },
       ],
     },
-    {
-      label: 'Profil ve Ayarlar',
-      icon: 'fa-solid fa-gear',
-      children: [
-        { label: 'Profil Bilgileri', icon: 'fa-solid fa-user', route: '/app/profile/info' },
-        { label: 'Görünüm Ayarları', icon: 'fa-solid fa-palette', route: '/app/profile/settings' },
-        {
-          label: 'Hesap İşlemleri',
-          icon: 'fa-solid fa-shield-halved',
-          route: '/app/profile/account-actions',
-        },
-      ],
-    },
-    { label: 'Test Sayfası', icon: 'fa-solid fa-flask', route: '/app/test' },
+    { label: 'Profil Bilgileri', icon: 'fa-solid fa-user', route: '/app/profile/info' },
+    { label: 'Yardım ve Destek', icon: 'fa-solid fa-life-ring', route: '/app/support' },
   ],
   [UserRole.ECONOMIST]: [
     { label: 'Müşterilerim', icon: 'fa-solid fa-users', route: '/app/economist/customers' },
     { label: 'Görevlerim', icon: 'fa-solid fa-list-check', route: '/app/economist/assigned-tasks' },
     { label: 'Mesajlar', icon: 'fa-solid fa-envelope', route: '/app/chat' },
-    { label: 'Notlarım', icon: 'fa-solid fa-note-sticky', route: '/app/economist/notes' },
+    { label: 'MCP', icon: 'fa-solid fa-diagram-project', route: '/app/mcp' },
     { label: 'Profil', icon: 'fa-solid fa-user', route: '/app/profile' },
-    { label: 'Test Sayfası', icon: 'fa-solid fa-flask', route: '/app/test' },
+    { label: 'Yardım ve Destek', icon: 'fa-solid fa-life-ring', route: '/app/support' },
   ],
   [UserRole.ADMIN]: [
     { label: 'Kullanıcılar', icon: 'fa-solid fa-users', route: '/app/admin/users' },
     { label: 'Paket Yönetimi', icon: 'fa-solid fa-crown', route: '/app/admin/subscriptions' },
-    { label: 'Test Sayfası', icon: 'fa-solid fa-flask', route: '/app/test' },
+    { label: 'Gelir Paneli', icon: 'fa-solid fa-chart-line', route: '/app/admin/revenue' },
+    {
+      label: 'Destek Talepleri',
+      icon: 'fa-solid fa-life-ring',
+      route: '/app/admin/support-tickets',
+    },
+    {
+      label: 'Ekonomist Performansı',
+      icon: 'fa-solid fa-star-half-stroke',
+      route: '/app/admin/economists',
+    },
+    {
+      label: 'Ekonomist Başvuruları',
+      icon: 'fa-solid fa-file-circle-check',
+      route: '/app/admin/economist-applications',
+    },
+    { label: 'MCP', icon: 'fa-solid fa-diagram-project', route: '/app/mcp' },
   ],
 };
+
+const ECONOMIST_PENDING_SIDEBAR: SidebarItem[] = [
+  { label: 'Başvurum', icon: 'fa-solid fa-file-pen', route: '/app/economist/application-status' },
+];
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TooltipMenuComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TooltipMenuComponent, ThemeToggleComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss',
 })
 export class MainLayoutComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly supportRepo = inject(SupportTicketRepository);
 
   protected readonly chatSignalR = inject(ChatSignalRService);
+  private readonly alertsSignalR = inject(AlertsSignalRService);
+  private readonly watchlistApi = inject(WatchlistApiService);
+  private readonly priceAlertApi = inject(PriceAlertApiService);
+  protected readonly supportOpenCount = signal<number>(0);
   protected readonly sidebarCollapsed = signal(false);
   /** Üst çubukta gösterilecek kısayol id’leri (havuz sırasına göre sıralanır). */
   private readonly shortcutIds = signal<string[]>([]);
@@ -198,7 +218,14 @@ export class MainLayoutComponent implements OnInit {
     return [user.firstName, user.lastName].filter(Boolean).join(' ') || user.userName;
   });
   protected get sidebarItems(): SidebarItem[] {
-    return SIDEBAR_MAP[this.currentRole()];
+    const role = this.currentRole();
+    if (role === UserRole.ECONOMIST) {
+      const status = this.authService.getEconomistStatus();
+      if (status !== EconomistStatus.APPROVED) {
+        return ECONOMIST_PENDING_SIDEBAR;
+      }
+    }
+    return SIDEBAR_MAP[role];
   }
 
   private readonly pools = computed(() => buildPoolsFromSidebar(this.sidebarItems));
@@ -226,14 +253,38 @@ export class MainLayoutComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.chatSignalR.connect();
-    
+    await this.alertsSignalR.connect();
+
+    // Not: Watchlist + PriceAlerts + /hubs/alerts bootstrap'i burada değil
+    // ilgili sayfaların (watchlist/markets) ngOnInit'inde tetikleniyor — böylece
+    // giriş anında gereksiz istek atılmıyor.
+
     this.checkActiveAccordion(this.router.url);
+    this.refreshSupportOpenCount();
 
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.checkActiveAccordion(event.urlAfterRedirects);
+        this.refreshSupportOpenCount();
       });
+
+    this.alertsSignalR.supportTicketCreated$.subscribe(() => {
+      this.refreshSupportOpenCount();
+    });
+  }
+
+  private refreshSupportOpenCount(): void {
+    if (this.currentRole() !== UserRole.ADMIN) {
+      this.supportOpenCount.set(0);
+      return;
+    }
+    this.supportRepo.getOpenCount().subscribe({
+      next: (count) => this.supportOpenCount.set(count),
+      error: () => {
+        // sidebar badge best-effort — hata durumunda mevcut sayıyı koru
+      },
+    });
   }
 
   private checkActiveAccordion(url: string): void {
@@ -355,6 +406,10 @@ export class MainLayoutComponent implements OnInit {
 
   protected logout(): void {
     this.authService.logout();
+    void this.alertsSignalR.disconnect();
+    this.watchlistApi.clear();
+    this.priceAlertApi.clear();
     void this.router.navigate(['/auth/login']);
   }
+
 }

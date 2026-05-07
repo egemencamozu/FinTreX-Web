@@ -1,5 +1,5 @@
 <div class="chat-input">
-  <div class="chat-input__wrapper">
+  <div class="chat-input__wrapper" *ngIf="!isReadOnly">
     <textarea
       class="chat-input__field"
       placeholder="Bir mesaj yazın..."
@@ -15,5 +15,9 @@
     >
       <i class="fas fa-paper-plane"></i>
     </button>
+  </div>
+  
+  <div class="chat-input__readonly-msg" *ngIf="isReadOnly">
+    Bu ekonomist ile artık aktif bir danışmanlık ilişkiniz bulunmuyor. Mesaj gönderemezsiniz.
   </div>
 </div>

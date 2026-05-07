@@ -11,6 +11,8 @@ namespace FinTreX.Core.DTOs.Subscription
         public string Description { get; set; }
         public decimal MonthlyPriceTRY { get; set; }
         public decimal YearlyPriceTRY { get; set; }
+        public int MaxPortfolios { get; set; }
+        public int MaxDailyChatMessages { get; set; }
         public int MaxEconomists { get; set; }
         public bool CanChangeEconomist { get; set; }
         public bool HasPrioritySupport { get; set; }

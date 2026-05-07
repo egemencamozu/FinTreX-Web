@@ -113,7 +113,7 @@ export class DoughnutChartComponent implements AfterViewInit, OnDestroy {
           label: { show: false },
           itemStyle: {
             shadowBlur: 16,
-            shadowColor: 'rgba(0, 0, 0, 0.12)',
+            shadowColor: 'rgba(0, 0, 0, 0.15)',
           },
         },
         data: list.map(i => ({ name: i.label, value: i.value })),

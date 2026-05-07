@@ -71,6 +71,42 @@ namespace FinTreX.Infrastructure.Services.MarketData.WebSocket
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                if (!await CanConnectAsync(stoppingToken))
+                {
+                    await OnIdleAsync(stoppingToken);
+                    continue;
+                }
+
+                var allSymbols = GetSubscribeSymbols()
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (allSymbols.Length == 0)
+                {
+                    _logger.LogWarning("{ServiceName}: no symbols, retrying in 5s.", ServiceName);
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                    continue;
+                }
+
+                var chunkSize = Math.Max(1, _settings.YahooSubscribeChunkSize);
+                var chunks = allSymbols.Chunk(chunkSize).ToArray();
+
+                _logger.LogInformation(
+                    "{ServiceName}: opening {Count} parallel connections for {Total} symbols ({ChunkSize} per connection).",
+                    ServiceName, chunks.Length, allSymbols.Length, chunkSize);
+
+                var tasks = chunks.Select((chunk, index) =>
+                    RunSingleConnectionAsync(chunk, index, stoppingToken)).ToArray();
+
+                await Task.WhenAll(tasks);
+            }
+        }
+
+        private async Task RunSingleConnectionAsync(string[] symbols, int index, CancellationToken stoppingToken)
+        {
             var reconnectAttempt = 0;
 
             while (!stoppingToken.IsCancellationRequested)
@@ -86,17 +122,17 @@ namespace FinTreX.Infrastructure.Services.MarketData.WebSocket
 
                 try
                 {
-                    await ConnectAsync(socket, stoppingToken);
+                    await ConnectAsync(socket, index, stoppingToken);
                     reconnectAttempt = 0;
 
-                    await SubscribeAsync(socket, stoppingToken);
+                    await SubscribeChunkAsync(socket, symbols, index, stoppingToken);
 
                     using var loopCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
                     var receiveTask = ReceiveLoopAsync(socket, loopCts.Token);
-                    var runtimeSubscribeTask = OnRuntimeSubscribeAsync(socket, loopCts.Token);
+                    var runtimeSubscribeTask = index == 0
+                        ? OnRuntimeSubscribeAsync(socket, loopCts.Token)
+                        : Task.CompletedTask;
 
-                    // When receive loop ends (normally or with exception), always cancel
-                    // and await the subscribe task so it never runs against a closed socket.
                     try
                     {
                         await receiveTask;
@@ -109,7 +145,7 @@ namespace FinTreX.Infrastructure.Services.MarketData.WebSocket
                 }
                 catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
                 {
-                    break;
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -118,10 +154,8 @@ namespace FinTreX.Infrastructure.Services.MarketData.WebSocket
 
                     _logger.LogWarning(
                         ex,
-                        "{ServiceName}: stream error. Reconnect attempt {Attempt} in {DelaySeconds}s.",
-                        ServiceName,
-                        reconnectAttempt,
-                        (int)delay.TotalSeconds);
+                        "{ServiceName}[{Index}]: stream error. Reconnect attempt {Attempt} in {DelaySeconds}s.",
+                        ServiceName, index, reconnectAttempt, (int)delay.TotalSeconds);
 
                     await Task.Delay(delay, stoppingToken);
                 }
@@ -132,53 +166,31 @@ namespace FinTreX.Infrastructure.Services.MarketData.WebSocket
             }
         }
 
-        private async Task ConnectAsync(ClientWebSocket socket, CancellationToken cancellationToken)
+        private async Task ConnectAsync(ClientWebSocket socket, int index, CancellationToken cancellationToken)
         {
             var uri = new Uri(_settings.YahooWebSocketUrl);
-            _logger.LogInformation("{ServiceName}: connecting to {Url}", ServiceName, uri);
+            _logger.LogInformation("{ServiceName}[{Index}]: connecting to {Url}", ServiceName, index, uri);
 
             await socket.ConnectAsync(uri, cancellationToken);
 
-            _logger.LogInformation("{ServiceName}: connected", ServiceName);
+            _logger.LogInformation("{ServiceName}[{Index}]: connected", ServiceName, index);
         }
 
-        private async Task SubscribeAsync(ClientWebSocket socket, CancellationToken cancellationToken)
+        private async Task SubscribeChunkAsync(ClientWebSocket socket, string[] symbols, int index, CancellationToken cancellationToken)
         {
-            var symbols = GetSubscribeSymbols()
-                .Where(symbol => !string.IsNullOrWhiteSpace(symbol))
-                .Select(symbol => symbol.Trim())
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-
             if (symbols.Length == 0)
             {
-                _logger.LogWarning("{ServiceName}: no symbols to subscribe.", ServiceName);
+                _logger.LogWarning("{ServiceName}[{Index}]: no symbols to subscribe.", ServiceName, index);
                 return;
             }
 
-            var chunkSize = Math.Max(1, _settings.YahooSubscribeChunkSize);
-            var totalChunks = (symbols.Length + chunkSize - 1) / chunkSize;
-            var chunkNumber = 0;
+            var payload = JsonSerializer.Serialize(new { subscribe = symbols });
+            var bytes = Encoding.UTF8.GetBytes(payload);
+            await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, endOfMessage: true, cancellationToken);
 
-            foreach (var chunk in symbols.Chunk(chunkSize))
-            {
-                chunkNumber++;
-
-                var payload = JsonSerializer.Serialize(new { subscribe = chunk });
-                var bytes = Encoding.UTF8.GetBytes(payload);
-                var segment = new ArraySegment<byte>(bytes);
-
-                await socket.SendAsync(segment, WebSocketMessageType.Text, endOfMessage: true, cancellationToken);
-
-                _logger.LogInformation(
-                    "{ServiceName}: subscribed chunk {ChunkNumber}/{TotalChunks} with {ChunkSize} symbols",
-                    ServiceName,
-                    chunkNumber,
-                    totalChunks,
-                    chunk.Length);
-            }
-
-            _logger.LogInformation("{ServiceName}: subscribed to {Count} symbols", ServiceName, symbols.Length);
+            _logger.LogInformation(
+                "{ServiceName}[{Index}]: subscribed to {Count} symbols.",
+                ServiceName, index, symbols.Length);
         }
 
         private async Task ReceiveLoopAsync(ClientWebSocket socket, CancellationToken cancellationToken)

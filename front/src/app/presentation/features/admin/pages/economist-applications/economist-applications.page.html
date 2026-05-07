@@ -1,0 +1,92 @@
+<section class="eco-apps-c">
+  <div class="eco-apps-c__wrapper">
+    <div class="eco-apps-c__header">
+      <h1 class="eco-apps-c__title">Ekonomist Başvuruları</h1>
+
+      <div class="eco-apps-c__filters">
+        @for (opt of statusOptions; track opt.label) {
+          <button class="eco-apps-c__filter-btn"
+            [class.eco-apps-c__filter-btn--active]="activeFilter() === opt.value"
+            (click)="setFilter(opt.value)">
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (apiError()) {
+      <div class="eco-apps-c__api-error">
+        <i class="fa-solid fa-triangle-exclamation"></i> {{ apiError() }}
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="eco-apps-c__loading">
+        <i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...
+      </div>
+    } @else if (!result() || result()!.items.length === 0) {
+      <div class="eco-apps-c__empty">
+        <i class="fa-solid fa-inbox"></i>
+        <p>Bu filtreye uygun başvuru bulunamadı.</p>
+      </div>
+    } @else {
+      <div class="eco-apps-c__table-wrapper">
+        <table class="eco-apps-c__table">
+          <thead>
+            <tr>
+              <th>Ad Soyad</th>
+              <th>Başvuru Tarihi</th>
+              <th>Uzmanlık</th>
+              <th>Deneyim</th>
+              <th>Durum</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of result()!.items; track app.id) {
+              <tr class="eco-apps-c__row" (click)="viewDetail(app)">
+                <td class="eco-apps-c__name">{{ app.fullName }}</td>
+                <td>{{ app.submittedAtUtc | date:'dd.MM.yyyy' }}</td>
+                <td>
+                  <div class="eco-apps-c__badges">
+                    @for (area of app.expertiseAreas.slice(0, 2); track area) {
+                      <span class="eco-apps-c__badge">{{ EXPERTISE_AREA_LABELS[area] }}</span>
+                    }
+                    @if (app.expertiseAreas.length > 2) {
+                      <span class="eco-apps-c__badge eco-apps-c__badge--more">
+                        +{{ app.expertiseAreas.length - 2 }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td>{{ app.yearsOfExperience }} yıl</td>
+                <td>
+                  <span class="eco-apps-c__status" [attr.data-status]="app.status">
+                    {{ statusLabel(app.status) }}
+                  </span>
+                </td>
+                <td>
+                  <button class="eco-apps-c__btn-detail" (click)="viewDetail(app); $event.stopPropagation()">
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalPages > 1) {
+        <div class="eco-apps-c__pagination">
+          @for (page of pages(); track page) {
+            <button class="eco-apps-c__page-btn"
+              [class.eco-apps-c__page-btn--active]="currentPage() === page"
+              (click)="setPage(page)">
+              {{ page }}
+            </button>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

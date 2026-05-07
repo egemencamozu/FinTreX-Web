@@ -18,7 +18,13 @@ namespace FinTreX.Core.DTOs.Subscription
         [Range(0, 1000000)]
         public decimal YearlyPriceTRY { get; set; }
 
-        [Range(1, 1000)]
+        [Range(1, 999)]
+        public int MaxPortfolios { get; set; }
+
+        [Range(1, 999)]
+        public int MaxDailyChatMessages { get; set; }
+
+        [Range(1, 999)]
         public int MaxEconomists { get; set; }
 
         public bool CanChangeEconomist { get; set; }

@@ -1,0 +1,186 @@
+:host {
+  display: block;
+  min-width: 0;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky, 20);
+}
+
+.market-ticker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  min-height: 46px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 82%, var(--bg-app));
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-surface) 96%, var(--bg-app)),
+      color-mix(in srgb, var(--bg-surface) 88%, var(--bg-app))
+    );
+  box-shadow: var(--shadow-xs);
+}
+
+.market-ticker__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 100%;
+  padding: 0 var(--space-4) 0 var(--space-5);
+  border-right: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.market-ticker__label-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-gold-500);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-gold-500) 14%, transparent);
+}
+
+.market-ticker__viewport {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.market-ticker__viewport::before,
+.market-ticker__viewport::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+}
+
+.market-ticker__viewport::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg-surface), transparent);
+}
+
+.market-ticker__viewport::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--bg-surface), transparent);
+}
+
+.market-ticker__track {
+  display: inline-flex;
+  align-items: center;
+  min-width: max-content;
+  padding: 6px 0 6px var(--space-3);
+  animation: market-ticker-scroll 46s linear infinite;
+}
+
+.market-ticker:hover .market-ticker__track {
+  animation-play-state: paused;
+}
+
+.market-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 30px;
+  margin-right: var(--space-2);
+  padding: 0 var(--space-3) 0 var(--space-2);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 64%, transparent);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-surface) 92%, var(--bg-app));
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.market-ticker__icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-navy-700) 7%, var(--bg-app));
+  color: var(--text-brand);
+  font-size: 10px;
+}
+
+.market-ticker__symbol {
+  color: var(--text-primary);
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.market-ticker__value,
+.market-ticker__change {
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-regular);
+  font-variant-numeric: normal;
+}
+
+.market-ticker__value {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.market-ticker__change {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.market-ticker__item--up {
+  border-color: color-mix(in srgb, var(--color-success-500) 12%, transparent);
+  background: color-mix(in srgb, var(--bg-success-subtle) 62%, var(--bg-surface));
+}
+
+.market-ticker__item--up .market-ticker__change {
+  color: var(--text-success);
+}
+
+.market-ticker__item--down {
+  border-color: color-mix(in srgb, var(--color-danger-500) 12%, transparent);
+  background: color-mix(in srgb, var(--bg-danger-subtle) 62%, var(--bg-surface));
+}
+
+.market-ticker__item--down .market-ticker__change {
+  color: var(--text-danger);
+}
+
+@keyframes market-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% / 6));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .market-ticker__track {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .market-ticker {
+    grid-template-columns: 1fr;
+  }
+
+  .market-ticker__label {
+    display: none;
+  }
+
+  .market-ticker__item {
+    padding-inline: var(--space-2);
+  }
+}

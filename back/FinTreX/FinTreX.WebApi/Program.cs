@@ -1,13 +1,16 @@
 using FinTreX.Core;
+using FinTreX.Core.Interfaces;
 using FinTreX.Infrastructure;
 using FinTreX.Infrastructure.Models;
 using FinTreX.WebApi.Extensions;
 using FinTreX.WebApi.Hubs;
+using FinTreX.WebApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -15,6 +18,9 @@ using System;
 using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<HostOptions>(opts =>
+    opts.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore);
 
 // Add services to the container.
 builder.Services.AddPersistenceInfrastructure(builder.Configuration);
@@ -43,6 +49,7 @@ builder.Services.AddSingleton<IMarketDataSubscriptionTracker, MarketDataSubscrip
 builder.Services.AddSingleton<IChatConnectionTracker, ChatConnectionTracker>();
 builder.Services.AddMarketDataServices(builder.Configuration);
 builder.Services.AddMarketDataBroadcaster<MarketDataHub>();
+builder.Services.AddSingleton<IAlertsBroadcaster, AlertsBroadcaster>();
 
 // CORS — restrict to known frontend origins
 const string corsPolicyName = "FinTreXCorsPolicy";
@@ -83,6 +90,7 @@ app.UseErrorHandlingMiddleware();
 app.UseHealthChecks("/health");
 app.MapHub<MarketDataHub>("/hubs/market");
 app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<AlertsHub>("/hubs/alerts");
 app.MapControllers();
 
 

@@ -34,6 +34,13 @@ export class ChatHeaderComponent {
     return this.conversation.title || this.peerName;
   }
 
+  get fullDisplayName() {
+    if (this.conversation.title && this.conversation.title !== this.peerName) {
+      return `${this.peerName} ile ${this.conversation.title} sohbeti`;
+    }
+    return this.peerName;
+  }
+
   get isOnline(): boolean {
     return this.peerParticipant?.isOnline ?? false;
   }

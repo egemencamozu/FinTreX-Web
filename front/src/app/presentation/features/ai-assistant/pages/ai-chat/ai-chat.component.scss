@@ -1,9 +1,9 @@
 .ai-chat-c {
-  height: calc(100vh - 64px);
+  height: 100%;
   background: var(--bg-body);
   display: flex;
   flex-direction: column;
-  padding: var(--space-4); // Added padding for card-like container
+  min-height: 0; // Allow shrinking in flex container
 
   &__wrapper {
     flex: 1;

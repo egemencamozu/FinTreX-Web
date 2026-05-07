@@ -1,0 +1,220 @@
+<section class="eas" aria-label="Ekonomist başvuru durumu">
+  <div class="eas__shell">
+
+    @if (isLoading()) {
+      <section class="eas__state" aria-label="Yükleniyor">
+        <div class="eas__spinner" aria-hidden="true"></div>
+        <p>Başvuru durumu yükleniyor...</p>
+      </section>
+    } @else if (!application()) {
+      <section class="eas__state eas__state--empty">
+        <i class="fa-solid fa-file-circle-question eas__state-icon" aria-hidden="true"></i>
+        <h2>Henüz başvuru yapılmamış</h2>
+        <p>Sisteme katılmak için başvuru formunu doldurun.</p>
+        <button class="eas__primary-action" (click)="reapply()">
+          <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+          Başvuru Yap
+        </button>
+      </section>
+    } @else {
+      @let app = application()!;
+
+      <!-- HEADER -->
+      <header class="eas__header">
+        <div class="eas__title-block">
+          <span class="eas__eyebrow">Başvuru Durumu</span>
+          <h1 class="eas__title">{{ app.fullName }}</h1>
+        </div>
+
+        <div class="eas__header-actions">
+          <span class="eas__status-pill" [attr.data-status]="app.status">
+            @switch (app.status) {
+              @case (EconomistStatus.PENDING) { <i class="fa-solid fa-clock"></i> Beklemede }
+              @case (EconomistStatus.APPROVED) { <i class="fa-solid fa-circle-check"></i> Onaylandı }
+              @case (EconomistStatus.REJECTED) { <i class="fa-solid fa-circle-xmark"></i> Reddedildi }
+            }
+          </span>
+        </div>
+      </header>
+
+      <!-- STATUS BANNER -->
+      @if (app.status === EconomistStatus.PENDING) {
+        <div class="eas__banner eas__banner--pending">
+          <div class="eas__banner-icon">
+            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+          </div>
+          <div class="eas__banner-content">
+            <strong>Başvurunuz İnceleniyor</strong>
+            <span>
+              Başvurunuz {{ app.submittedAtUtc | date:'dd.MM.yyyy' }} tarihinde alındı.
+              Admin ekibimiz kısa sürede inceleyerek size bilgi verecektir.
+            </span>
+          </div>
+        </div>
+      }
+
+      @if (app.status === EconomistStatus.REJECTED) {
+        <div class="eas__banner eas__banner--rejected">
+          <div class="eas__banner-icon">
+            <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+          </div>
+          <div class="eas__banner-content">
+            <strong>Başvurunuz Reddedildi</strong>
+            @if (app.adminDecisionNote) {
+              <span class="eas__banner-note">
+                <i class="fa-solid fa-message" aria-hidden="true"></i>
+                {{ app.adminDecisionNote }}
+              </span>
+            }
+            <span>Yeni bilgi ve belgelerle tekrar başvurabilirsiniz.</span>
+          </div>
+          <button class="eas__primary-action" (click)="reapply()">
+            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+            Yeniden Başvur
+          </button>
+        </div>
+      }
+
+      <!-- KPI STRIP -->
+      <section class="eas__kpis" aria-label="Başvuru metrikleri">
+        <app-kpi-card
+          [compact]="true"
+          label="Deneyim"
+          [value]="app.yearsOfExperience + ' yıl'"
+          subtitle="Profesyonel tecrübe"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Uzmanlık Alanı"
+          [value]="(app.expertiseAreas?.length ?? 0).toString()"
+          subtitle="Seçili alan sayısı"
+        >
+          <div kpiFooter class="eas__badge-rail">
+            @for (area of app.expertiseAreas; track area) {
+              <span class="eas__mini-badge">{{ getExpertiseLabel(area) }}</span>
+            } @empty {
+              <span class="eas__mini-badge eas__mini-badge--muted">Yok</span>
+            }
+          </div>
+        </app-kpi-card>
+        <app-kpi-card
+          [compact]="true"
+          label="Sertifika"
+          [value]="(app.licensesAndCertificates?.length ?? 0).toString()"
+          subtitle="Lisans & sertifika"
+        >
+          <div kpiFooter class="eas__badge-rail">
+            @for (cert of app.licensesAndCertificates; track cert) {
+              <span class="eas__mini-badge eas__mini-badge--cert">{{ cert }}</span>
+            } @empty {
+              <span class="eas__mini-badge eas__mini-badge--muted">Yok</span>
+            }
+          </div>
+        </app-kpi-card>
+        <app-kpi-card
+          [compact]="true"
+          label="Platformlar"
+          [value]="(app.links?.length ?? 0).toString()"
+          subtitle="Bağlantılı profil"
+        >
+          <div kpiFooter class="eas__badge-rail">
+            @for (link of app.links; track link.id) {
+              <a class="eas__mini-badge eas__mini-badge--link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+                <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                {{ link.platform }}
+              </a>
+            } @empty {
+              <span class="eas__mini-badge eas__mini-badge--muted">Yok</span>
+            }
+          </div>
+        </app-kpi-card>
+      </section>
+
+      <!-- MAIN GRID -->
+      <div class="eas__grid">
+
+        <!-- LEFT: Profile Info -->
+        <section class="eas__panel eas__panel--profile">
+          <div class="eas__panel-header">
+            <div>
+              <span class="eas__panel-kicker">Profil</span>
+              <h2 class="eas__panel-title">Kişisel Bilgiler</h2>
+            </div>
+          </div>
+
+          <div class="eas__info-grid">
+            <div class="eas__info-item">
+              <span class="eas__info-label">
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                Başvuru Tarihi
+              </span>
+              <span class="eas__info-value">{{ app.submittedAtUtc | date:'dd.MM.yyyy HH:mm' }}</span>
+            </div>
+
+            @if (app.reviewedAtUtc) {
+              <div class="eas__info-item">
+                <span class="eas__info-label">
+                  <i class="fa-solid fa-gavel" aria-hidden="true"></i>
+                  Değerlendirme Tarihi
+                </span>
+                <span class="eas__info-value">{{ app.reviewedAtUtc | date:'dd.MM.yyyy HH:mm' }}</span>
+              </div>
+            }
+
+            @if (app.phone) {
+              <div class="eas__info-item">
+                <span class="eas__info-label">
+                  <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                  Telefon
+                </span>
+                <span class="eas__info-value">{{ app.phone }}</span>
+              </div>
+            }
+
+            @if (app.currentTitle) {
+              <div class="eas__info-item">
+                <span class="eas__info-label">
+                  <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                  Mevcut Ünvan
+                </span>
+                <span class="eas__info-value">{{ app.currentTitle }}</span>
+              </div>
+            }
+
+            @if (app.institution) {
+              <div class="eas__info-item">
+                <span class="eas__info-label">
+                  <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+                  Kurum
+                </span>
+                <span class="eas__info-value">{{ app.institution }}</span>
+              </div>
+            }
+
+            @if (app.education) {
+              <div class="eas__info-item">
+                <span class="eas__info-label">
+                  <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+                  Eğitim
+                </span>
+                <span class="eas__info-value">{{ app.education }}</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- RIGHT: Bio -->
+        <section class="eas__panel eas__panel--bio">
+          <div class="eas__panel-header">
+            <div>
+              <span class="eas__panel-kicker">Hakkında</span>
+              <h2 class="eas__panel-title">Biyografi</h2>
+            </div>
+          </div>
+          <p class="eas__bio-text">{{ app.biography }}</p>
+        </section>
+
+      </div>
+    }
+  </div>
+</section>

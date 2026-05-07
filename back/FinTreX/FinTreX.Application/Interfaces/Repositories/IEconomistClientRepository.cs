@@ -9,6 +9,7 @@ namespace FinTreX.Core.Interfaces.Repositories
         Task<IReadOnlyList<EconomistClient>> GetClientsByEconomistIdAsync(string economistId);
         Task<IReadOnlyList<EconomistClient>> GetEconomistsByClientIdAsync(string clientId);
         Task<bool> IsClientAssignedAsync(string economistId, string clientId);
+        Task<EconomistClient?> GetAssignmentAsync(string economistId, string clientId);
         Task<int> GetActiveEconomistCountAsync(string clientId);
     }
 }

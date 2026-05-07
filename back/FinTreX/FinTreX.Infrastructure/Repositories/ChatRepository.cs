@@ -51,13 +51,9 @@ namespace FinTreX.Infrastructure.Repositories
             var tracked = _db.Conversations.Local.FirstOrDefault(e => e.Id == conversation.Id);
             if (tracked != null)
             {
-                _db.Entry(tracked).CurrentValues.SetValues(conversation);
+                _db.Entry(tracked).State = EntityState.Detached;
             }
-            else
-            {
-                _db.Conversations.Attach(conversation);
-                _db.Entry(conversation).State = EntityState.Modified;
-            }
+            _db.Conversations.Update(conversation);
             await _db.SaveChangesAsync();
         }
 
@@ -66,6 +62,7 @@ namespace FinTreX.Infrastructure.Repositories
         public async Task<ConversationParticipant> GetParticipantAsync(int conversationId, string userId)
         {
             return await _db.ConversationParticipants
+                .AsNoTracking() // Use AsNoTracking to avoid initial tracking
                 .FirstOrDefaultAsync(p => p.ConversationId == conversationId && p.UserId == userId);
         }
 
@@ -82,17 +79,9 @@ namespace FinTreX.Infrastructure.Repositories
             var tracked = _db.ConversationParticipants.Local.FirstOrDefault(e => e.Id == participant.Id);
             if (tracked != null)
             {
-                // If it's the same instance, do nothing or update properties
-                if (!ReferenceEquals(tracked, participant))
-                {
-                    _db.Entry(tracked).CurrentValues.SetValues(participant);
-                }
+                _db.Entry(tracked).State = EntityState.Detached;
             }
-            else
-            {
-                _db.ConversationParticipants.Attach(participant);
-                _db.Entry(participant).State = EntityState.Modified;
-            }
+            _db.ConversationParticipants.Update(participant);
             await _db.SaveChangesAsync();
         }
 
@@ -107,7 +96,7 @@ namespace FinTreX.Infrastructure.Repositories
 
         public async Task<ChatMessage> GetMessageByIdAsync(long messageId)
         {
-            return await _db.ChatMessages.FindAsync(messageId);
+            return await _db.ChatMessages.AsNoTracking().FirstOrDefaultAsync(m => m.Id == messageId);
         }
 
         public async Task UpdateMessageAsync(ChatMessage message)
@@ -115,16 +104,9 @@ namespace FinTreX.Infrastructure.Repositories
             var tracked = _db.ChatMessages.Local.FirstOrDefault(e => e.Id == message.Id);
             if (tracked != null)
             {
-                if (!ReferenceEquals(tracked, message))
-                {
-                    _db.Entry(tracked).CurrentValues.SetValues(message);
-                }
+                _db.Entry(tracked).State = EntityState.Detached;
             }
-            else
-            {
-                _db.ChatMessages.Attach(message);
-                _db.Entry(message).State = EntityState.Modified;
-            }
+            _db.ChatMessages.Update(message);
             await _db.SaveChangesAsync();
         }
 
@@ -170,11 +152,10 @@ namespace FinTreX.Infrastructure.Repositories
 
         public async Task<int> GetTotalUnreadCountAsync(string userId)
         {
-            // Subquery: for each conversation the user participates in,
-            // count messages with Id > LastReadMessageId sent by others.
             var participations = await _db.ConversationParticipants
                 .Where(p => p.UserId == userId && !p.IsDeleted)
                 .Select(p => new { p.ConversationId, p.LastReadMessageId })
+                .AsNoTracking()
                 .ToListAsync();
 
             int total = 0;

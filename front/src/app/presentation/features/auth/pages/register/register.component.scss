@@ -92,9 +92,11 @@
   }
 
   &__field {
+    position: relative;
     display: grid;
     gap: var(--space-1-5);
     min-width: 0;
+    padding-bottom: var(--space-5);
   }
 
   &__label {
@@ -163,14 +165,21 @@
   }
 
   &__field-error {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
+    max-width: 100%;
+    min-height: var(--space-4);
     color: var(--text-danger);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
 
     i {
+      flex-shrink: 0;
       font-size: var(--font-size-xs);
     }
   }

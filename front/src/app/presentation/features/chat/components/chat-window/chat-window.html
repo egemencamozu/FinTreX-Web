@@ -47,6 +47,7 @@
   </div>
 
   <app-chat-input 
+    [isReadOnly]="conversation.isReadOnly"
     (messageSent)="onSendMessage($event)"
     (typing)="onTyping()"
   />

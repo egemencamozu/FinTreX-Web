@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, inject, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatMessage } from '../../models';
@@ -18,10 +18,26 @@ export class MessageBubbleComponent {
 
   isEditing = signal(false);
   editContent = signal('');
+  isMenuOpen = signal(false);
+
+  private elementRef = inject(ElementRef);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.isMenuOpen.set(false);
+    }
+  }
+
+  toggleMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.isMenuOpen.update(v => !v);
+  }
 
   startEdit() {
     this.editContent.set(this.message.content);
     this.isEditing.set(true);
+    this.isMenuOpen.set(false);
   }
 
   saveEdit() {
@@ -37,6 +53,7 @@ export class MessageBubbleComponent {
   }
 
   deleteMessage() {
+    this.isMenuOpen.set(false);
     if (confirm('Bu mesajı silmek istediğinizden emin misiniz?')) {
       this.deleteRequested.emit(this.message.id);
     }

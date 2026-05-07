@@ -63,4 +63,12 @@
       color: var(--color-info-600);
     }
   }
+
+  &__readonly-msg {
+    color: var(--text-tertiary);
+    text-align: center;
+    font-size: 0.85rem;
+    font-style: italic;
+    padding: 0.5rem 0;
+  }
 }

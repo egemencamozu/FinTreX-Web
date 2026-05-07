@@ -1,721 +1,625 @@
-<section class="watchlist-c">
-  <div class="watchlist-c__wrapper">
-    <div class="watchlist-c__container">
-      <div class="watchlist-c__shell">
+﻿<section class="watchlist-page-c">
+  <div class="watchlist-page-c__wrapper">
+    <div class="watchlist-page-c__container">
+      <div class="watchlist-page-c__shell">
 
-        <!-- ══════════════════════════════════════════════════════════════
-             PAGE HEADER
-        ══════════════════════════════════════════════════════════════ -->
-        <div class="watchlist-c__page-header">
-          <div class="watchlist-c__page-header-left">
-            <div class="watchlist-c__page-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </div>
-            <div>
-              <h1 class="watchlist-c__page-title">İzleme Listem</h1>
-              <p class="watchlist-c__page-subtitle">Takip ettiğiniz varlıklar ve anlık piyasa hareketleri</p>
-            </div>
-          </div>
-          <div class="watchlist-c__page-header-actions">
-            <span class="watchlist-c__last-refresh">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-              </svg>
-              {{ formatLastRefresh(lastRefresh()) }}
-            </span>
-            <button class="watchlist-c__btn watchlist-c__btn--secondary" type="button" (click)="refresh()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-              </svg>
-              Yenile
-            </button>
-            <button class="watchlist-c__btn watchlist-c__btn--primary" type="button" (click)="openAddModal()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              Varlık Ekle
-            </button>
-          </div>
-        </div>
+        <!-- =========== HEADER PANEL =========== -->
+        <header class="watchlist-page-c__header-panel">
+          <div class="watchlist-page-c__header-shell">
 
-        <!-- ══════════════════════════════════════════════════════════════
-             MARKET OVERVIEW BAR
-        ══════════════════════════════════════════════════════════════ -->
-        <div class="watchlist-c__market-bar">
-
-          <!-- Total Market Cap -->
-          <div class="watchlist-c__market-chip">
-            <div class="watchlist-c__market-chip-header">
-              <span class="watchlist-c__market-chip-label">Toplam Piyasa Değeri</span>
-              <span class="watchlist-c__change-badge"
-                    [class.watchlist-c__change-badge--up]="marketMetrics().totalMarketCapChange24h >= 0"
-                    [class.watchlist-c__change-badge--down]="marketMetrics().totalMarketCapChange24h < 0">
-                {{ formatPercent(marketMetrics().totalMarketCapChange24h) }}
-              </span>
-            </div>
-            <div class="watchlist-c__market-chip-value">
-              ${{ formatMarketCap(marketMetrics().totalMarketCapUsd) }}
-            </div>
-            <svg class="watchlist-c__mini-chart watchlist-c__mini-chart--up"
-                 viewBox="0 0 60 20" width="60" height="20">
-              <polyline class="watchlist-c__mini-line"
-                        [attr.points]="getSparklinePoints(marketMetrics().marketCapSparkline, 60, 20)"/>
-            </svg>
-          </div>
-
-          <!-- 24h Volume -->
-          <div class="watchlist-c__market-chip">
-            <div class="watchlist-c__market-chip-header">
-              <span class="watchlist-c__market-chip-label">24s Hacim</span>
-              <span class="watchlist-c__change-badge"
-                    [class.watchlist-c__change-badge--up]="marketMetrics().volume24hChange24h >= 0"
-                    [class.watchlist-c__change-badge--down]="marketMetrics().volume24hChange24h < 0">
-                {{ formatPercent(marketMetrics().volume24hChange24h) }}
-              </span>
-            </div>
-            <div class="watchlist-c__market-chip-value">
-              ${{ formatMarketCap(marketMetrics().volume24hUsd) }}
-            </div>
-            <div class="watchlist-c__mini-bar-wrap">
-              <div class="watchlist-c__mini-bar" style="width: 72%"></div>
-            </div>
-          </div>
-
-          <!-- Fear & Greed -->
-          <div class="watchlist-c__market-chip watchlist-c__market-chip--fg">
-            <div class="watchlist-c__market-chip-header">
-              <span class="watchlist-c__market-chip-label">Korku &amp; Açgözlülük</span>
-            </div>
-            <div class="watchlist-c__fg-row">
-              <span class="watchlist-c__fg-value watchlist-c__fg-value--{{ fearGreedClass() }}">
-                {{ marketMetrics().fearGreedValue }}
-              </span>
-              <span class="watchlist-c__fg-label-text watchlist-c__fg-label-text--{{ fearGreedClass() }}">
-                {{ marketMetrics().fearGreedLabel }}
-              </span>
-            </div>
-            <div class="watchlist-c__fg-track">
-              <div class="watchlist-c__fg-thumb" [style.left.%]="marketMetrics().fearGreedValue"></div>
-            </div>
-            <div class="watchlist-c__fg-scale">
-              <span>Aşırı Korku</span><span>Nötr</span><span>Açgözlülük</span>
-            </div>
-          </div>
-
-          <!-- BTC Dominance -->
-          <div class="watchlist-c__market-chip">
-            <div class="watchlist-c__market-chip-header">
-              <span class="watchlist-c__market-chip-label">BTC Dominansı</span>
-              <span class="watchlist-c__change-badge"
-                    [class.watchlist-c__change-badge--up]="marketMetrics().btcDominanceChange24h >= 0"
-                    [class.watchlist-c__change-badge--down]="marketMetrics().btcDominanceChange24h < 0">
-                {{ formatPercent(marketMetrics().btcDominanceChange24h) }}
-              </span>
-            </div>
-            <div class="watchlist-c__market-chip-value">{{ marketMetrics().btcDominance }}%</div>
-            <div class="watchlist-c__dom-track">
-              <div class="watchlist-c__dom-fill watchlist-c__dom-fill--btc"
-                   [style.width.%]="marketMetrics().btcDominance"></div>
-              <div class="watchlist-c__dom-fill watchlist-c__dom-fill--alt"
-                   [style.width.%]="100 - marketMetrics().btcDominance"></div>
-            </div>
-            <div class="watchlist-c__dom-legend">
-              <span class="watchlist-c__dom-legend-item watchlist-c__dom-legend-item--btc">BTC</span>
-              <span class="watchlist-c__dom-legend-item watchlist-c__dom-legend-item--alt">Diğerleri</span>
-            </div>
-          </div>
-
-          <!-- BIST 100 -->
-          <div class="watchlist-c__market-chip">
-            <div class="watchlist-c__market-chip-header">
-              <span class="watchlist-c__market-chip-label">BIST 100</span>
-              <span class="watchlist-c__change-badge"
-                    [class.watchlist-c__change-badge--up]="marketMetrics().bist100Change24h >= 0"
-                    [class.watchlist-c__change-badge--down]="marketMetrics().bist100Change24h < 0">
-                {{ formatPercent(marketMetrics().bist100Change24h) }}
-              </span>
-            </div>
-            <div class="watchlist-c__market-chip-value">
-              {{ marketMetrics().bist100Value.toLocaleString('tr-TR') }}
-            </div>
-            <svg class="watchlist-c__mini-chart watchlist-c__mini-chart--up"
-                 viewBox="0 0 60 20" width="60" height="20">
-              <polyline class="watchlist-c__mini-line"
-                        [attr.points]="getSparklinePoints(marketMetrics().bist100Sparkline, 60, 20)"/>
-            </svg>
-          </div>
-
-          <!-- Altcoin Season -->
-          <div class="watchlist-c__market-chip">
-            <div class="watchlist-c__market-chip-header">
-              <span class="watchlist-c__market-chip-label">Altcoin Sezonu</span>
-            </div>
-            <div class="watchlist-c__market-chip-value">{{ marketMetrics().altcoinSeasonIndex }} / 100</div>
-            <div class="watchlist-c__alt-track">
-              <div class="watchlist-c__alt-fill"
-                   [style.width.%]="marketMetrics().altcoinSeasonIndex"></div>
-            </div>
-            <div class="watchlist-c__alt-legend">
-              <span>Bitcoin</span><span>Altcoin</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ══════════════════════════════════════════════════════════════
-             STATS ROW
-        ══════════════════════════════════════════════════════════════ -->
-        <div class="watchlist-c__stats-row">
-
-          <div class="watchlist-c__stat-card">
-            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--navy">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-            </div>
-            <div class="watchlist-c__stat-body">
-              <span class="watchlist-c__stat-value">{{ totalCount() }}</span>
-              <span class="watchlist-c__stat-label">Toplam Takip</span>
-            </div>
-          </div>
-
-          <div class="watchlist-c__stat-card">
-            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--success">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-              </svg>
-            </div>
-            <div class="watchlist-c__stat-body">
-              <span class="watchlist-c__stat-value watchlist-c__stat-value--success">{{ gainersCount() }}</span>
-              <span class="watchlist-c__stat-label">Yükselen</span>
-            </div>
-          </div>
-
-          <div class="watchlist-c__stat-card">
-            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--danger">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/>
-              </svg>
-            </div>
-            <div class="watchlist-c__stat-body">
-              <span class="watchlist-c__stat-value watchlist-c__stat-value--danger">{{ losersCount() }}</span>
-              <span class="watchlist-c__stat-label">Düşen</span>
-            </div>
-          </div>
-
-          <div class="watchlist-c__stat-card">
-            <div class="watchlist-c__stat-icon watchlist-c__stat-icon--gold">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-            </div>
-            <div class="watchlist-c__stat-body">
-              <span class="watchlist-c__stat-value watchlist-c__stat-value--gold">{{ alertsCount() }}</span>
-              <span class="watchlist-c__stat-label">Aktif Alarm</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ══════════════════════════════════════════════════════════════
-             MAIN PANEL  (tabs + toolbar + table)
-        ══════════════════════════════════════════════════════════════ -->
-        <div class="watchlist-c__main-panel">
-
-          <!-- Tabs -->
-          <div class="watchlist-c__tabs" role="tablist">
-            @for (tab of tabs; track tab.id) {
-              <button
-                [class]="'watchlist-c__tab watchlist-c__tab--' + tab.colorClass + (activeTab() === tab.id ? ' watchlist-c__tab--active' : '')"
-                role="tab"
-                type="button"
-                (click)="setTab(tab.id)"
-              >
-                <span class="watchlist-c__tab-dot watchlist-c__tab-dot--{{ tab.colorClass }}"></span>
-                {{ tab.label }}
-                <span class="watchlist-c__tab-badge">{{ getCategoryCount(tab.id) }}</span>
-              </button>
-            }
-          </div>
-
-          <!-- Toolbar -->
-          <div class="watchlist-c__toolbar">
-            <div class="watchlist-c__search-wrap">
-              <svg class="watchlist-c__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-              <input
-                class="watchlist-c__search-input"
-                type="search"
-                placeholder="Sembol veya isim ara..."
-                [value]="searchQuery()"
-                (input)="searchQuery.set($any($event.target).value)"
-              />
-            </div>
-            <div class="watchlist-c__toolbar-right">
-              <span class="watchlist-c__result-count">{{ filteredItems().length }} varlık</span>
-            </div>
-          </div>
-
-          <!-- Table -->
-          @if (filteredItems().length > 0) {
-            <div class="watchlist-c__table-wrap">
-              <table class="watchlist-c__table" role="table">
-                <thead class="watchlist-c__thead">
-                  <tr>
-                    <th class="watchlist-c__th watchlist-c__th--rank watchlist-c__th--sortable"
-                        (click)="sortBy('rank')">#
-                      @if (isSortActive('rank')) {
-                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                      }
-                    </th>
-                    <th class="watchlist-c__th watchlist-c__th--symbol watchlist-c__th--sortable"
-                        (click)="sortBy('symbol')">Sembol / İsim
-                      @if (isSortActive('symbol')) {
-                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                      }
-                    </th>
-                    <th class="watchlist-c__th watchlist-c__th--price watchlist-c__th--sortable"
-                        (click)="sortBy('price')">Fiyat
-                      @if (isSortActive('price')) {
-                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                      }
-                    </th>
-                    <th class="watchlist-c__th watchlist-c__th--pct watchlist-c__th--hide-mobile watchlist-c__th--sortable"
-                        (click)="sortBy('change1h')">1s %
-                      @if (isSortActive('change1h')) {
-                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                      }
-                    </th>
-                    <th class="watchlist-c__th watchlist-c__th--pct watchlist-c__th--sortable"
-                        (click)="sortBy('changePercent')">24s %
-                      @if (isSortActive('changePercent')) {
-                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                      }
-                    </th>
-                    <th class="watchlist-c__th watchlist-c__th--pct watchlist-c__th--hide-mobile watchlist-c__th--sortable"
-                        (click)="sortBy('change7d')">7g %
-                      @if (isSortActive('change7d')) {
-                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                      }
-                    </th>
-                    <th class="watchlist-c__th watchlist-c__th--range watchlist-c__th--hide-tablet">24s Aralık</th>
-                    @if (showMarketCapColumn) {
-                      <th class="watchlist-c__th watchlist-c__th--cap watchlist-c__th--hide-tablet watchlist-c__th--sortable"
-                          (click)="sortBy('marketCap')">Piy. Değeri
-                        @if (isSortActive('marketCap')) {
-                          <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                        }
-                      </th>
-                    }
-                    <th class="watchlist-c__th watchlist-c__th--vol watchlist-c__th--hide-tablet watchlist-c__th--sortable"
-                        (click)="sortBy('volume')">24s Hacim
-                      @if (isSortActive('volume')) {
-                        <span class="watchlist-c__sort-icon" [class.watchlist-c__sort-icon--asc]="sortDirection() === 'asc'">▾</span>
-                      }
-                    </th>
-                    @if (showSupplyColumn) {
-                      <th class="watchlist-c__th watchlist-c__th--supply watchlist-c__th--hide-tablet">Dolaşım Arzı</th>
-                    }
-                    <th class="watchlist-c__th watchlist-c__th--sparkline watchlist-c__th--hide-mobile">Son 7 Gün</th>
-                    <th class="watchlist-c__th watchlist-c__th--actions">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody class="watchlist-c__tbody">
-                  @for (item of filteredItems(); track item.id) {
-                    <tr class="watchlist-c__row"
-                        [class.watchlist-c__row--gaining]="item.changePercent >= 0"
-                        [class.watchlist-c__row--losing]="item.changePercent < 0">
-
-                      <!-- Rank -->
-                      <td class="watchlist-c__td watchlist-c__td--rank">
-                        <span class="watchlist-c__rank">{{ item.rank }}</span>
-                      </td>
-
-                      <!-- Symbol / Name -->
-                      <td class="watchlist-c__td watchlist-c__td--symbol">
-                        <div class="watchlist-c__asset">
-                          <div class="watchlist-c__asset-icon watchlist-c__asset-icon--{{ item.category }}">
-                            {{ item.symbol.charAt(0) }}
-                          </div>
-                          <div class="watchlist-c__asset-info">
-                            <span class="watchlist-c__asset-symbol">{{ item.symbol }}</span>
-                            <span class="watchlist-c__asset-name">{{ item.name }}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <!-- Price -->
-                      <td class="watchlist-c__td watchlist-c__td--price">
-                        <div class="watchlist-c__price-group">
-                          <span class="watchlist-c__price">{{ formatPrice(item.price, item.currency) }}</span>
-                          <span class="watchlist-c__price-abs"
-                                [class.watchlist-c__price-abs--up]="item.change >= 0"
-                                [class.watchlist-c__price-abs--down]="item.change < 0">
-                            {{ formatChange(item.change, item.currency) }}
-                          </span>
-                        </div>
-                      </td>
-
-                      <!-- 1h % -->
-                      <td class="watchlist-c__td watchlist-c__td--pct watchlist-c__td--hide-mobile">
-                        <span class="watchlist-c__pct-pill"
-                              [class.watchlist-c__pct-pill--up]="item.change1h >= 0"
-                              [class.watchlist-c__pct-pill--down]="item.change1h < 0">
-                          {{ formatPercent(item.change1h) }}
-                        </span>
-                      </td>
-
-                      <!-- 24h % -->
-                      <td class="watchlist-c__td watchlist-c__td--pct">
-                        <span class="watchlist-c__pct-pill watchlist-c__pct-pill--lg"
-                              [class.watchlist-c__pct-pill--up]="item.changePercent >= 0"
-                              [class.watchlist-c__pct-pill--down]="item.changePercent < 0">
-                          {{ formatPercent(item.changePercent) }}
-                        </span>
-                      </td>
-
-                      <!-- 7d % -->
-                      <td class="watchlist-c__td watchlist-c__td--pct watchlist-c__td--hide-mobile">
-                        <span class="watchlist-c__pct-pill"
-                              [class.watchlist-c__pct-pill--up]="item.change7d >= 0"
-                              [class.watchlist-c__pct-pill--down]="item.change7d < 0">
-                          {{ formatPercent(item.change7d) }}
-                        </span>
-                      </td>
-
-                      <!-- 24h Range -->
-                      <td class="watchlist-c__td watchlist-c__td--range watchlist-c__td--hide-tablet">
-                        <div class="watchlist-c__range">
-                          <span class="watchlist-c__range-low">{{ formatPrice(item.low24h, '') }}</span>
-                          <div class="watchlist-c__range-track">
-                            <div class="watchlist-c__range-thumb"
-                                 [style.left.%]="getPriceRangePosition(item.price, item.low24h, item.high24h)">
-                            </div>
-                          </div>
-                          <span class="watchlist-c__range-high">{{ formatPrice(item.high24h, '') }}</span>
-                        </div>
-                      </td>
-
-                      <!-- Market Cap -->
-                      @if (showMarketCapColumn) {
-                        <td class="watchlist-c__td watchlist-c__td--cap watchlist-c__td--hide-tablet">
-                          <span class="watchlist-c__cap">{{ formatMarketCap(item.marketCap) }}</span>
-                        </td>
-                      }
-
-                      <!-- Volume -->
-                      <td class="watchlist-c__td watchlist-c__td--vol watchlist-c__td--hide-tablet">
-                        <span class="watchlist-c__vol">{{ formatVolume(item.volume) }}</span>
-                      </td>
-
-                      <!-- Circulating Supply -->
-                      @if (showSupplyColumn) {
-                        <td class="watchlist-c__td watchlist-c__td--supply watchlist-c__td--hide-tablet">
-                          <div class="watchlist-c__supply">
-                            <span class="watchlist-c__supply-value">
-                              {{ formatSupply(item.circulatingSupply) }} {{ item.symbol }}
-                            </span>
-                            @if (item.circulatingSupply !== null && item.totalSupply !== null) {
-                              <div class="watchlist-c__supply-track">
-                                <div class="watchlist-c__supply-fill"
-                                     [style.width.%]="(item.circulatingSupply / item.totalSupply) * 100">
-                                </div>
-                              </div>
-                            }
-                          </div>
-                        </td>
-                      }
-
-                      <!-- Sparkline -->
-                      <td class="watchlist-c__td watchlist-c__td--sparkline watchlist-c__td--hide-mobile">
-                        <svg
-                          class="watchlist-c__sparkline"
-                          viewBox="0 0 80 32"
-                          width="80"
-                          height="32"
-                          [class.watchlist-c__sparkline--up]="item.changePercent >= 0"
-                          [class.watchlist-c__sparkline--down]="item.changePercent < 0"
-                        >
-                          <polyline class="watchlist-c__sparkline-line"
-                                    [attr.points]="getSparklinePoints(item.sparkline)"/>
-                        </svg>
-                      </td>
-
-                      <!-- Actions -->
-                      <td class="watchlist-c__td watchlist-c__td--actions">
-                        <div class="watchlist-c__action-group">
-                          <button
-                            class="watchlist-c__action-btn"
-                            [class.watchlist-c__action-btn--alert-on]="item.alertEnabled"
-                            type="button"
-                            (click)="toggleAlert(item.id)"
-                            [title]="item.alertEnabled ? 'Alarm kapat' : 'Alarm kur'"
-                          >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                            </svg>
-                          </button>
-                          <button
-                            class="watchlist-c__action-btn watchlist-c__action-btn--remove"
-                            type="button"
-                            (click)="removeItem(item.id)"
-                            title="İzlemeden çıkar"
-                          >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-
-          } @else {
-            <div class="watchlist-c__empty">
-              <div class="watchlist-c__empty-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                  <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
+            <!-- Üst satır: aktif liste adı + eylemler -->
+            <div class="watchlist-page-c__header-main">
+              <div class="watchlist-page-c__header-value-stack">
+                <h1 class="watchlist-page-c__title">{{ activeWatchlist()?.name ?? 'İzleme Listem' }}</h1>
+                <p class="watchlist-page-c__subtitle">
+                  {{ totalCount() }} varlık takip ediliyor
+                </p>
               </div>
-              <p class="watchlist-c__empty-title">
-                @if (searchQuery()) { "{{ searchQuery() }}" için sonuç bulunamadı }
-                @else { Bu kategoride takip listesi boş }
-              </p>
-              <p class="watchlist-c__empty-desc">
-                @if (searchQuery()) { Farklı bir sembol veya isim aramayı deneyin. }
-                @else { Varlık Ekle butonu ile buraya hisse, maden veya kripto ekleyebilirsiniz. }
-              </p>
-              @if (!searchQuery()) {
-                <button class="watchlist-c__btn watchlist-c__btn--primary" type="button" (click)="openAddModal()">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                  </svg>
-                  Varlık Ekle
+
+              <div class="watchlist-page-c__header-actions">
+                <button class="watchlist-page-c__btn-primary" (click)="openAddModal()">
+                  <i class="fa-solid fa-plus"></i>
+                  <span>Varlık Ekle</span>
+                </button>
+
+                <div class="watchlist-page-c__actions-menu">
+                  <button class="watchlist-page-c__icon-btn"
+                          (click)="showWlActionsMenu.set(!showWlActionsMenu())"
+                          title="Daha fazla">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                  @if (showWlActionsMenu()) {
+                    <div class="watchlist-page-c__dropdown-backdrop"
+                         (click)="showWlActionsMenu.set(false)"></div>
+                    <div class="watchlist-page-c__actions-menu-panel">
+                      <button class="watchlist-page-c__actions-menu-item"
+                              (click)="openRenameWlModal()">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Listeyi Yeniden Adlandır</span>
+                      </button>
+                      <button class="watchlist-page-c__actions-menu-item watchlist-page-c__actions-menu-item--danger"
+                              (click)="deleteWatchlist()"
+                              [disabled]="watchlists().length <= 1">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Listeyi Sil</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Chip-row: watchlist sekmeleri (portfolio tarzı) -->
+            <div class="watchlist-page-c__header-chip-row">
+              @for (wl of watchlists(); track wl.id) {
+                <button class="watchlist-page-c__header-chip watchlist-page-c__header-chip--badge watchlist-page-c__header-chip--list"
+                        [class.watchlist-page-c__header-chip--active]="activeWatchlistId() === wl.id"
+                        (click)="selectWatchlist(wl.id)">
+                  <span class="watchlist-page-c__header-chip-text">{{ wl.name }}</span>
+                </button>
+              }
+              <button class="watchlist-page-c__header-chip watchlist-page-c__header-chip--add"
+                      (click)="showNewWlModal.set(true)"
+                      title="Yeni liste oluştur">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+
+          </div>
+        </header>
+
+        <!-- =========== YENİ LİSTE MODAL =========== -->
+        @if (showNewWlModal()) {
+          <div class="watchlist-page-c__modal-overlay" (click)="showNewWlModal.set(false)">
+            <div class="watchlist-page-c__modal" (click)="$event.stopPropagation()">
+              <div class="watchlist-page-c__modal-header">
+                <h2 class="watchlist-page-c__modal-title">Yeni İzleme Listesi</h2>
+                <button class="watchlist-page-c__modal-close" (click)="showNewWlModal.set(false)">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="watchlist-page-c__wl-modal-body">
+                <input class="watchlist-page-c__wl-modal-input" type="text"
+                       placeholder="Liste adı..." [value]="newWlName()"
+                       (input)="newWlName.set($any($event.target).value)"
+                       (keyup.enter)="createWatchlist()" autofocus/>
+                <div class="watchlist-page-c__wl-modal-actions">
+                  <button class="watchlist-page-c__btn-icon" (click)="showNewWlModal.set(false)">İptal</button>
+                  <button class="watchlist-page-c__btn-primary" (click)="createWatchlist()">Oluştur</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- =========== YENİDEN ADLANDIRMA MODAL =========== -->
+        @if (showRenameWlModal()) {
+          <div class="watchlist-page-c__modal-overlay" (click)="showRenameWlModal.set(false)">
+            <div class="watchlist-page-c__modal" (click)="$event.stopPropagation()">
+              <div class="watchlist-page-c__modal-header">
+                <h2 class="watchlist-page-c__modal-title">Listeyi Yeniden Adlandır</h2>
+                <button class="watchlist-page-c__modal-close" (click)="showRenameWlModal.set(false)">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="watchlist-page-c__wl-modal-body">
+                <input class="watchlist-page-c__wl-modal-input" type="text"
+                       placeholder="Yeni ad..." [value]="newWlName()"
+                       (input)="newWlName.set($any($event.target).value)"
+                       (keyup.enter)="renameWatchlist()" autofocus/>
+                <div class="watchlist-page-c__wl-modal-actions">
+                  <button class="watchlist-page-c__btn-icon" (click)="showRenameWlModal.set(false)">İptal</button>
+                  <button class="watchlist-page-c__btn-primary" (click)="renameWatchlist()">Kaydet</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- =========== OVERVIEW BAND =========== -->
+        <div class="watchlist-page-c__overview-band">
+
+          <!-- Sol: Spotlight Kart -->
+          <article class="watchlist-page-c__spotlight">
+
+            <header class="watchlist-page-c__spotlight-header">
+              <span class="watchlist-page-c__spotlight-eyebrow">
+                Öne Çıkan · {{ activeTab() === 'alarmlar' ? 'Tümü' : getCategoryLabel($any(activeTab())) }}
+              </span>
+              <span class="watchlist-page-c__spotlight-meta">
+                Ortalama
+                <strong [class.watchlist-page-c__text-up]="avgChange() >= 0"
+                        [class.watchlist-page-c__text-down]="avgChange() < 0">
+                  {{ avgChange() >= 0 ? '+' : '' }}{{ avgChange().toFixed(2) }}%
+                </strong>
+              </span>
+            </header>
+
+            @if (spotlightItem(); as top) {
+              <div class="watchlist-page-c__spotlight-body">
+
+                <div class="watchlist-page-c__spotlight-asset">
+                  <app-market-asset-cell
+                    [symbol]="top.symbol"
+                    [subLabel]="top.name"
+                    [showLogo]="top.category === 'crypto'"
+                    [isGold]="top.category === 'metal'"
+                    [avatarKey]="top.symbol"
+                  />
+                </div>
+
+                <div class="watchlist-page-c__spotlight-price-wrap">
+                  <span class="watchlist-page-c__spotlight-price">{{ formatPrice(top.price, top.currency) }}</span>
+                  <span class="watchlist-page-c__spotlight-change"
+                        [class.watchlist-page-c__spotlight-change--up]="top.changePercent >= 0"
+                        [class.watchlist-page-c__spotlight-change--down]="top.changePercent < 0">
+                    <i class="fa-solid" [class.fa-caret-up]="top.changePercent >= 0" [class.fa-caret-down]="top.changePercent < 0"></i>
+                    {{ top.changePercent >= 0 ? '+' : '' }}{{ top.changePercent.toFixed(2) }}%
+                  </span>
+                </div>
+
+                <svg class="watchlist-page-c__spotlight-sparkline" viewBox="0 0 160 48" preserveAspectRatio="none"
+                     [class.watchlist-page-c__spotlight-sparkline--up]="top.changePercent >= 0"
+                     [class.watchlist-page-c__spotlight-sparkline--down]="top.changePercent < 0">
+                  <defs>
+                    <linearGradient id="spotlight-grad-up" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="var(--chart-profit)" stop-opacity="0.26"/>
+                      <stop offset="100%" stop-color="var(--chart-profit)" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="spotlight-grad-down" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="var(--chart-loss)" stop-opacity="0.26"/>
+                      <stop offset="100%" stop-color="var(--chart-loss)" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <polygon class="watchlist-page-c__spotlight-sparkline-area"
+                           [attr.points]="getSparklineAreaPoints(top.sparkline, 160, 48)"
+                           [attr.fill]="top.changePercent >= 0 ? 'url(#spotlight-grad-up)' : 'url(#spotlight-grad-down)'"/>
+                  <polyline [attr.points]="getSparklinePoints(top.sparkline, 160, 48)" class="watchlist-page-c__spotlight-sparkline-path"/>
+                </svg>
+
+              </div>
+            } @else {
+              <div class="watchlist-page-c__spotlight-empty">
+                Bu kategoride varlık bulunamadı
+              </div>
+            }
+
+            <footer class="watchlist-page-c__spotlight-footer">
+              <div class="watchlist-page-c__mini-stat">
+                <span class="watchlist-page-c__mini-stat-label">Toplam</span>
+                <span class="watchlist-page-c__mini-stat-value">{{ totalCount() }}</span>
+              </div>
+
+              <div class="watchlist-page-c__mini-stat">
+                <span class="watchlist-page-c__mini-stat-label">Yükselen</span>
+                <span class="watchlist-page-c__mini-stat-value watchlist-page-c__text-up">{{ gainersCount() }}</span>
+              </div>
+
+              <div class="watchlist-page-c__mini-stat">
+                <span class="watchlist-page-c__mini-stat-label">Düşen</span>
+                <span class="watchlist-page-c__mini-stat-value watchlist-page-c__text-down">{{ losersCount() }}</span>
+              </div>
+
+              <div class="watchlist-page-c__mini-stat">
+                <span class="watchlist-page-c__mini-stat-label">Aktif Alarm</span>
+                <span class="watchlist-page-c__mini-stat-value">{{ alertsCount() }}</span>
+              </div>
+            </footer>
+
+          </article>
+
+          <!-- Orta: Alarmlar (segmented: ulaşanlar / ulaşmayanlar) -->
+          <div class="watchlist-page-c__target-panel">
+            <app-holdings-card
+              heading="Alarmlar"
+              [viewOptions]="alarmViewOptions"
+              defaultView="hit"
+            >
+              <ng-template cardView="hit">
+                @if (alertTargetsHit().length > 0) {
+                  <div class="watchlist-page-c__target-list">
+                    @for (a of alertTargetsHit(); track a.item.id) {
+                      <div class="watchlist-page-c__target-row">
+                        <app-market-asset-cell
+                          [symbol]="a.item.symbol"
+                          [showSubLabel]="false"
+                          [showLogo]="a.item.category === 'crypto'"
+                          [isGold]="a.item.category === 'metal'"
+                          [avatarKey]="a.item.symbol"
+                        />
+                        <span class="watchlist-page-c__target-status watchlist-page-c__target-status--hit">
+                          <i class="fa-solid fa-check"></i> Ulaştı
+                        </span>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="watchlist-page-c__movers-empty">Hedefe ulaşan alarm yok</p>
+                }
+              </ng-template>
+
+              <ng-template cardView="pending">
+                @if (alertTargetsPending().length > 0) {
+                  <div class="watchlist-page-c__target-list">
+                    @for (a of alertTargetsPending(); track a.item.id) {
+                      <div class="watchlist-page-c__target-row">
+                        <app-market-asset-cell
+                          [symbol]="a.item.symbol"
+                          [showSubLabel]="false"
+                          [showLogo]="a.item.category === 'crypto'"
+                          [isGold]="a.item.category === 'metal'"
+                          [avatarKey]="a.item.symbol"
+                        />
+                        <span class="watchlist-page-c__target-price watchlist-page-c__target-price--right">
+                          <i class="fa-solid" [class.fa-arrow-trend-up]="a.direction > 0"
+                                               [class.fa-arrow-trend-down]="a.direction < 0"></i>
+                          {{ formatPrice(a.targetPrice, a.item.currency) }}
+                        </span>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="watchlist-page-c__movers-empty">Bekleyen alarm yok</p>
+                }
+              </ng-template>
+            </app-holdings-card>
+          </div>
+
+          <!-- Sağ: Piyasa Hareketleri -->
+          <div class="watchlist-page-c__movers-panel">
+            <app-holdings-card
+              heading="Piyasa Hareketleri"
+              [viewOptions]="moverViewOptions"
+              defaultView="gainers"
+            >
+              <ng-template cardView="gainers">
+                @if (topGainersMovers().length > 0) {
+                  <app-mover-list [items]="topGainersMovers()" />
+                } @else {
+                  <p class="watchlist-page-c__movers-empty">Yükselen varlık yok</p>
+                }
+              </ng-template>
+              <ng-template cardView="losers">
+                @if (topLosersMovers().length > 0) {
+                  <app-mover-list [items]="topLosersMovers()" />
+                } @else {
+                  <p class="watchlist-page-c__movers-empty">Düşen varlık yok</p>
+                }
+              </ng-template>
+            </app-holdings-card>
+          </div>
+
+        </div>
+
+        <!-- =========== CONTENT PANEL (main) =========== -->
+        <section class="watchlist-page-c__content-panel">
+
+          <!-- =========== MAIN =========== -->
+          <main class="watchlist-page-c__main">
+
+            <div class="watchlist-page-c__tabs">
+              @for (tab of tabs; track tab.id) {
+                <button
+                  class="watchlist-page-c__tab"
+                  [class.watchlist-page-c__tab--active]="activeTab() === tab.id"
+                  (click)="setTab(tab.id)"
+                >
+                  {{ tab.label }}
                 </button>
               }
             </div>
-          }
 
-        </div>
-
-        <!-- ══════════════════════════════════════════════════════════════
-             WIDGETS ROW
-        ══════════════════════════════════════════════════════════════ -->
-        <div class="watchlist-c__widgets">
-
-          <!-- Top Gainers -->
-          <div class="watchlist-c__widget">
-            <div class="watchlist-c__widget-header">
-              <div class="watchlist-c__widget-title-group">
-                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--success"></div>
-                <h3 class="watchlist-c__widget-title">En Çok Yükselenler</h3>
+            @if (activeTab() !== 'alarmlar') {
+              <div class="watchlist-page-c__toolbar">
+                <div class="mk__search-wrap">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input
+                    type="search"
+                    class="mk__search"
+                    placeholder="Sembol veya isim ara..."
+                    [value]="searchQuery()"
+                    (input)="searchQuery.set($any($event.target).value)"
+                  />
+                </div>
               </div>
-              <span class="watchlist-c__widget-badge watchlist-c__widget-badge--success">24s</span>
-            </div>
-            <div class="watchlist-c__widget-body">
-              @if (topGainers().length > 0) {
-                <ul class="watchlist-c__mover-list">
-                  @for (item of topGainers(); track item.id) {
-                    <li class="watchlist-c__mover-item">
-                      <span class="watchlist-c__mover-rank">{{ item.rank }}</span>
-                      <div class="watchlist-c__mover-icon watchlist-c__mover-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
-                      <div class="watchlist-c__mover-info">
-                        <span class="watchlist-c__mover-symbol">{{ item.symbol }}</span>
-                        <span class="watchlist-c__mover-cat">{{ getCategoryLabel(item.category) }}</span>
-                      </div>
-                      <div class="watchlist-c__mover-right">
-                        <span class="watchlist-c__mover-price">{{ formatPrice(item.price, item.currency) }}</span>
-                        <span class="watchlist-c__mover-pct watchlist-c__mover-pct--up">{{ formatPercent(item.changePercent) }}</span>
-                      </div>
-                    </li>
+            }
+
+            <!-- BIST / Kripto tablosu -->
+            @if (activeTab() !== 'alarmlar') {
+              <div class="watchlist-page-c__table-container mk">
+                @if (filteredItems().length > 0) {
+                  @if (activeTab() === 'crypto') {
+                    <app-market-crypto-table
+                      [cryptos]="filteredAsCryptos()"
+                      [favorites]="favoriteSymbols()"
+                      [colSort]="cryptoColSort()"
+                      [currency]="'USD'"
+                      [usdTryRate]="0"
+                      [rowAction]="'remove'"
+                      (rowRemove)="onRemoveFromTable($event)"
+                      (alertOpen)="onAlertFromTable($event)"
+                      (sortChange)="onCryptoColSortChange($event)" />
+                  } @else if (activeTab() === 'metal') {
+                    <app-market-bist-table
+                      [stocks]="filteredAsMetals()"
+                      [favorites]="favoriteSymbols()"
+                      [colSort]="stockColSort()"
+                      [currency]="'TRY'"
+                      [usdTryRate]="0"
+                      [rowAction]="'remove'"
+                      (rowRemove)="onRemoveFromTable($event)"
+                      (alertOpen)="onAlertFromTable($event)"
+                      (sortChange)="onStockColSortChange($event)" />
+                  } @else {
+                    <app-market-bist-table
+                      [stocks]="filteredAsStocks()"
+                      [favorites]="favoriteSymbols()"
+                      [colSort]="stockColSort()"
+                      [currency]="'TRY'"
+                      [usdTryRate]="0"
+                      [rowAction]="'remove'"
+                      (rowRemove)="onRemoveFromTable($event)"
+                      (alertOpen)="onAlertFromTable($event)"
+                      (sortChange)="onStockColSortChange($event)" />
                   }
-                </ul>
-              } @else {
-                <p class="watchlist-c__widget-empty">Yükselen varlık bulunamadı</p>
-              }
-            </div>
-          </div>
-
-          <!-- Top Losers -->
-          <div class="watchlist-c__widget">
-            <div class="watchlist-c__widget-header">
-              <div class="watchlist-c__widget-title-group">
-                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--danger"></div>
-                <h3 class="watchlist-c__widget-title">En Çok Düşenler</h3>
-              </div>
-              <span class="watchlist-c__widget-badge watchlist-c__widget-badge--danger">24s</span>
-            </div>
-            <div class="watchlist-c__widget-body">
-              @if (topLosers().length > 0) {
-                <ul class="watchlist-c__mover-list">
-                  @for (item of topLosers(); track item.id) {
-                    <li class="watchlist-c__mover-item">
-                      <span class="watchlist-c__mover-rank">{{ item.rank }}</span>
-                      <div class="watchlist-c__mover-icon watchlist-c__mover-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
-                      <div class="watchlist-c__mover-info">
-                        <span class="watchlist-c__mover-symbol">{{ item.symbol }}</span>
-                        <span class="watchlist-c__mover-cat">{{ getCategoryLabel(item.category) }}</span>
-                      </div>
-                      <div class="watchlist-c__mover-right">
-                        <span class="watchlist-c__mover-price">{{ formatPrice(item.price, item.currency) }}</span>
-                        <span class="watchlist-c__mover-pct watchlist-c__mover-pct--down">{{ formatPercent(item.changePercent) }}</span>
-                      </div>
-                    </li>
-                  }
-                </ul>
-              } @else {
-                <p class="watchlist-c__widget-empty">Düşen varlık bulunamadı</p>
-              }
-            </div>
-          </div>
-
-          <!-- Price Alerts -->
-          <div class="watchlist-c__widget">
-            <div class="watchlist-c__widget-header">
-              <div class="watchlist-c__widget-title-group">
-                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--gold"></div>
-                <h3 class="watchlist-c__widget-title">Fiyat Alarmları</h3>
-              </div>
-              <span class="watchlist-c__widget-badge watchlist-c__widget-badge--gold">{{ alertsCount() }} Aktif</span>
-            </div>
-            <div class="watchlist-c__widget-body">
-              @if (alertItems().length > 0) {
-                <ul class="watchlist-c__mover-list">
-                  @for (item of alertItems(); track item.id) {
-                    <li class="watchlist-c__mover-item">
-                      <div class="watchlist-c__mover-icon watchlist-c__mover-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
-                      <div class="watchlist-c__mover-info">
-                        <span class="watchlist-c__mover-symbol">{{ item.symbol }}</span>
-                        <span class="watchlist-c__mover-cat">{{ formatPrice(item.price, item.currency) }}</span>
-                      </div>
-                      <div class="watchlist-c__mover-right">
-                        <button class="watchlist-c__alert-chip" type="button" (click)="toggleAlert(item.id)" title="Alarmı kapat">
-                          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-                          </svg>
-                          Aktif
-                        </button>
-                      </div>
-                    </li>
-                  }
-                </ul>
-              } @else {
-                <p class="watchlist-c__widget-empty">Aktif alarm yok</p>
-              }
-            </div>
-          </div>
-
-          <!-- Category Distribution -->
-          <div class="watchlist-c__widget">
-            <div class="watchlist-c__widget-header">
-              <div class="watchlist-c__widget-title-group">
-                <div class="watchlist-c__widget-dot watchlist-c__widget-dot--navy"></div>
-                <h3 class="watchlist-c__widget-title">Kategori Dağılımı</h3>
-              </div>
-              <span class="watchlist-c__widget-badge">{{ totalCount() }} Toplam</span>
-            </div>
-            <div class="watchlist-c__widget-body">
-              <ul class="watchlist-c__dist-list">
-                @for (cat of categoryDistribution(); track cat.id) {
-                  <li class="watchlist-c__dist-item">
-                    <div class="watchlist-c__dist-header">
-                      <span class="watchlist-c__dist-dot watchlist-c__dist-dot--{{ cat.colorClass }}"></span>
-                      <span class="watchlist-c__dist-label">{{ cat.label }}</span>
-                      <span class="watchlist-c__dist-count">{{ cat.count }}</span>
-                      <span class="watchlist-c__dist-pct">{{ cat.pct }}%</span>
+                } @else {
+                  <div class="watchlist-page-c__empty">
+                    <div class="watchlist-page-c__empty-icon">
+                      <i class="fa-solid fa-magnifying-glass"></i>
                     </div>
-                    <div class="watchlist-c__dist-track">
-                      <div class="watchlist-c__dist-fill watchlist-c__dist-fill--{{ cat.colorClass }}"
-                           [style.width.%]="cat.pct"></div>
-                    </div>
-                  </li>
+                    <h3 class="watchlist-page-c__empty-title">
+                      @if (searchQuery()) { "{{ searchQuery() }}" bulunamadı }
+                      @else { Takip listesi boş }
+                    </h3>
+                    <p class="watchlist-page-c__empty-desc">
+                      @if (searchQuery()) { Farklı bir arama yapın. }
+                      @else { Bu kategoride henüz varlık eklemediniz. }
+                    </p>
+                    @if (!searchQuery()) {
+                      <button class="watchlist-page-c__btn-primary watchlist-page-c__mt-4" (click)="openAddModal()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Varlık Ekle</span>
+                      </button>
+                    }
+                  </div>
                 }
-              </ul>
-            </div>
-          </div>
+              </div>
+            }
 
-        </div>
+            <!-- Alarmlar tab içeriği -->
+            @if (activeTab() === 'alarmlar') {
+              <div class="watchlist-page-c__alarms-panel">
+
+                <!-- Alarm filters -->
+                <div class="watchlist-page-c__alarms-summary">
+                  <app-network-filter-pills
+                    [pills]="alarmFilterPills()"
+                    [activeId]="alarmFilter()"
+                    (onSelect)="setAlarmFilter($event)"
+                  />
+                </div>
+                @if (alarmsVisibleCount() > 0) {
+                  <div class="watchlist-page-c__alarm-table mk__list mk__list--alarms">
+
+                    <!-- Header -->
+                    <div class="mk__list-header">
+                      <span class="mk__cell mk__cell--name">Varlık</span>
+                      <span class="mk__cell mk__cell--right mk__cell--mono">Hedef</span>
+                      <span class="mk__cell mk__cell--right mk__cell--mono">Güncel</span>
+                      <span class="mk__cell mk__cell--right mk__cell--mono">Mesafe</span>
+                      <span class="mk__cell">Durum</span>
+                      <span class="mk__cell mk__cell--actions">İşlemler</span>
+                    </div>
+
+                    <!-- Bekleyen -->
+                    @if (alarmFilter() === 'all' || alarmFilter() === 'active') {
+                    @for (a of alarmsActive(); track a.id) {
+                      <div class="mk__list-row">
+                        <div class="mk__cell mk__cell--name">
+                          <div class="mk__avatar watchlist-page-c__alarm-avatar"
+                            [style.background]="ui.getAvatarColor(a.symbol)">
+                            @if (getAlertCategory(a) === 'crypto') {
+                              <img class="mk__coin-logo"
+                                [src]="ui.getCryptoLogoUrl(a.symbol)"
+                                [alt]="a.symbol"
+                                (load)="ui.onCoinLogoLoad($event)"
+                                (error)="ui.onCoinLogoError($event)" />
+                            }
+                            {{ ui.getAvatarLetter(a.symbol) }}
+                          </div>
+                          <div class="mk__asset-info">
+                            <span class="mk__asset-sym">{{ a.symbol }}</span>
+                            <span class="mk__asset-sub">{{ a.assetName ?? a.symbol }}</span>
+                          </div>
+                        </div>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ alertTargetPriceLabel(a) }}</span>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ getAlertCurrentPriceLabel(a) }}</span>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ getAlertDistanceLabel(a) }}</span>
+                        <span class="mk__cell">
+                          <span class="watchlist-page-c__alarm-chip">Bekleyen</span>
+                        </span>
+                        <div class="mk__cell mk__cell--actions">
+                          <button class="mk__action-btn" title="Düzenle" (click)="openEditAlert(a)">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                          </button>
+                          <button class="mk__action-btn" title="Duraklat" (click)="togglePauseAlert(a)">
+                            <i class="fa-solid fa-pause"></i>
+                          </button>
+                          <button class="mk__action-btn mk__action-btn--remove" title="Sil" (click)="deleteAlert(a.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                    }
+
+                    <!-- Ulaştı -->
+                    @if (alarmFilter() === 'all' || alarmFilter() === 'triggered') {
+                    @for (a of alarmsTriggered(); track a.id) {
+                      <div class="mk__list-row">
+                        <div class="mk__cell mk__cell--name">
+                          <div class="mk__avatar watchlist-page-c__alarm-avatar"
+                            [style.background]="ui.getAvatarColor(a.symbol)">
+                            @if (getAlertCategory(a) === 'crypto') {
+                              <img class="mk__coin-logo"
+                                [src]="ui.getCryptoLogoUrl(a.symbol)"
+                                [alt]="a.symbol"
+                                (load)="ui.onCoinLogoLoad($event)"
+                                (error)="ui.onCoinLogoError($event)" />
+                            }
+                            {{ ui.getAvatarLetter(a.symbol) }}
+                          </div>
+                          <div class="mk__asset-info">
+                            <span class="mk__asset-sym">{{ a.symbol }}</span>
+                            <span class="mk__asset-sub">{{ a.assetName ?? a.symbol }}</span>
+                          </div>
+                        </div>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ alertTargetPriceLabel(a) }}</span>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">
+                          {{ a.triggeredPrice ? formatPrice(a.triggeredPrice, a.currency) : getAlertCurrentPriceLabel(a) }}
+                        </span>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ formatAlertTimestamp(a.triggeredAt ?? a.updatedAt) }}</span>
+                        <span class="mk__cell">
+                          <span class="watchlist-page-c__alarm-chip watchlist-page-c__alarm-chip--hit">
+                            <i class="fa-solid fa-check"></i> Ulaştı
+                          </span>
+                        </span>
+                        <div class="mk__cell mk__cell--actions">
+                          <button class="mk__action-btn" title="Düzenle" (click)="openEditAlert(a)">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                          </button>
+                          <button class="mk__action-btn mk__action-btn--remove" title="Sil" (click)="deleteAlert(a.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                    }
+
+                    <!-- Duraklatıldı -->
+                    @if (alarmFilter() === 'all' || alarmFilter() === 'paused') {
+                    @for (a of alarmsPaused(); track a.id) {
+                      <div class="mk__list-row">
+                        <div class="mk__cell mk__cell--name">
+                          <div class="mk__avatar watchlist-page-c__alarm-avatar"
+                            [style.background]="ui.getAvatarColor(a.symbol)">
+                            @if (getAlertCategory(a) === 'crypto') {
+                              <img class="mk__coin-logo"
+                                [src]="ui.getCryptoLogoUrl(a.symbol)"
+                                [alt]="a.symbol"
+                                (load)="ui.onCoinLogoLoad($event)"
+                                (error)="ui.onCoinLogoError($event)" />
+                            }
+                            {{ ui.getAvatarLetter(a.symbol) }}
+                          </div>
+                          <div class="mk__asset-info">
+                            <span class="mk__asset-sym">{{ a.symbol }}</span>
+                            <span class="mk__asset-sub">{{ a.assetName ?? a.symbol }}</span>
+                          </div>
+                        </div>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ alertTargetPriceLabel(a) }}</span>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ getAlertCurrentPriceLabel(a) }}</span>
+                        <span class="mk__cell mk__cell--right mk__cell--mono">{{ getAlertDistanceLabel(a) }}</span>
+                        <span class="mk__cell">
+                          <span class="watchlist-page-c__alarm-chip watchlist-page-c__alarm-chip--paused">
+                            <i class="fa-solid fa-circle-pause"></i> Duraklıyor
+                          </span>
+                        </span>
+                        <div class="mk__cell mk__cell--actions">
+                          <button class="mk__action-btn" title="Düzenle" (click)="openEditAlert(a)">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                          </button>
+                          <button class="mk__action-btn" title="Devam ettir" (click)="togglePauseAlert(a)">
+                            <i class="fa-solid fa-play"></i>
+                          </button>
+                          <button class="mk__action-btn mk__action-btn--remove" title="Sil" (click)="deleteAlert(a.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                    }
+
+                  </div>
+                } @else {
+                  <div class="watchlist-page-c__empty">
+                    <div class="watchlist-page-c__empty-icon">
+                      <i class="fa-regular fa-bell"></i>
+                    </div>
+                    <h3 class="watchlist-page-c__empty-title">Henüz alarm kurulmamış</h3>
+                    <p class="watchlist-page-c__empty-desc">BIST, Kripto veya Değerli Maden sekmesinde bir varlık üzerinden alarm kurabilirsiniz.</p>
+                  </div>
+                }
+
+              </div>
+            }
+            
+
+          </main>
+
+        </section>
 
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     ADD ITEM MODAL
-══════════════════════════════════════════════════════════════════════ -->
+<!-- =========== MODAL: ADD ASSET =========== -->
 @if (showAddModal()) {
-  <div class="watchlist-c__modal-backdrop" (click)="onBackdropClick($event)" role="dialog" aria-modal="true" aria-label="Varlık Ekle">
-    <div class="watchlist-c__modal">
-      <div class="watchlist-c__modal-header">
-        <h2 class="watchlist-c__modal-title">İzleme Listesine Ekle</h2>
-        <button class="watchlist-c__modal-close" type="button" (click)="closeAddModal()" aria-label="Kapat">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-      <div class="watchlist-c__modal-tabs">
-        @for (tab of tabs; track tab.id) {
-          <button
-            [class]="'watchlist-c__modal-tab' + (modalActiveTab() === tab.id ? ' watchlist-c__modal-tab--active' : '')"
-            type="button"
-            (click)="modalActiveTab.set(tab.id)"
-          >{{ tab.label }}</button>
-        }
-      </div>
-      <div class="watchlist-c__modal-search-wrap">
-        <svg class="watchlist-c__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input
-          class="watchlist-c__modal-search"
-          type="search"
-          placeholder="Sembol veya isim ara..."
-          [value]="modalSearch()"
-          (input)="modalSearch.set($any($event.target).value)"
-        />
-      </div>
-      <div class="watchlist-c__modal-list">
-        @if (addableCatalogItems().length > 0) {
-          @for (item of addableCatalogItems(); track item.id) {
-            <div class="watchlist-c__modal-item">
-              <div class="watchlist-c__asset-icon watchlist-c__asset-icon--{{ item.category }}">{{ item.symbol.charAt(0) }}</div>
-              <div class="watchlist-c__modal-item-info">
-                <span class="watchlist-c__asset-symbol">{{ item.symbol }}</span>
-                <span class="watchlist-c__asset-name">{{ item.name }}</span>
-              </div>
-              <span class="watchlist-c__modal-item-price">{{ formatPrice(item.price, item.currency) }}</span>
-              <span class="watchlist-c__pct-pill"
-                    [class.watchlist-c__pct-pill--up]="item.changePercent >= 0"
-                    [class.watchlist-c__pct-pill--down]="item.changePercent < 0">
-                {{ formatPercent(item.changePercent) }}
-              </span>
-              <button class="watchlist-c__btn watchlist-c__btn--primary watchlist-c__btn--sm" type="button" (click)="addItem(item)">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Ekle
+  <div class="watchlist-page-c__modal-overlay" (click)="closeAddModal()">
+    <div class="watchlist-page-c__add-modal" (click)="$event.stopPropagation()">
+      <div class="watchlist-page-c__add-modal-body">
+        <div class="watchlist-page-c__add-modal-head">
+          <h2 class="watchlist-page-c__add-modal-title">Varlık Ekle</h2>
+          <button class="watchlist-page-c__modal-close" (click)="closeAddModal()" aria-label="Kapat">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="watchlist-page-c__form-group watchlist-page-c__form-group--full">
+          <label class="watchlist-page-c__form-label">Varlık Türü</label>
+          <div class="watchlist-page-c__asset-type-tabs">
+            @for (opt of addAssetTypeOptions; track opt.value) {
+              <button
+                type="button"
+                class="watchlist-page-c__asset-type-tab"
+                [class.watchlist-page-c__asset-type-tab--active]="addModalAssetType() === opt.value"
+                (click)="onAddModalAssetTypeChange(opt.value)">
+                <i [class]="opt.icon"></i>
+                {{ opt.label }}
               </button>
-            </div>
-          }
-        } @else {
-          <div class="watchlist-c__modal-empty">
-            <p>Bu kategorideki tüm varlıklar zaten listenizde.</p>
+            }
           </div>
-        }
+        </div>
+
+        <div class="watchlist-page-c__form-group watchlist-page-c__form-group--full">
+          <label class="watchlist-page-c__form-label">Sembol</label>
+          <div class="watchlist-page-c__asset-selector-shell">
+            <app-asset-select-modal
+              [assetType]="addModalAssetType()"
+              [visible]="showAddModal()"
+              [embedded]="true"
+              [embeddedHeight]="320"
+              [embeddedMaxHeight]="320"
+              [excludedSymbols]="watchlistSymbols()"
+              (selected)="onAddAssetSelected($event)"
+              (cancelled)="closeAddModal()" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 }
+
+<!-- Alarm Kur / Düzenle Drawer -->
+<app-alert-editor-drawer
+  [visible]="alertDrawerOpen()"
+  [symbol]="alertDrawerSymbol()"
+  [assetName]="alertDrawerName()"
+  [assetType]="alertDrawerAssetType()"
+  [currentPrice]="alertDrawerPrice()"
+  [currency]="alertDrawerCurrency()"
+  [userEmail]="alertDrawerUserEmail()"
+  [existingAlert]="alertDrawerExistingAlert()"
+  (closed)="closeAlertDrawer()" />
+

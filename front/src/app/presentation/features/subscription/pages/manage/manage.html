@@ -35,8 +35,8 @@
     </div>
     } @else {
 
-    <!-- Current Plan Status Banner (if cancelled) -->
-    @if (currentSubscription() && currentSubscription()!.cancelledAtUtc) {
+    <!-- Current Plan Status Banner (if cancelled or pending cancellation) -->
+    @if (currentSubscription() && (currentSubscription()!.cancelledAtUtc || currentSubscription()!.cancelAtPeriodEnd)) {
     <div class="manage-c__alert manage-c__alert--warning">
       <svg class="manage-c__alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -45,11 +45,24 @@
         <line x1="12" y1="17" x2="12.01" y2="17" />
       </svg>
       <div class="manage-c__alert-content">
+        @if (currentSubscription()!.cancelledAtUtc) {
         <h4 class="manage-c__alert-title">Aboneliğiniz İptal Edildi</h4>
         <p class="manage-c__alert-desc">
-          Mevcut aboneliğiniz <strong>{{ currentSubscription()?.currentPeriodEndUtc | date:'dd MMMM yyyy' }}</strong>
-          tarihine kadar devam edecek ve ardından ücretsiz plana düşürülecektir.
+          Aboneliğiniz <strong>{{ currentSubscription()?.cancelledAtUtc | date:'dd MMMM yyyy, HH:mm' }}</strong>
+          tarihinde iptal edilmiştir.
+          @if (currentSubscription()?.currentPeriodEndUtc) {
+            Mevcut dönem <strong>{{ currentSubscription()?.currentPeriodEndUtc | date:'dd MMMM yyyy' }}</strong>
+            tarihine kadar devam edecek ve ardından ücretsiz plana düşürülecektir.
+          }
         </p>
+        } @else {
+        <h4 class="manage-c__alert-title">Aboneliğiniz İptal Edilecek</h4>
+        <p class="manage-c__alert-desc">
+          Aboneliğiniz dönem sonunda iptal edilecektir. Mevcut dönem
+          <strong>{{ currentSubscription()?.currentPeriodEndUtc | date:'dd MMMM yyyy' }}</strong>
+          tarihine kadar aktif kalacak ve ardından ücretsiz plana düşürülecektir.
+        </p>
+        }
       </div>
     </div>
     }
@@ -123,7 +136,7 @@
             Mevcut Planınız
           </button>
 
-          @if (plan.tier !== tierEnum.Default && !currentSubscription()?.cancelledAtUtc) {
+          @if (plan.tier !== tierEnum.Default && !currentSubscription()?.cancelledAtUtc && !currentSubscription()?.cancelAtPeriodEnd) {
           <button class="manage-c__btn-text manage-c__btn-text--danger" type="button"
             (click)="showCancelConfirm.set(true)" [disabled]="isProcessing()">
             Aboneliği İptal Et
@@ -139,7 +152,7 @@
             }
           </button>
 
-          @if (plan.tier !== tierEnum.Default && !currentSubscription()?.cancelledAtUtc) {
+          @if (plan.tier !== tierEnum.Default && !currentSubscription()?.cancelledAtUtc && !currentSubscription()?.cancelAtPeriodEnd) {
           <button class="manage-c__btn-text manage-c__btn-text--danger" type="button"
             (click)="showCancelConfirm.set(true)" [disabled]="isProcessing()">
             Aboneliği İptal Et
@@ -150,7 +163,7 @@
             Mevcut Planınız (Yıllık)
           </button>
 
-          @if (!currentSubscription()?.cancelledAtUtc) {
+          @if (!currentSubscription()?.cancelledAtUtc && !currentSubscription()?.cancelAtPeriodEnd) {
           <button class="manage-c__btn-text manage-c__btn-text--danger" type="button"
             (click)="showCancelConfirm.set(true)" [disabled]="isProcessing()">
             Aboneliği İptal Et
@@ -226,13 +239,19 @@
       <h2 class="payment-modal__title">Ödemeniz Doğrulanıyor...</h2>
       <p class="payment-modal__desc">Lütfen bekleyin, işleminiz tamamlanıyor.</p>
       } @else {
-      @if (paymentModalState() === 'success') {
+      @if (paymentModalState() === 'success' || paymentModalState() === 'cancelled') {
       <div class="payment-modal__icon-wrapper success">
         <svg class="payment-modal__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </div>
-      <h2 class="payment-modal__title">Başarılı!</h2>
+      <h2 class="payment-modal__title">
+        @if (paymentModalState() === 'cancelled') {
+          Abonelik İptal Edildi
+        } @else {
+          Başarılı!
+        }
+      </h2>
       } @else {
       <div class="payment-modal__icon-wrapper error">
         <svg class="payment-modal__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

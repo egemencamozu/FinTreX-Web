@@ -25,6 +25,8 @@ namespace FinTreX.Infrastructure.Services
         private readonly StripeSettings _stripeSettings;
         private readonly IUserSubscriptionRepository _subRepository;
         private readonly IGenericRepository<SubscriptionPlan> _planRepository;
+        private readonly IPaymentTransactionRepository _paymentRepository;
+        private readonly PaymentHistoryService _paymentHistoryService;
         private readonly ICurrentUserService _currentUserService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<StripePaymentService> _logger;
@@ -33,6 +35,8 @@ namespace FinTreX.Infrastructure.Services
             IOptions<StripeSettings> stripeSettings,
             IUserSubscriptionRepository subRepository,
             IGenericRepository<SubscriptionPlan> planRepository,
+            IPaymentTransactionRepository paymentRepository,
+            PaymentHistoryService paymentHistoryService,
             ICurrentUserService currentUserService,
             UserManager<ApplicationUser> userManager,
             ILogger<StripePaymentService> logger)
@@ -40,6 +44,8 @@ namespace FinTreX.Infrastructure.Services
             _stripeSettings = stripeSettings.Value;
             _subRepository = subRepository;
             _planRepository = planRepository;
+            _paymentRepository = paymentRepository;
+            _paymentHistoryService = paymentHistoryService;
             _currentUserService = currentUserService;
             _userManager = userManager;
             _logger = logger;
@@ -108,57 +114,6 @@ namespace FinTreX.Infrastructure.Services
                 }
             }
 
-            // UPGRADE FLOW: If user already has an active Stripe subscription, transition by paying the difference
-            if (sub != null && !string.IsNullOrEmpty(sub.StripeSubscriptionId) && sub.Status == SubscriptionStatus.Active)
-            {
-                var subscriptionService = new Stripe.SubscriptionService();
-                var stripeSub = await subscriptionService.GetAsync(sub.StripeSubscriptionId);
-                
-                var subscriptionItem = stripeSub.Items?.Data?.FirstOrDefault();
-                if (subscriptionItem != null)
-                {
-                    var updateOptions = new SubscriptionUpdateOptions
-                    {
-                        Items = new List<SubscriptionItemOptions>
-                        {
-                            new SubscriptionItemOptions
-                            {
-                                Id = subscriptionItem.Id,
-                                Price = priceId,
-                            }
-                        },
-                        ProrationBehavior = "always_invoice",
-                        Metadata = new Dictionary<string, string>
-                        {
-                            { "ApplicationUserId", userId },
-                            { "PlanId", planId.ToString() }
-                        }
-                    };
-                    await subscriptionService.UpdateAsync(sub.StripeSubscriptionId, updateOptions);
-
-                    // Immediately update DB to reflect the new plan on the frontend
-                    sub.SubscriptionPlanId = planId;
-                    sub.BillingPeriod = billingPeriod;
-                    await _subRepository.UpdateAsync(sub);
-
-                    // Verify the upgrade persisted
-                    var verified = await _subRepository.GetByUserIdAsync(userId);
-                    if (verified == null || verified.SubscriptionPlanId != planId)
-                    {
-                        _logger.LogError(
-                            "In-place upgrade verification failed. Expected PlanId={ExpectedPlanId}, Got={ActualPlanId} for user {UserId}",
-                            planId, verified?.SubscriptionPlanId, userId);
-                        throw new InvalidOperationException("Plan yükseltmesi veritabanına kaydedilemedi. Lütfen tekrar deneyiniz.");
-                    }
-
-                    return new CheckoutSessionResponse
-                    {
-                        SessionId = "upgrade_" + Guid.NewGuid().ToString("N"),
-                        CheckoutUrl = _stripeSettings.SuccessUrl + "?session_id=upgrade_success"
-                    };
-                }
-            }
-
             // Ensure user has a Stripe customer + a UserSubscription row
             var needsNewCustomer = sub == null || string.IsNullOrEmpty(sub.StripeCustomerId);
 
@@ -215,7 +170,17 @@ namespace FinTreX.Infrastructure.Services
             var options = new SessionCreateOptions
             {
                 Customer = sub.StripeCustomerId,
-                PaymentMethodTypes = new List<string> { "card" },
+                CustomerUpdate = new SessionCustomerUpdateOptions
+                {
+                    Address = "auto",
+                    Name = "auto",
+                },
+                PaymentMethodCollection = "if_required",
+                SavedPaymentMethodOptions = new SessionSavedPaymentMethodOptionsOptions
+                {
+                    PaymentMethodSave = "enabled",
+                    AllowRedisplayFilters = new List<string> { "always", "limited", "unspecified" }
+                },
                 LineItems = new List<SessionLineItemOptions>
                 {
                     new SessionLineItemOptions
@@ -357,6 +322,28 @@ namespace FinTreX.Infrastructure.Services
                         if (stripeEvent.Data.Object is Stripe.Invoice invoice)
                         {
                             await HandleInvoicePaid(invoice);
+                            await PersistInvoiceAsync(invoice);
+                        }
+                        break;
+
+                    case "invoice.payment_failed":
+                        if (stripeEvent.Data.Object is Stripe.Invoice failedInvoice)
+                        {
+                            await PersistInvoiceAsync(failedInvoice, isFailure: true);
+                        }
+                        break;
+
+                    case "invoice.finalized":
+                        if (stripeEvent.Data.Object is Stripe.Invoice finalizedInvoice)
+                        {
+                            await PersistInvoiceAsync(finalizedInvoice);
+                        }
+                        break;
+
+                    case "charge.refunded":
+                        if (stripeEvent.Data.Object is Stripe.Charge refundedCharge)
+                        {
+                            await HandleChargeRefunded(refundedCharge);
                         }
                         break;
 
@@ -388,13 +375,24 @@ namespace FinTreX.Infrastructure.Services
 
         public async Task<UserSubscriptionDto> VerifyCheckoutSessionAsync(string sessionId)
         {
+            var userId = _currentUserService.UserId;
+
+            // In-place upgrade flow doesn't create a real Stripe Checkout Session — it updates
+            // the existing subscription directly and returns a sentinel sessionId ("upgrade_success"
+            // or "upgrade_<guid>"). Skip Stripe verification and just return the current sub.
+            if (string.IsNullOrEmpty(sessionId) || sessionId.StartsWith("upgrade_", StringComparison.Ordinal))
+            {
+                var existing = await _subRepository.GetWithPlanAsync(userId);
+                if (existing == null)
+                    throw new KeyNotFoundException("Subscription not found.");
+                return MapToDto(existing);
+            }
+
             var service = new SessionService();
             var session = await service.GetAsync(sessionId);
 
             if (session == null)
                 throw new KeyNotFoundException("Checkout session not found.");
-
-            var userId = _currentUserService.UserId;
 
             if (session.ClientReferenceId != userId)
                 throw new UnauthorizedAccessException("Session does not belong to the current user.");
@@ -450,6 +448,22 @@ namespace FinTreX.Infrastructure.Services
             }
 
             var (periodStart, periodEnd) = GetCurrentPeriod(stripeSub);
+
+            // If the user already had a different active Stripe subscription (upgrade flow),
+            // cancel it immediately so they aren't billed twice.
+            if (!string.IsNullOrEmpty(userSub.StripeSubscriptionId) &&
+                userSub.StripeSubscriptionId != stripeSub.Id)
+            {
+                try
+                {
+                    await new Stripe.SubscriptionService().CancelAsync(userSub.StripeSubscriptionId);
+                }
+                catch (StripeException ex)
+                {
+                    _logger.LogWarning(ex, "Failed to cancel previous Stripe subscription {OldSubId} for user {UserId}",
+                        userSub.StripeSubscriptionId, userId);
+                }
+            }
 
             userSub.StripeSubscriptionId = stripeSub.Id;
             userSub.SubscriptionPlanId = planId;
@@ -530,6 +544,88 @@ namespace FinTreX.Infrastructure.Services
             userSub.Status = SubscriptionStatus.Cancelled;
             userSub.CancelledAtUtc = DateTime.UtcNow;
             await _subRepository.UpdateAsync(userSub);
+        }
+
+        /// <summary>
+        /// Upserts a PaymentTransaction row from a Stripe invoice webhook. Idempotent.
+        /// Failure details are captured from invoice.LastFinalizationError when present.
+        /// </summary>
+        private async Task PersistInvoiceAsync(Stripe.Invoice invoice, bool isFailure = false)
+        {
+            // Resolve the owning user via subscription metadata, since invoice events
+            // don't carry ApplicationUserId directly.
+            string userId = null;
+            var subId = ExtractSubscriptionIdFromInvoice(invoice);
+            if (!string.IsNullOrEmpty(subId))
+            {
+                try
+                {
+                    var stripeSub = await new Stripe.SubscriptionService().GetAsync(subId);
+                    TryGetMetadata(stripeSub.Metadata, "ApplicationUserId", out userId);
+                }
+                catch (StripeException ex)
+                {
+                    _logger.LogWarning(ex, "Could not resolve subscription {SubId} while persisting invoice {InvoiceId}",
+                        subId, invoice.Id);
+                }
+            }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("Cannot persist invoice {InvoiceId} — ApplicationUserId could not be resolved.",
+                    invoice.Id);
+                return;
+            }
+
+            var plans = await _planRepository.GetAllAsync();
+            var planByStripePrice = new Dictionary<string, SubscriptionPlan>(StringComparer.OrdinalIgnoreCase);
+            foreach (var p in plans)
+            {
+                if (!string.IsNullOrEmpty(p.StripeMonthlyPriceId)) planByStripePrice[p.StripeMonthlyPriceId] = p;
+                if (!string.IsNullOrEmpty(p.StripeYearlyPriceId)) planByStripePrice[p.StripeYearlyPriceId] = p;
+            }
+
+            await _paymentHistoryService.UpsertFromStripeInvoiceAsync(invoice, userId, planByStripePrice);
+
+            if (isFailure)
+            {
+                var existing = await _paymentRepository.GetByStripeInvoiceIdAsync(invoice.Id);
+                if (existing != null)
+                {
+                    existing.Status = PaymentStatus.Failed;
+                    existing.FailureCode = invoice.LastFinalizationError?.Code;
+                    existing.FailureMessage = invoice.LastFinalizationError?.Message;
+                    existing.UpdatedAtUtc = DateTime.UtcNow;
+                    await _paymentRepository.UpdateAsync(existing);
+                }
+            }
+        }
+
+        /// <summary>
+        /// On charge.refunded, update the linked PaymentTransaction with refund totals.
+        /// A partial refund leaves Status=PartiallyRefunded; a full refund sets Refunded.
+        /// </summary>
+        private async Task HandleChargeRefunded(Stripe.Charge charge)
+        {
+            // Stripe.NET v51 removed Charge.InvoiceId — look up by charge id instead.
+            // The row is populated at invoice.paid time with its StripeChargeId.
+            if (string.IsNullOrEmpty(charge.Id)) return;
+
+            var tx = await _paymentRepository.GetByStripeChargeIdAsync(charge.Id);
+            if (tx == null)
+            {
+                _logger.LogInformation("charge.refunded received for unknown charge {ChargeId}", charge.Id);
+                return;
+            }
+
+            tx.RefundedAmount = charge.AmountRefunded;
+            tx.RefundedAtUtc = DateTime.UtcNow;
+            tx.Status = charge.AmountRefunded >= charge.Amount
+                ? PaymentStatus.Refunded
+                : PaymentStatus.PartiallyRefunded;
+            tx.UpdatedAtUtc = DateTime.UtcNow;
+
+            await _paymentRepository.UpdateAsync(tx);
         }
 
         // ── Helpers ─────────────────────────────────────────────────────────────

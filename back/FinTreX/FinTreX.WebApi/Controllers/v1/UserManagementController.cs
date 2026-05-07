@@ -1,12 +1,9 @@
-using FinTreX.Core.Interfaces;
 using FinTreX.Core.DTOs.Account;
+using FinTreX.Core.Interfaces;
 using System.Collections.Generic;
 using FinTreX.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
 using Asp.Versioning;
 
@@ -16,15 +13,13 @@ namespace FinTreX.WebApi.Controllers.v1
     [ApiVersion("1.0")]
     public class UserManagementController : BaseApiController
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserManagementService _userManagementService;
 
-        public UserManagementController(UserManager<ApplicationUser> userManager, IUserManagementService userManagementService)
+        public UserManagementController(IUserManagementService userManagementService)
         {
-            _userManager = userManager;
             _userManagementService = userManagementService;
         }
-        
+
         [HttpGet("me")]
         public async Task<IActionResult> GetMyProfile()
         {
@@ -38,6 +33,13 @@ namespace FinTreX.WebApi.Controllers.v1
         {
             var stats = await _userManagementService.GetAdminStatsAsync();
             return Ok(stats);
+        }
+
+        [HttpPut("me")]
+        public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateMyProfileDto request)
+        {
+            var updated = await _userManagementService.UpdateMyProfileAsync(AuthenticatedUserId, request);
+            return Ok(updated);
         }
 
         [HttpGet("users")]

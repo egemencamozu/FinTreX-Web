@@ -17,9 +17,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at top right, var(--color-navy-100), transparent 24%),
-    radial-gradient(circle at bottom left, var(--color-gold-100), transparent 18%);
-  opacity: 0.8;
+    radial-gradient(circle at top right, var(--bg-gold-subtle), transparent 24%),
+    radial-gradient(circle at bottom left, var(--bg-navy-subtle), transparent 18%);
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -184,17 +184,17 @@
   display: block;
   height: 4.75rem;
   border-radius: 1.25rem;
-  background: linear-gradient(90deg, var(--color-navy-100), var(--color-navy-300));
+  background: linear-gradient(90deg, var(--bg-navy-subtle), var(--border-default));
 }
 
 .hero__panel-line--medium {
   width: 82%;
-  background: linear-gradient(90deg, var(--color-gold-100), var(--color-gold-300));
+  background: linear-gradient(90deg, var(--bg-gold-subtle), var(--color-gold-200));
 }
 
 .hero__panel-line--soft {
   width: 68%;
-  background: linear-gradient(90deg, var(--color-slate-100), var(--color-slate-300));
+  background: linear-gradient(90deg, var(--bg-surface-raised), var(--border-subtle));
 }
 
 .hero__panel-stats {

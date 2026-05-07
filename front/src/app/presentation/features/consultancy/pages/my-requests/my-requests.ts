@@ -5,11 +5,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ConsultancyTaskRepository } from '../../../../../core/interfaces/consultancy-task.repository';
 import { EconomistRepository } from '../../../../../core/interfaces/economist.repository';
-import { ConsultancyTask } from '../../../../../core/models/task.model';
+import { AlertsSignalRService } from '../../../../../core/services/alerts-signalr.service';
+import { ConsultancyTask, RateTaskRequest } from '../../../../../core/models/task.model';
 import { EconomistClient } from '../../../../../core/models/economist.model';
 import { TaskCategory } from '../../../../../core/enums/task-category.enum';
 import { TaskPriority } from '../../../../../core/enums/task-priority.enum';
 import { ConsultancyTaskStatus } from '../../../../../core/enums/consultancy-task-status.enum';
+import { KpiCardComponent } from '../../../../shared/components/kpi-card/kpi-card.component';
+import { SegmentedControlComponent, SegmentedOption } from '../../../../shared/components/segmented-control/segmented-control.component';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -23,13 +26,14 @@ interface SelectOption {
 @Component({
   selector: 'app-my-requests',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, KpiCardComponent, SegmentedControlComponent],
   templateUrl: './my-requests.html',
   styleUrl: './my-requests.scss',
 })
 export class MyRequests implements OnInit {
   private readonly taskRepo = inject(ConsultancyTaskRepository);
   private readonly economistRepo = inject(EconomistRepository);
+  private readonly alertsSignalR = inject(AlertsSignalRService);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -37,6 +41,7 @@ export class MyRequests implements OnInit {
   readonly tasks = signal<ConsultancyTask[]>([]);
   readonly assignedEconomists = signal<EconomistClient[]>([]);
   readonly isLoading = signal(true);
+  readonly isEconomistsLoading = signal(true);
   readonly isSubmitting = signal(false);
 
   // ── UI State ────────────────────────────────────────────────────────────────
@@ -44,6 +49,23 @@ export class MyRequests implements OnInit {
   readonly selectedTask = signal<ConsultancyTask | null>(null);
   readonly isCancelling = signal(false);
   readonly isGeneratingAnalysis = signal(false);
+  readonly taskView = signal<'open' | 'done'>('open');
+
+  // ── Rating State ─────────────────────────────────────────────────────────────
+  readonly hoveredStar = signal(0);
+  readonly selectedStar = signal(0);
+  readonly ratingFeedback = signal('');
+  readonly isSubmittingRating = signal(false);
+  readonly ratingSubmitted = signal(false);
+
+  readonly taskViewOptions: SegmentedOption[] = [
+    { id: 'open', label: 'Açık Talepler' },
+    { id: 'done', label: 'Tamamlanan & İptal' },
+  ];
+
+  readonly visibleTasks = computed(() =>
+    this.taskView() === 'open' ? this.openTasks() : this.completedTasks()
+  );
 
   // ── Form ────────────────────────────────────────────────────────────────────
   readonly taskForm: FormGroup = this.fb.group({
@@ -88,16 +110,32 @@ export class MyRequests implements OnInit {
     ),
   );
 
+  readonly taskStats = computed(() => {
+    const all = this.tasks();
+    return {
+      total: all.length,
+      pending: all.filter(t => t.status === ConsultancyTaskStatus.Pending).length,
+      inProgress: all.filter(t => t.status === ConsultancyTaskStatus.InProgress).length,
+      completed: all.filter(t => t.status === ConsultancyTaskStatus.Completed).length,
+      cancelled: all.filter(t => t.status === ConsultancyTaskStatus.Cancelled).length,
+    };
+  });
+
   readonly hasSingleEconomist = computed(() => this.assignedEconomists().length === 1);
 
   readonly hasMultipleEconomists = computed(() => this.assignedEconomists().length > 1);
 
   readonly hasNoEconomist = computed(() => this.assignedEconomists().length === 0);
 
+  readonly showNoEconomistNotice = computed(() =>
+    !this.isLoading() && !this.isEconomistsLoading() && this.hasNoEconomist()
+  );
+
   // ── Lifecycle ───────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.loadTasks();
     this.loadAssignedEconomists();
+    this.bindRealtimeTaskUpdates();
   }
 
   // ── Data Loading ────────────────────────────────────────────────────────────
@@ -117,7 +155,57 @@ export class MyRequests implements OnInit {
       });
   }
 
+  private bindRealtimeTaskUpdates(): void {
+    void this.alertsSignalR.connect();
+
+    this.alertsSignalR.taskCompleted$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => this.refreshTask(event.taskId));
+
+    this.alertsSignalR.taskStatusChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => this.refreshTask(event.taskId));
+
+    this.alertsSignalR.economistClientChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadAssignedEconomists());
+
+    this.alertsSignalR.taskRated$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => this.refreshTask(event.taskId));
+  }
+
+  private refreshTask(taskId: number): void {
+    this.taskRepo
+      .getTaskById(taskId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (task) => this.upsertTask(task),
+        error: () => this.loadTasks(),
+      });
+  }
+
+  private upsertTask(updatedTask: ConsultancyTask): void {
+    this.tasks.update((tasks) => {
+      const existing = tasks.find((task) => task.id === updatedTask.id);
+      const merged = existing ? { ...existing, ...updatedTask } : updatedTask;
+      const next = existing
+        ? tasks.map((task) => (task.id === updatedTask.id ? merged : task))
+        : [merged, ...tasks];
+
+      return next.sort(
+        (a, b) => new Date(b.createdAtUtc).getTime() - new Date(a.createdAtUtc).getTime(),
+      );
+    });
+
+    const current = this.selectedTask();
+    if (current?.id === updatedTask.id) {
+      this.selectedTask.set({ ...current, ...updatedTask });
+    }
+  }
+
   private loadAssignedEconomists(): void {
+    this.isEconomistsLoading.set(true);
     this.economistRepo
       .getMyEconomists()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -128,9 +216,20 @@ export class MyRequests implements OnInit {
           if (economists.length === 1) {
             this.taskForm.patchValue({ economistId: economists[0].economistId });
             this.taskForm.get('economistId')?.disable();
+          } else {
+            const currentEconomistId = this.taskForm.getRawValue().economistId;
+            const currentStillAssigned = economists.some((item) => item.economistId === currentEconomistId);
+            this.taskForm.get('economistId')?.enable();
+            if (!currentStillAssigned) {
+              this.taskForm.patchValue({ economistId: '' });
+            }
           }
+          this.isEconomistsLoading.set(false);
         },
-        error: (err: any) => console.error('Failed to load assigned economists', err)
+        error: (err: any) => {
+          console.error('Failed to load assigned economists', err);
+          this.isEconomistsLoading.set(false);
+        }
       });
   }
 
@@ -151,11 +250,13 @@ export class MyRequests implements OnInit {
 
   selectTask(task: ConsultancyTask): void {
     this.selectedTask.set(task);
-    this.showForm.set(false); // Close form when viewing detail
+    this.showForm.set(false);
+    this.resetRatingState();
   }
 
   closeDetail(): void {
     this.selectedTask.set(null);
+    this.resetRatingState();
   }
 
   cancelTask(task: ConsultancyTask): void {
@@ -215,6 +316,43 @@ export class MyRequests implements OnInit {
           this.isSubmitting.set(false);
         },
       });
+  }
+
+  submitRating(task: ConsultancyTask): void {
+    const rating = this.selectedStar();
+    if (rating === 0 || this.isSubmittingRating()) return;
+
+    this.isSubmittingRating.set(true);
+    const request: RateTaskRequest = {
+      rating,
+      feedback: this.ratingFeedback().trim() || undefined,
+    };
+
+    this.taskRepo
+      .rateTask(task.id, request)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updatedTask) => {
+          this.isSubmittingRating.set(false);
+          this.ratingSubmitted.set(true);
+          this.upsertTask(updatedTask);
+        },
+        error: () => {
+          this.isSubmittingRating.set(false);
+        },
+      });
+  }
+
+  private resetRatingState(): void {
+    this.hoveredStar.set(0);
+    this.selectedStar.set(0);
+    this.ratingFeedback.set('');
+    this.isSubmittingRating.set(false);
+    this.ratingSubmitted.set(false);
+  }
+
+  getStarRange(): number[] {
+    return [1, 2, 3, 4, 5];
   }
 
   generateAnalysis(task: ConsultancyTask): void {

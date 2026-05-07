@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FinTreX.Core.DTOs.Account
 {
@@ -17,5 +17,7 @@ namespace FinTreX.Core.DTOs.Account
         public string Role { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset? DeactivatedUntil { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? LastLoginAt { get; set; }
     }
 }

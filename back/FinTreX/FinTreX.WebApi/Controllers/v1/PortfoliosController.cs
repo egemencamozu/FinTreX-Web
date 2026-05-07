@@ -30,11 +30,32 @@ namespace FinTreX.WebApi.Controllers.v1
             return Ok(portfolio);
         }
 
+        [HttpGet("{id}/history")]
+        public async Task<IActionResult> GetPortfolioHistory(int id, [FromQuery] string? interval = "30d", [FromQuery] string? currency = "TRY")
+        {
+            var history = await _portfolioService.GetPortfolioHistoryAsync(id, interval, currency);
+            return Ok(history);
+        }
+
+        [HttpGet("{id}/overview")]
+        public async Task<IActionResult> GetPortfolioOverview(int id, [FromQuery] string? currency = "TRY")
+        {
+            var overview = await _portfolioService.GetPortfolioOverviewAsync(id, currency);
+            return Ok(overview);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreatePortfolio(CreatePortfolioRequest request)
         {
             var created = await _portfolioService.CreatePortfolioAsync(request);
             return CreatedAtAction(nameof(GetPortfolioById), new { id = created.Id }, created);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePortfolio(int id, UpdatePortfolioRequest request)
+        {
+            var updated = await _portfolioService.UpdatePortfolioAsync(id, request);
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]
@@ -67,6 +88,37 @@ namespace FinTreX.WebApi.Controllers.v1
             var removed = await _portfolioService.RemoveAssetAsync(assetId);
             if (!removed) return NotFound("Asset not found.");
             return NoContent();
+        }
+
+        // --- Transaction Endpoints ---
+
+        [HttpGet("{id}/transactions")]
+        public async Task<IActionResult> GetTransactions(int id)
+        {
+            var transactions = await _portfolioService.GetTransactionsAsync(id);
+            return Ok(transactions);
+        }
+
+        [HttpPost("{id}/transactions")]
+        public async Task<IActionResult> AddTransaction(int id, CreatePortfolioTransactionRequest request)
+        {
+            var transaction = await _portfolioService.AddTransactionAsync(id, request);
+            return Ok(transaction);
+        }
+
+        [HttpDelete("transactions/{transactionId}")]
+        public async Task<IActionResult> DeleteTransaction(int transactionId)
+        {
+            var deleted = await _portfolioService.DeleteTransactionAsync(transactionId);
+            if (!deleted) return NotFound("Transaction not found.");
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/economist-visibility")]
+        public async Task<IActionResult> SetEconomistVisibility(int id, SetPortfolioEconomistVisibilityRequest request)
+        {
+            var updated = await _portfolioService.SetPortfolioEconomistVisibilityAsync(id, request.IsHiddenFromEconomists);
+            return Ok(updated);
         }
 
         // --- Economist Endpoints ---

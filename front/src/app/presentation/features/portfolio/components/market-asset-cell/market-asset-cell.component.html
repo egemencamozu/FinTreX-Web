@@ -18,6 +18,8 @@
 
   <div class="mk__asset-info">
     <span class="mk__asset-sym">{{ symbol }}</span>
-    <span class="mk__asset-sub">{{ subLabel || '—' }}</span>
+    @if (showSubLabel) {
+      <span class="mk__asset-sub">{{ subLabel || '—' }}</span>
+    }
   </div>
 </div>

@@ -1,5 +1,7 @@
 using FinTreX.Core.Entities;
+using FinTreX.Core.Enums;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace FinTreX.Infrastructure.Models
@@ -8,6 +10,16 @@ namespace FinTreX.Infrastructure.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        /// <summary>Tracks the economist's approval lifecycle. None for non-economist accounts.</summary>
+        public EconomistStatus EconomistStatus { get; set; } = EconomistStatus.None;
+
+        // ── Profile Timestamps ───────────────────────────────────────────────
+        /// <summary>UTC timestamp when the account was created.</summary>
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+        /// <summary>UTC timestamp of the user's last successful sign-in. Null if never signed in.</summary>
+        public DateTimeOffset? LastLoginAt { get; set; }
 
         // ── Auth ─────────────────────────────────────────────────────────────
         /// <summary>Refresh tokens for this user (multi-device support).</summary>

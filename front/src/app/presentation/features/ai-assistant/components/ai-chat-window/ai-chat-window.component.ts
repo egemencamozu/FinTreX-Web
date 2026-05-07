@@ -57,6 +57,6 @@ export class AiChatWindowComponent {
           behavior: 'smooth',
         });
       }
-    }, 50);
+    }, 100);
   }
 }

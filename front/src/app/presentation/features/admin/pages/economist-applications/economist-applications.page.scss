@@ -1,0 +1,209 @@
+.eco-apps-c {
+  padding: var(--spacing-page-x);
+  color: var(--text-primary);
+
+  &__wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  &__filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__filter-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &--active {
+      background: var(--btn-primary-bg);
+      border-color: var(--btn-primary-bg);
+      color: #fff;
+    }
+
+    &:not(&--active):hover {
+      border-color: var(--border-focus);
+      color: var(--text-primary);
+    }
+  }
+
+  &__api-error {
+    background: color-mix(in srgb, var(--text-danger) 12%, transparent);
+    border: 1px solid var(--text-danger);
+    color: var(--text-danger);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__loading,
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 4rem 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    flex-direction: column;
+  }
+
+  &__table-wrapper {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+    overflow: auto;
+    box-shadow: var(--shadow-card);
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th {
+      background: var(--bg-surface-raised);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      color: var(--text-secondary);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-default);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  &__row {
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--bg-surface-raised);
+    }
+  }
+
+  &__name {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  &__badge {
+    background: var(--bg-surface-raised);
+    border: 1px solid var(--border-default);
+    border-radius: 20px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+
+    &--more {
+      opacity: 0.6;
+    }
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 0.2rem 0.625rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &[data-status='Pending'] {
+      background: color-mix(in srgb, var(--chart-bist) 15%, transparent);
+      color: var(--chart-bist);
+    }
+
+    &[data-status='Approved'] {
+      background: color-mix(in srgb, var(--text-success) 15%, transparent);
+      color: var(--text-success);
+    }
+
+    &[data-status='Rejected'] {
+      background: color-mix(in srgb, var(--text-danger) 15%, transparent);
+      color: var(--text-danger);
+    }
+  }
+
+  &__btn-detail {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.25rem;
+    transition: color 0.15s;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  &__pagination {
+    display: flex;
+    gap: 0.375rem;
+    justify-content: center;
+    margin-top: 1.25rem;
+  }
+
+  &__page-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &--active {
+      background: var(--btn-primary-bg);
+      border-color: var(--btn-primary-bg);
+      color: #fff;
+    }
+
+    &:not(&--active):hover {
+      border-color: var(--border-focus);
+      color: var(--text-primary);
+    }
+  }
+}

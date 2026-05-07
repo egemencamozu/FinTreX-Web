@@ -4,4 +4,6 @@ export interface AvailableEconomist {
   lastName: string;
   userName: string;
   email: string;
+  averageRating?: number | null;
+  totalRatings: number;
 }

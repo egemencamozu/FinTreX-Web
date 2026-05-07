@@ -7,7 +7,7 @@
       }
     </div>
     <div class="chat-header__details">
-      <h3 class="chat-header__name">{{ displayName }}</h3>
+      <h3 class="chat-header__name">{{ fullDisplayName }}</h3>
       <span class="chat-header__status" [class.chat-header__status--online]="isOnline">
         {{ isOnline ? 'Çevrimiçi' : 'Çevrimdışı' }}
       </span>

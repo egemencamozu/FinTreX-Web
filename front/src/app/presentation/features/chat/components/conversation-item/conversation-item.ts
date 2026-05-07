@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Conversation } from '../../models';
@@ -20,8 +20,17 @@ export class ConversationItemComponent {
 
   isEditing = signal(false);
   editTitle = signal('');
+  isMenuOpen = signal(false);
 
   private authService = inject(AuthService);
+  private elementRef = inject(ElementRef);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.isMenuOpen.set(false);
+    }
+  }
 
   get peerParticipant() {
     const user = this.authService.getCurrentUser();
@@ -50,8 +59,14 @@ export class ConversationItemComponent {
     return this.conversation.lastMessage.content;
   }
 
+  toggleMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.isMenuOpen.update(v => !v);
+  }
+
   startEditing(event: MouseEvent) {
     event.stopPropagation();
+    this.isMenuOpen.set(false);
     this.editTitle.set(this.conversation.title || this.peerName);
     this.isEditing.set(true);
   }
@@ -70,6 +85,7 @@ export class ConversationItemComponent {
 
   requestDelete(event: MouseEvent) {
     event.stopPropagation();
+    this.isMenuOpen.set(false);
     if (confirm('Bu sohbeti silmek istediğinizden emin misiniz?')) {
       this.deleteRequested.emit(this.conversation.id);
     }

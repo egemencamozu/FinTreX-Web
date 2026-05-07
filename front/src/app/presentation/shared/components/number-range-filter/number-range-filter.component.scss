@@ -31,7 +31,7 @@
   &--active {
     background: var(--color-navy-700);
     border-color: var(--color-navy-700);
-    color: #fff;
+    color: var(--text-inverse);
   }
 }
 
@@ -51,8 +51,8 @@
   width: 280px;
   border-radius: var(--radius-lg, 14px);
   border: 1px solid var(--border-default);
-  background: var(--bg-surface, #fff);
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.18);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 
@@ -140,7 +140,7 @@
 .nr-filter__reset {
   border: none;
   background: transparent;
-  color: var(--color-primary-600, #2f5af4);
+  color: var(--text-brand);
   font-family: var(--font-family-sans);
   font-size: var(--font-size-sm, 14px);
   font-weight: var(--font-weight-semibold, 600);
@@ -153,8 +153,8 @@
   height: 38px;
   border: none;
   border-radius: 12px;
-  background: var(--color-primary-600, #2f5af4);
-  color: #fff;
+  background: var(--btn-primary-bg);
+  color: var(--text-inverse);
   font-family: var(--font-family-sans);
   font-size: var(--font-size-sm, 14px);
   font-weight: var(--font-weight-semibold, 600);

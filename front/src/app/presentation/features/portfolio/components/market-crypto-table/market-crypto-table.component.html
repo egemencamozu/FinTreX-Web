@@ -1,7 +1,9 @@
 <!-- ── Table ───────────────────────────────────────────────────────────────── -->
-<div class="mk__list mk__list--cmc">
+<div class="mk__list mk__list--cmc"
+  [class.mk__list--actions]="rowAction === 'remove'"
+  [class.mk__list--alert]="rowAction === 'favorite+alert'">
   <div class="mk__list-header">
-    <span></span>
+    @if (rowAction !== 'remove') { <span></span> }
     <span class="center">#</span>
     <span>İsim</span>
     <span class="right sortable">Fiyat
@@ -28,32 +30,47 @@
         <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('change4h','asc')" (click)="sortByDir('change4h','asc')"></i>
       </span>
     </span>
-    <span class="right sortable">Market Cap
+    <span class="right sortable">Market Cap ({{ currency }})
       <span class="mk__sort-icons">
         <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('marketCap','desc')" (click)="sortByDir('marketCap','desc')"></i>
         <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('marketCap','asc')" (click)="sortByDir('marketCap','asc')"></i>
       </span>
     </span>
-    <span class="right sortable">Hacim (24s)
+    <span class="right sortable">Hacim (24s) ({{ currency }})
       <span class="mk__sort-icons">
         <i class="fa-solid fa-sort-up mk__sort-up" [class.mk__sort-up--active]="isSortActive('volume','desc')" (click)="sortByDir('volume','desc')"></i>
         <i class="fa-solid fa-sort-down mk__sort-down" [class.mk__sort-down--active]="isSortActive('volume','asc')" (click)="sortByDir('volume','asc')"></i>
       </span>
     </span>
     <span class="right">Dolaşım Arzı</span>
+    @if (rowAction === 'remove') { <span class="center">İşlemler</span> }
   </div>
 
   @for (item of cryptos; track trackBySymbol($index, item); let i = $index) {
     <div class="mk__list-row">
-      <div class="mk__cell mk__cell--star">
-        <button
-          class="mk__star-btn"
-          [class.mk__star-btn--on]="favorites.has(item.symbol)"
-          (click)="favoriteToggle.emit(item.symbol)"
-        >
-          <i [class]="favorites.has(item.symbol) ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
-        </button>
-      </div>
+      @if (rowAction !== 'remove') {
+        <div class="mk__cell mk__cell--star">
+          <button
+            class="mk__star-btn"
+            [class.mk__star-btn--on]="favorites.has(item.symbol)"
+            (click)="onStarClick(item.symbol, $event)"
+            title="İzleme listelerine ekle/çıkar"
+            aria-label="İzleme listelerine ekle/çıkar"
+          >
+            <i [class]="favorites.has(item.symbol) ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+          </button>
+          @if (rowAction === 'favorite+alert') {
+            <button
+              class="mk__bell-btn"
+              (click)="onAlertClick(item.symbol, $event)"
+              title="Alarm kur"
+              aria-label="Alarm kur"
+            >
+              <i class="fa-regular fa-bell"></i>
+            </button>
+          }
+        </div>
+      }
 
       <div class="mk__cell mk__cell--rank">{{ i + 1 }}</div>
 
@@ -67,7 +84,7 @@
       </div>
 
       <div class="mk__cell mk__cell--right mk__cell--mono">
-        {{ item.priceUsdt | marketPrice: 'USD' }}
+        {{ getPrice(item) | marketPrice: currency }}
       </div>
 
       <div class="mk__cell mk__cell--right">
@@ -91,15 +108,15 @@
       </div>
 
       <div class="mk__cell mk__cell--right mk__cell--mono">
-        @if (item.marketCapUsdt !== null) {
-          ${{ item.marketCapUsdt | compactNumber }}
+        @if (getMarketCap(item) !== null) {
+          {{ getCurrencySymbol() }}{{ getMarketCap(item)! | compactNumber }}
         } @else {
           <span class="mk__cell--muted">—</span>
         }
       </div>
 
       <div class="mk__cell mk__cell--right mk__cell--vol">
-        <span class="mk__cell--mono">${{ item.volume24h | compactNumber }}</span>
+        <span class="mk__cell--mono">{{ getCurrencySymbol() }}{{ getVolume24h(item) | compactNumber }}</span>
       </div>
 
       <div class="mk__cell mk__cell--right mk__cell--vol">
@@ -112,6 +129,29 @@
           <span class="mk__cell--muted">—</span>
         }
       </div>
+
+      @if (rowAction === 'remove') {
+        <div class="mk__cell mk__cell--center">
+          <div class="mk__row-actions">
+            <button
+              class="mk__action-btn mk__action-btn--alert"
+              (click)="onAlertClick(item.symbol, $event)"
+              title="Alarm kur"
+              aria-label="Alarm kur"
+            >
+              <i class="fa-regular fa-bell"></i>
+            </button>
+            <button
+              class="mk__action-btn mk__action-btn--delete"
+              (click)="onRowActionClick(item.symbol)"
+              title="Listeden kaldır"
+              aria-label="Listeden kaldır"
+            >
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>

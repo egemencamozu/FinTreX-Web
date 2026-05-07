@@ -80,6 +80,7 @@
   &__items {
     flex: 1;
     overflow-y: auto;
+    padding-bottom: 5rem; // Space for dropdown menus of last items
 
     &::-webkit-scrollbar {
       width: 4px;

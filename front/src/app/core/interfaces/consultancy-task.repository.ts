@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ConsultancyTask } from '../models/task.model';
+import { ConsultancyTask, RateTaskRequest } from '../models/task.model';
 
 export abstract class ConsultancyTaskRepository {
   abstract getMyTasks(): Observable<ConsultancyTask[]>;
@@ -7,6 +7,8 @@ export abstract class ConsultancyTaskRepository {
   abstract createTask(request: CreateConsultancyTaskRequest): Observable<ConsultancyTask>;
   abstract updateTaskStatus(taskId: number, request: { status: string }): Observable<void>;
   abstract generateAnalysis(taskId: number): Observable<ConsultancyTask>;
+  abstract submitReport(taskId: number, report: string): Observable<ConsultancyTask>;
+  abstract rateTask(taskId: number, request: RateTaskRequest): Observable<ConsultancyTask>;
 }
 
 export interface CreateConsultancyTaskRequest {

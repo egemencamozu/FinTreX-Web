@@ -19,6 +19,8 @@ namespace FinTreX.Infrastructure.Repositories
             return await _dbContext.Portfolios
                 .Where(x => x.ApplicationUserId == userId && x.ParentPortfolioId == null)
                 .Include(x => x.Assets)
+                .Include(x => x.SubPortfolios)
+                    .ThenInclude(s => s.Assets)
                 .ToListAsync();
         }
 

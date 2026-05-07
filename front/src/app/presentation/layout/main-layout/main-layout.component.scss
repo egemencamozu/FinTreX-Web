@@ -47,7 +47,7 @@ $topbar-height: 64px;
   align-items: center;
   height: $topbar-height;
   padding: 0 var(--space-4, 16px);
-  border-bottom: 1px solid var(--border-sidebar-subtle, rgba(255, 255, 255, 0.05));
+  border-bottom: 1px solid var(--border-sidebar-subtle, var(--glass-white-5));
 
   .layout--collapsed & {
     justify-content: center;
@@ -68,31 +68,39 @@ $topbar-height: 64px;
   }
 }
 
-.sidebar__logo {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: var(--radius-md, 6px);
-  background: linear-gradient(135deg, var(--color-navy-500), var(--color-gold-500));
-  font-weight: var(--font-weight-bold, 700);
-  font-size: var(--font-size-sm, 14px);
-  letter-spacing: 0.06em;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.sidebar__logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 40px;
+  width: 100%;
+  overflow: hidden;
+  transition: all 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  .layout--collapsed & {
+    justify-content: center;
+    height: 32px;
+  }
 }
 
-.sidebar__brand-text {
-  font-size: var(--font-size-lg, 20px);
-  font-weight: var(--font-weight-bold, 700);
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  background: linear-gradient(to right, var(--text-inverse), var(--color-gold-300));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: sidebarFadeIn 220ms ease both;
+.sidebar__logo-img {
+  height: 100%;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  // Since the original SVG has fill="#000000", we invert it to make it white/silver for the dark sidebar.
+  // We also add a slight brightness/contrast boost to make it look premium.
+  filter: invert(1) brightness(1.5);
+  transition: transform 320ms ease;
+
+  .layout--collapsed & {
+    // In collapsed mode, we might want to scale it or just show the icon part.
+    // Given the SVG width, scaling it down is safer.
+    transform: scale(0.9);
+  }
 }
+
+// .sidebar__logo and .sidebar__brand-text are replaced by .sidebar__logo-container and .sidebar__logo-img
 
 // ── Nav links ─────────────────────────────────────────────────────────────────
 .sidebar__nav {
@@ -110,6 +118,7 @@ $topbar-height: 64px;
   &::-webkit-scrollbar {
     width: 4px;
   }
+
   &::-webkit-scrollbar-thumb {
     background: var(--bg-sidebar-hover);
     border-radius: var(--radius-full);
@@ -192,14 +201,14 @@ $topbar-height: 64px;
   height: 18px;
   padding: 0 4px;
   border-radius: var(--radius-full, 999px);
-  background-color: #ef4444;
-  color: #fff;
+  background-color: var(--color-danger-500);
+  color: var(--color-white);
   font-size: 10px;
   font-weight: 700;
   line-height: 1;
   flex-shrink: 0;
   margin-left: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 // ── Accordion ─────────────────────────────────────────────────────────────────
@@ -221,7 +230,7 @@ $topbar-height: 64px;
   margin-left: auto;
   font-size: 0.8rem;
   transition: transform var(--duration-fast, 150ms) var(--ease-out, ease-out);
-  color: var(--text-sidebar-muted, rgba(255, 255, 255, 0.5));
+  color: var(--text-sidebar-muted, var(--glass-white-60));
 }
 
 // Rotate chevron when open
@@ -292,8 +301,8 @@ $topbar-height: 64px;
   display: flex;
   justify-content: center;
   padding: var(--space-3, 12px);
-  border-top: 1px solid var(--border-sidebar-subtle, rgba(255, 255, 255, 0.05));
-  background: rgba(0, 0, 0, 0.14);
+  border-top: 1px solid var(--border-sidebar-subtle, var(--glass-white-5));
+  background: var(--glass-black-10);
 }
 
 .sidebar__toggle {
@@ -303,10 +312,10 @@ $topbar-height: 64px;
   gap: var(--space-2, 8px);
   width: 100%;
   height: 2.5rem;
-  border: 1px solid var(--border-sidebar-subtle, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--border-sidebar-subtle, var(--glass-white-10));
   border-radius: var(--radius-md, 8px);
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--text-sidebar-muted, rgba(255, 255, 255, 0.75));
+  background: var(--glass-white-5);
+  color: var(--text-sidebar-muted, var(--glass-white-80));
   cursor: pointer;
   transition:
     background-color var(--duration-fast, 150ms) var(--ease-default, ease),
@@ -317,7 +326,7 @@ $topbar-height: 64px;
   &:hover {
     background: var(--bg-sidebar-hover);
     color: var(--text-inverse);
-    border-color: var(--border-sidebar, rgba(255, 255, 255, 0.2));
+    border-color: var(--border-sidebar, var(--glass-white-20));
   }
 }
 
@@ -344,6 +353,7 @@ $topbar-height: 64px;
     opacity: 0;
     transform: translateX(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -369,7 +379,7 @@ $topbar-height: 64px;
 // ── Top bar ───────────────────────────────────────────────────────────────────
 .topbar {
   position: relative;
-  z-index: var(--z-topbar, 30);
+  z-index: var(--z-topbar, 120);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -431,7 +441,7 @@ $topbar-height: 64px;
   flex: 1;
   min-width: 0;
 
-  > app-tooltip-menu {
+  >app-tooltip-menu {
     display: inline-flex;
     flex-shrink: 0;
     --tooltip-menu-min-width: 230px;
@@ -446,9 +456,7 @@ $topbar-height: 64px;
   background: color-mix(in srgb, var(--color-navy-700) 8%, var(--bg-surface));
   padding: 4px;
   gap: 2px;
-  box-shadow:
-    inset 0 1px 3px rgba(0, 0, 0, 0.06),
-    0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .seg__item {
@@ -460,7 +468,7 @@ $topbar-height: 64px;
   border-radius: 7px;
   border: none;
   background: transparent;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary);
   font-size: var(--font-size-sm, 13px);
   font-weight: var(--font-weight-medium, 500);
   text-decoration: none;
@@ -472,12 +480,10 @@ $topbar-height: 64px;
     box-shadow 200ms ease;
 
   &--active {
-    background: var(--bg-navbar, #fff);
-    color: var(--color-navy-800, var(--text-primary));
+    background: var(--bg-navbar);
+    color: var(--color-navy-800);
     font-weight: var(--font-weight-semibold, 600);
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.1),
-      0 1px 2px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-sm);
   }
 }
 
@@ -505,7 +511,7 @@ $topbar-height: 64px;
 }
 
 // Aktif sekmenin yanındaki divider'ı gizle
-.seg__item--active + .seg__divider,
+.seg__item--active+.seg__divider,
 .seg__divider:has(+ .seg__item--active) {
   opacity: 0;
 }
@@ -520,7 +526,7 @@ $topbar-height: 64px;
   border: none;
   border-radius: 8px;
   background: color-mix(in srgb, var(--color-navy-700) 6%, var(--bg-surface));
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
   transition:
@@ -547,10 +553,10 @@ $topbar-height: 64px;
 }
 
 .topbar__tooltip-group {
-  & + & {
+  &+& {
     margin-top: 2px;
     padding-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--glass-white-5);
   }
 }
 
@@ -563,7 +569,7 @@ $topbar-height: 64px;
   font-weight: var(--font-weight-bold, 700);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--text-sidebar-muted, rgba(255, 255, 255, 0.4));
+  color: var(--text-sidebar-muted, var(--glass-white-40));
   user-select: none;
 
   i {
@@ -587,7 +593,7 @@ $topbar-height: 64px;
     top: 2px;
     bottom: 10px;
     width: 1px;
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--glass-white-10);
   }
 }
 
@@ -619,7 +625,7 @@ $topbar-height: 64px;
     top: 50%;
     width: 10px;
     height: 1px;
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--glass-white-10);
   }
 
   &:hover:not(:disabled) {
@@ -664,7 +670,7 @@ $topbar-height: 64px;
 .topbar__tooltip-footer {
   padding: 8px 8px 4px;
   margin-top: 4px;
-  border-top: 1px solid var(--border-sidebar-subtle, rgba(255, 255, 255, 0.08));
+  border-top: 1px solid var(--border-sidebar-subtle, var(--glass-white-10));
 }
 
 .topbar__tooltip-apply {
@@ -673,7 +679,7 @@ $topbar-height: 64px;
   border: none;
   border-radius: 6px;
   background: var(--color-gold-600);
-  color: #fff;
+  color: var(--text-inverse);
   font-family: inherit;
   font-size: var(--font-size-sm, 13px);
   font-weight: var(--font-weight-semibold, 600);
@@ -775,7 +781,7 @@ $topbar-height: 64px;
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-4);
+  padding: 0 var(--space-4) var(--space-4);
   scrollbar-gutter: stable;
 }
 
@@ -813,6 +819,7 @@ $topbar-height: 64px;
 
 // Tablet: segmented label gizle, sadece ikon
 @media (max-width: 1024px) {
+
   .layout--collapsed .sidebar__label,
   .layout--collapsed .sidebar__brand-text {
     display: none;
@@ -915,7 +922,7 @@ $topbar-height: 64px;
   }
 
   .content {
-    padding: var(--space-4, 16px);
+    padding: 0 var(--space-4, 16px) var(--space-4, 16px);
   }
 }
 

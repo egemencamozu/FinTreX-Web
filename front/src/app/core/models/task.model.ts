@@ -17,5 +17,14 @@ export interface ConsultancyTask {
   status: ConsultancyTaskStatus;
   createdAtUtc: string;
   completedAtUtc?: string;
+  economistReport?: string;
   preAnalysisReport?: PreAnalysisReport;
+  rating?: number | null;
+  ratingFeedback?: string | null;
+  ratedAtUtc?: string | null;
+}
+
+export interface RateTaskRequest {
+  rating: number;
+  feedback?: string;
 }

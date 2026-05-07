@@ -6,6 +6,7 @@ export interface EnvironmentConfig {
   appName: string;
   debug: boolean;
   apiBaseUrl: string;
+  aiServiceUrl: string;
   apiTimeout: number;
   authApiUrl: string;
   jwtTokenStorageKey: string;
@@ -41,6 +42,7 @@ export class EnvironmentConfigService {
       appName: this.getEnv('APP_NAME', 'FinTreX'),
       debug: this.getEnvAsBoolean('DEBUG', !environment.production),
       apiBaseUrl: this.getEnv('API_BASE_URL', environment.apiBaseUrl),
+      aiServiceUrl: this.getEnv('AI_SERVICE_URL', environment.aiServiceUrl),
       apiTimeout: this.getEnvAsNumber('API_TIMEOUT', 30000),
       authApiUrl: this.getEnv('AUTH_API_URL', environment.authApiUrl),
       jwtTokenStorageKey: this.getEnv('JWT_TOKEN_STORAGE_KEY', 'fintrex_auth_token'),

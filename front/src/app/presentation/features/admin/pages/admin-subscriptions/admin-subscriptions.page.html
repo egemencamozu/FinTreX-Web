@@ -2,7 +2,10 @@
   <div class="summary-container">
     @for (section of sections; track section.title) {
       <article class="summary-info-card">
-        <div class="summary-info-card__badge">{{ section.highlight }}</div>
+        <div class="summary-info-card__badge">
+          <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+          <span>{{ section.highlight }}</span>
+        </div>
         <div class="summary-info-card__body">
           <p>{{ section.description }}</p>
         </div>
@@ -44,7 +47,7 @@
                   {{ plan.isActive ? 'Aktif' : 'Pasif' }}
                 </span>
               </div>
-              
+
               <div class="plan-item-card__body">
                 <h3>{{ plan.displayName }}</h3>
                 <p class="plan-item-card__desc">{{ plan.description }}</p>
@@ -59,11 +62,19 @@
                     <span class="value">{{ plan.yearlyPriceTRY === 0 ? 'Ücretsiz' : (plan.yearlyPriceTRY + ' ₺') }}</span>
                   </div>
                   <div class="plan-metric">
+                    <span class="label">Maks. Portfolyo</span>
+                    <span class="value">{{ plan.maxPortfolios === 999 ? 'Sınırsız' : plan.maxPortfolios }}</span>
+                  </div>
+                  <div class="plan-metric">
+                    <span class="label">Günlük Mesaj Limiti</span>
+                    <span class="value">{{ plan.maxDailyChatMessages === 999 ? 'Sınırsız' : plan.maxDailyChatMessages }}</span>
+                  </div>
+                  <div class="plan-metric">
                     <span class="label">Maksimum Danışman</span>
-                    <span class="value">{{ plan.maxEconomists === 999 ? 'Sınırsız ' : plan.maxEconomists }}</span>
+                    <span class="value">{{ plan.maxEconomists === 999 ? 'Sınırsız' : plan.maxEconomists }}</span>
                   </div>
                 </div>
-                
+
                 <ul class="features-check-list">
                   @for (feature of plan.features; track feature.name) {
                     <li [class.item-included]="feature.status === 'included'" [class.item-excluded]="feature.status === 'excluded'">
@@ -109,7 +120,7 @@
                       <i class="fa-solid fa-info-circle"></i>
                       <span>Temel Bilgiler</span>
                     </div>
-                    
+
                     <div class="input-group">
                       <label>Görünüm Adı</label>
                       <div class="input-with-icon">
@@ -119,10 +130,34 @@
                     </div>
 
                     <div class="input-group">
-                      <label>Maksimum Ekonomist Limiti</label>
+                      <label>Açıklama</label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <textarea name="description" [(ngModel)]="editFormData.description" placeholder="Paket Açıklaması" rows="2"></textarea>
+                      </div>
+                    </div>
+
+                    <div class="input-group">
+                      <label>Maksimum Portfolyo Limiti <small>(999 = Sınırsız)</small></label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <input type="number" name="maxPortfolios" [(ngModel)]="editFormData.maxPortfolios" required min="1" max="999">
+                      </div>
+                    </div>
+
+                    <div class="input-group">
+                      <label>Günlük Mesaj Limiti <small>(999 = Sınırsız)</small></label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-comments"></i>
+                        <input type="number" name="maxDailyChatMessages" [(ngModel)]="editFormData.maxDailyChatMessages" required min="1" max="999">
+                      </div>
+                    </div>
+
+                    <div class="input-group">
+                      <label>Maksimum Ekonomist Limiti <small>(999 = Sınırsız)</small></label>
                       <div class="input-with-icon">
                         <i class="fa-solid fa-users-gear"></i>
-                        <input type="number" name="maxEconomists" [(ngModel)]="editFormData.maxEconomists" required min="1">
+                        <input type="number" name="maxEconomists" [(ngModel)]="editFormData.maxEconomists" required min="1" max="999">
                       </div>
                     </div>
                   </div>
@@ -167,30 +202,30 @@
                       <i class="fa-solid fa-layer-group"></i>
                       <span>Özellik Matrisi</span>
                     </div>
-                    
+
                     <div class="matrix-info">
                       Havuzdaki özellikleri paket bazlı yönetin.
                     </div>
-                    
+
                     <div class="matrix-list">
                       @for (featName of globalFeaturePool; track featName) {
                         <div class="matrix-row">
                           <span class="feat-label">{{ featName }}</span>
-                          
+
                           <div class="feat-actions">
-                            <button type="button" class="feat-btn feat-btn--hide" 
+                            <!-- <button type="button" class="feat-btn feat-btn--hide"
                               [class.active]="getFeatureStatus(featName) === 'hidden'"
                               (click)="setFeatureStatus(featName, 'hidden')" title="Listede Kapat">
                               <i class="fa-solid fa-eye-slash"></i>
-                            </button>
-                            
-                            <button type="button" class="feat-btn feat-btn--no" 
+                            </button> -->
+
+                            <button type="button" class="feat-btn feat-btn--no"
                               [class.active]="getFeatureStatus(featName) === 'excluded'"
                               (click)="setFeatureStatus(featName, 'excluded')" title="Kırmızı X Göster">
                               <i class="fa-solid fa-xmark"></i>
                             </button>
-                            
-                            <button type="button" class="feat-btn feat-btn--yes" 
+
+                            <button type="button" class="feat-btn feat-btn--yes"
                               [class.active]="getFeatureStatus(featName) === 'included'"
                               (click)="setFeatureStatus(featName, 'included')" title="Yeşil Tik Göster">
                               <i class="fa-solid fa-check"></i>

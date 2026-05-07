@@ -17,7 +17,7 @@ echarts.use([LineChart, GridComponent, CanvasRenderer]);
 })
 export class SparklineChartComponent implements AfterViewInit, OnDestroy {
   readonly values = input.required<number[]>();
-  readonly color = input('#2563eb');
+  readonly color = input('var(--color-brand-500)');
   readonly height = input(40);
 
   readonly chartEl = viewChild.required<ElementRef<HTMLDivElement>>('chart');

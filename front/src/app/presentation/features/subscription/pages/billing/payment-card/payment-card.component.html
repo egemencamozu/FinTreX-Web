@@ -1,0 +1,79 @@
+<article class="pay-card">
+  <header class="pay-card__head">
+    <div class="pay-card__head-main">
+      <h3 class="pay-card__plan">
+        {{ payment().planDisplayName ?? 'Abonelik Ödemesi' }}
+      </h3>
+      @if (billingPeriodLabel(); as bp) {
+        <span class="pay-card__chip pay-card__chip--period">{{ bp }}</span>
+      }
+      @if (payment().invoiceNumber; as inv) {
+        <span class="pay-card__invoice">#{{ inv }}</span>
+      }
+    </div>
+    <span class="pay-card__status" [attr.data-variant]="statusVariant()">
+      {{ statusLabel() }}
+    </span>
+  </header>
+
+  <div class="pay-card__amount-row">
+    <div class="pay-card__amount">
+      {{ payment().amountPaid | currency:currencyCode():'symbol':'1.2-2':'tr-TR' }}
+    </div>
+    @if (payment().refundedAmount > 0) {
+      <div class="pay-card__refunded">
+        İade: {{ payment().refundedAmount | currency:currencyCode():'symbol':'1.2-2':'tr-TR' }}
+      </div>
+    }
+  </div>
+
+  <dl class="pay-card__meta">
+    @if (effectiveDate(); as d) {
+      <div class="pay-card__meta-item">
+        <dt><i class="fa-regular fa-calendar"></i> Tarih</dt>
+        <dd>{{ d | date:'dd MMM yyyy, HH:mm':'':'tr-TR' }}</dd>
+      </div>
+    }
+
+    @if (payment().periodStartUtc && payment().periodEndUtc) {
+      <div class="pay-card__meta-item">
+        <dt><i class="fa-regular fa-clock"></i> Dönem</dt>
+        <dd>
+          {{ payment().periodStartUtc | date:'dd MMM yyyy':'':'tr-TR' }}
+          –
+          {{ payment().periodEndUtc | date:'dd MMM yyyy':'':'tr-TR' }}
+        </dd>
+      </div>
+    }
+
+    @if (payment().failureMessage) {
+      <div class="pay-card__meta-item pay-card__meta-item--error">
+        <dt><i class="fa-solid fa-triangle-exclamation"></i> Hata</dt>
+        <dd>{{ payment().failureMessage }}</dd>
+      </div>
+    }
+  </dl>
+
+  <footer class="pay-card__actions">
+    @if (payment().hostedInvoiceUrl) {
+      <a
+        class="pay-card__btn pay-card__btn--primary"
+        [href]="payment().hostedInvoiceUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <i class="fa-solid fa-file-invoice"></i> Fatura
+      </a>
+    }
+    @if (payment().receiptUrl) {
+      <a
+        class="pay-card__btn"
+        [href]="payment().receiptUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <i class="fa-regular fa-receipt"></i> Makbuz
+      </a>
+    }
+  </footer>
+</article>

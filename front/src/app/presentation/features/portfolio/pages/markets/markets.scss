@@ -269,46 +269,8 @@ $grid-cmc:       36px 44px 1fr 140px 100px 100px 100px 150px 180px 140px;
     }
   }
 
-  // ── Toolbar ───────────────────────────────────────────────────────────────────
-  &__toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-2);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  &__search-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-
-    i {
-      position: absolute;
-      left: 11px;
-      color: var(--text-tertiary);
-      font-size: 12px;
-      pointer-events: none;
-    }
-  }
-
-  &__search {
-    height: 34px;
-    min-width: 200px;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--border-default);
-    background: var(--bg-surface-raised);
-    color: var(--text-primary);
-    padding: 0 var(--space-4) 0 34px;
-    font-family: var(--font-family-sans);
-    font-size: var(--font-size-xs);
-    outline: none;
-    transition: border-color 150ms;
-
-    &::placeholder { color: var(--text-placeholder); }
-    &:focus { border-color: var(--border-focus); }
-  }
+  // NOT: `.mk__toolbar`, `.mk__search-wrap`, `.mk__search` stilleri artık
+  // `src/styles/_market-list.scss` içinde (markets + watchlist ortak).
 
   &__count {
     font-family: var(--font-family-sans);
@@ -529,13 +491,13 @@ $grid-cmc:       36px 44px 1fr 140px 100px 100px 100px 150px 180px 140px;
     font-size: 13px;
     font-weight: var(--font-weight-bold);
     font-family: var(--font-family-sans);
-    color: #fff;
+    color: var(--text-inverse);
     user-select: none;
     position: relative;
     overflow: hidden;
 
     &--gold {
-      background: linear-gradient(135deg, #C9970C 0%, #E8B923 60%, #C9970C 100%) !important;
+      background: linear-gradient(135deg, var(--color-gold-600) 0%, var(--color-gold-400) 60%, var(--color-gold-600) 100%) !important;
       font-size: 10px;
       font-weight: var(--font-weight-extrabold);
       letter-spacing: 0.02em;

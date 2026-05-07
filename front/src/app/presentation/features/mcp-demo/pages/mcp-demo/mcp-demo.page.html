@@ -1,0 +1,200 @@
+<section class="mcp-demo">
+  <header class="mcp-demo__header">
+    <div>
+      <span class="mcp-demo__eyebrow">Model Context Protocol</span>
+      <h1>FinTreX MCP</h1>
+      <p>
+        AI service, MCP server'a stdio ile baglanir; tool kesfi, resource okuma ve
+        tool call sonuclarini tek ekranda gosterir.
+      </p>
+    </div>
+
+    <button class="mcp-demo__run" type="button" (click)="runDemo()" [disabled]="isLoading()">
+      <i class="fa-solid" [class.fa-play]="!isLoading()" [class.fa-circle-notch]="isLoading()" [class.fa-spin]="isLoading()"></i>
+      <span>{{ isLoading() ? 'Running' : 'Run MCP' }}</span>
+    </button>
+  </header>
+
+  <div class="mcp-demo__layout">
+    <aside class="mcp-demo__panel mcp-demo__panel--inputs">
+      <div class="mcp-demo__panel-heading">
+        <h2>Input Context</h2>
+        <span>POST /mcp/run</span>
+      </div>
+
+      <label>
+        <span>Cash TRY</span>
+        <input type="number" min="0" [(ngModel)]="cashTry" />
+      </label>
+
+      <label>
+        <span>Stock TRY</span>
+        <input type="number" min="0" [(ngModel)]="stockTry" />
+      </label>
+
+      <label>
+        <span>Crypto TRY</span>
+        <input type="number" min="0" [(ngModel)]="cryptoTry" />
+      </label>
+
+      <label>
+        <span>Gold TRY</span>
+        <input type="number" min="0" [(ngModel)]="goldTry" />
+      </label>
+
+      <label>
+        <span>Market Symbol</span>
+        <select [(ngModel)]="symbol">
+          <option value="BIST100">BIST100</option>
+          <option value="BTC">BTC</option>
+          <option value="XAU">XAU</option>
+        </select>
+      </label>
+    </aside>
+
+    <main class="mcp-demo__content">
+      @if (errorMessage()) {
+        <div class="mcp-demo__error">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      @if (demo(); as result) {
+        <section class="mcp-demo__summary">
+          <div>
+            <span>Server</span>
+            <strong>{{ result.handshake.server_name }}</strong>
+          </div>
+          <div>
+            <span>Protocol</span>
+            <strong>{{ result.handshake.protocol_version || 'negotiated' }}</strong>
+          </div>
+          <div>
+            <span>Tools</span>
+            <strong>{{ result.discovered_tools.length }}</strong>
+          </div>
+          <div>
+            <span>Status</span>
+            <strong>{{ result.status }}</strong>
+          </div>
+        </section>
+
+        <section class="mcp-demo__panel">
+          <div class="mcp-demo__panel-heading">
+            <h2>MCP Process</h2>
+            <span>observable protocol flow</span>
+          </div>
+
+          <ol class="mcp-demo__steps">
+            @for (step of result.process; track step.name) {
+              <li>
+                <i class="fa-solid fa-check"></i>
+                <div>
+                  <strong>{{ step.name }}</strong>
+                  <p>{{ step.detail }}</p>
+                </div>
+              </li>
+            }
+          </ol>
+        </section>
+
+        <section class="mcp-demo__grid">
+          <article class="mcp-demo__panel">
+            <div class="mcp-demo__panel-heading">
+              <h2>Discovered Tools</h2>
+              <span>tools/list</span>
+            </div>
+
+            <div class="mcp-demo__tools">
+              @for (tool of result.discovered_tools; track tool.name) {
+                <div class="mcp-demo__tool">
+                  <strong>{{ tool.name }}</strong>
+                  <p>{{ tool.description }}</p>
+                </div>
+              }
+            </div>
+          </article>
+
+          <article class="mcp-demo__panel">
+            <div class="mcp-demo__panel-heading">
+              <h2>Resource</h2>
+              <span>{{ result.resource.uri }}</span>
+            </div>
+            <p class="mcp-demo__resource">{{ result.resource.content }}</p>
+          </article>
+        </section>
+
+        <section class="mcp-demo__grid">
+          <article class="mcp-demo__panel">
+            <div class="mcp-demo__panel-heading">
+              <h2>Portfolio Risk</h2>
+              <span>calculate_portfolio_risk</span>
+            </div>
+
+            <div class="mcp-demo__risk">
+              <strong>{{ result.tool_results.portfolio_risk.risk_level }}</strong>
+              <span>{{ result.tool_results.portfolio_risk.risk_score }} / 100</span>
+            </div>
+
+            <dl class="mcp-demo__metrics">
+              <div>
+                <dt>Total</dt>
+                <dd>{{ formatTry(result.tool_results.portfolio_risk.total_try) }}</dd>
+              </div>
+              <div>
+                <dt>Largest</dt>
+                <dd>{{ result.tool_results.portfolio_risk.largest_asset }}</dd>
+              </div>
+            </dl>
+
+            <div class="mcp-demo__allocation">
+              @for (entry of allocationEntries(); track entry[0]) {
+                <div>
+                  <span>{{ entry[0] }}</span>
+                  <meter min="0" max="100" [value]="entry[1]"></meter>
+                  <strong>{{ formatPercent(entry[1]) }}%</strong>
+                </div>
+              }
+            </div>
+
+            <p class="mcp-demo__note">{{ result.tool_results.portfolio_risk.concentration_warning }}</p>
+          </article>
+
+          <article class="mcp-demo__panel">
+            <div class="mcp-demo__panel-heading">
+              <h2>Market Context</h2>
+              <span>simulate_market_context</span>
+            </div>
+
+            <dl class="mcp-demo__metrics mcp-demo__metrics--stacked">
+              <div>
+                <dt>Symbol</dt>
+                <dd>{{ result.tool_results.market_context.symbol }}</dd>
+              </div>
+              <div>
+                <dt>Trend</dt>
+                <dd>{{ result.tool_results.market_context.trend }}</dd>
+              </div>
+              <div>
+                <dt>Daily Change</dt>
+                <dd>{{ result.tool_results.market_context.daily_change_percent }}%</dd>
+              </div>
+              <div>
+                <dt>Volatility</dt>
+                <dd>{{ result.tool_results.market_context.volatility }}</dd>
+              </div>
+            </dl>
+
+            <p class="mcp-demo__note">{{ result.tool_results.market_context.source }}</p>
+          </article>
+        </section>
+      } @else {
+        <div class="mcp-demo__empty">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>MCP hazirlaniyor...</span>
+        </div>
+      }
+    </main>
+  </div>
+</section>

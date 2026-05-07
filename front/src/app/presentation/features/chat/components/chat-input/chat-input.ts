@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Output, EventEmitter, signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './chat-input.scss',
 })
 export class ChatInputComponent {
+  @Input() isReadOnly = false;
   @Output() messageSent = new EventEmitter<string>();
   @Output() typing = new EventEmitter<void>();
 

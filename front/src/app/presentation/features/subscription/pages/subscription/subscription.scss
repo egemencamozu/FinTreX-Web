@@ -13,7 +13,7 @@
       font-size: var(--font-size-3xl);
       font-weight: 800;
       margin-bottom: var(--space-4);
-      background: linear-gradient(135deg, white, rgba(255, 255, 255, 0.7));
+      background: var(--glass-white-80, rgba(255, 255, 255, 0.8));
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -37,10 +37,10 @@
         align-items: center;
         gap: var(--space-3);
         padding: var(--space-3) var(--space-6);
-        background: rgba(38, 166, 154, 0.1);
-        border: 1px solid rgba(38, 166, 154, 0.2);
+        background: color-mix(in srgb, var(--text-success) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--text-success) 20%, transparent);
         border-radius: var(--radius-full);
-        color: #26a69a;
+        color: var(--text-success);
         font-weight: 500;
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -82,8 +82,8 @@
     }
 
     &.active {
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-white-20, rgba(255, 255, 255, 0.2));
+      background: var(--glass-white-5, rgba(255, 255, 255, 0.05));
 
       &::after {
         content: "";

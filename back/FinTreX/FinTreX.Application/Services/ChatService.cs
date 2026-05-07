@@ -27,29 +27,31 @@ namespace FinTreX.Core.Services
             _currentUser = currentUser;
         }
 
+        private string ResolveUserId(string? userId) => userId ?? _currentUser.UserId;
+
         // ── Conversations ─────────────────────────────────────────────
 
-        public async Task<ConversationDto> CreateConversationAsync(CreateConversationRequest request)
+        public async Task<ConversationDto> CreateConversationAsync(CreateConversationRequest request, string? userId = null)
         {
-            var userId = _currentUser.UserId;
+            var activeUserId = ResolveUserId(userId);
 
             // Validate: user can only create chats, not economists
-            if (_currentUser.IsEconomist)
+            // Note: If we pass userId explicitly, we assume caller handled role checks or we use _currentUser
+            if (userId == null && _currentUser.IsEconomist)
                 throw new UnauthorizedAccessException("Sadece kullanıcılar yeni sohbet başlatabilir.");
 
             // Validate: economist must be assigned to this user
-            var isAssigned = await _econClientRepo.IsClientAssignedAsync(request.EconomistId, userId);
+            var isAssigned = await _econClientRepo.IsClientAssignedAsync(request.EconomistId, activeUserId);
             if (!isAssigned)
                 throw new InvalidOperationException("Bu ekonomist size atanmamış. Sadece atanmış ekonomistinizle sohbet başlatabilirsiniz.");
 
             var conversation = new Conversation
             {
-                CreatedByUserId = userId,
+                CreatedByUserId = activeUserId,
                 Title = string.IsNullOrWhiteSpace(request.Title) ? null : request.Title.Trim(),
                 CreatedAtUtc = DateTime.UtcNow,
             };
 
-            // If an initial message is provided, set the timestamp
             if (!string.IsNullOrWhiteSpace(request.InitialMessage))
             {
                 conversation.LastMessageAtUtc = DateTime.UtcNow;
@@ -57,11 +59,10 @@ namespace FinTreX.Core.Services
 
             var created = await _chatRepo.CreateConversationAsync(conversation);
 
-            // Add participants
             var userParticipant = new ConversationParticipant
             {
                 ConversationId = created.Id,
-                UserId = userId,
+                UserId = activeUserId,
                 Role = ConversationParticipantRole.User,
                 JoinedAtUtc = DateTime.UtcNow
             };
@@ -77,13 +78,12 @@ namespace FinTreX.Core.Services
             created.Participants.Add(economistParticipant);
             await _chatRepo.UpdateConversationAsync(created);
 
-            // If initial message provided, add it
             if (!string.IsNullOrWhiteSpace(request.InitialMessage))
             {
                 var message = new ChatMessage
                 {
                     ConversationId = created.Id,
-                    SenderId = userId,
+                    SenderId = activeUserId,
                     MessageType = MessageType.Text,
                     Content = request.InitialMessage.Trim(),
                     SentAtUtc = DateTime.UtcNow
@@ -91,43 +91,42 @@ namespace FinTreX.Core.Services
                 await _chatRepo.AddMessageAsync(message);
             }
 
-            return await GetConversationAsync(created.Id);
+            return await GetConversationAsync(created.Id, activeUserId);
         }
 
-        public async Task<IReadOnlyList<ConversationDto>> GetMyConversationsAsync()
+        public async Task<IReadOnlyList<ConversationDto>> GetMyConversationsAsync(string? userId = null)
         {
-            var userId = _currentUser.UserId;
-            var conversations = await _chatRepo.GetConversationsByUserIdAsync(userId);
+            var activeUserId = ResolveUserId(userId);
+            var conversations = await _chatRepo.GetConversationsByUserIdAsync(activeUserId);
             var result = new List<ConversationDto>();
 
             foreach (var conv in conversations)
             {
-                var dto = await MapConversationToDto(conv, userId);
+                var dto = await MapConversationToDto(conv, activeUserId);
                 result.Add(dto);
             }
 
             return result;
         }
 
-        public async Task<ConversationDto> GetConversationAsync(int conversationId)
+        public async Task<ConversationDto> GetConversationAsync(int conversationId, string? userId = null)
         {
-            var userId = _currentUser.UserId;
+            var activeUserId = ResolveUserId(userId);
             var conv = await _chatRepo.GetConversationByIdAsync(conversationId);
             if (conv == null)
                 throw new KeyNotFoundException("Sohbet bulunamadı.");
 
-            // Check participant
-            var participant = conv.Participants?.FirstOrDefault(p => p.UserId == userId);
+            var participant = conv.Participants?.FirstOrDefault(p => p.UserId == activeUserId);
             if (participant == null || participant.IsDeleted)
                 throw new UnauthorizedAccessException("Bu sohbete erişim yetkiniz yok.");
 
-            return await MapConversationToDto(conv, userId);
+            return await MapConversationToDto(conv, activeUserId);
         }
 
-        public async Task DeleteConversationAsync(int conversationId)
+        public async Task DeleteConversationAsync(int conversationId, string? userId = null)
         {
-            var userId = _currentUser.UserId;
-            var participant = await _chatRepo.GetParticipantAsync(conversationId, userId);
+            var activeUserId = ResolveUserId(userId);
+            var participant = await _chatRepo.GetParticipantAsync(conversationId, activeUserId);
             if (participant == null)
                 throw new UnauthorizedAccessException("Bu sohbete erişim yetkiniz yok.");
 
@@ -136,14 +135,14 @@ namespace FinTreX.Core.Services
             await _chatRepo.UpdateParticipantAsync(participant);
         }
 
-        public async Task UpdateConversationTitleAsync(int conversationId, string title)
+        public async Task UpdateConversationTitleAsync(int conversationId, string title, string? userId = null)
         {
-            var userId = _currentUser.UserId;
+            var activeUserId = ResolveUserId(userId);
             var conv = await _chatRepo.GetConversationByIdAsync(conversationId);
             if (conv == null)
                 throw new KeyNotFoundException("Sohbet bulunamadı.");
 
-            var participant = conv.Participants?.FirstOrDefault(p => p.UserId == userId);
+            var participant = conv.Participants?.FirstOrDefault(p => p.UserId == activeUserId);
             if (participant == null)
                 throw new UnauthorizedAccessException("Bu sohbete erişim yetkiniz yok.");
 
@@ -153,13 +152,28 @@ namespace FinTreX.Core.Services
 
         // ── Messages ──────────────────────────────────────────────────
 
-        public async Task<ChatMessageDto> SendMessageAsync(int conversationId, string content)
+        public async Task<ChatMessageDto> SendMessageAsync(int conversationId, string content, string? userId = null)
         {
-            var userId = _currentUser.UserId;
-            var participant = await _chatRepo.GetParticipantAsync(conversationId, userId);
+            var activeUserId = ResolveUserId(userId);
+            var participant = await _chatRepo.GetParticipantAsync(conversationId, activeUserId);
             
             if (participant == null || participant.IsDeleted)
                 throw new UnauthorizedAccessException("Bu sohbete erişim yetkiniz yok.");
+
+            // Verify active assignment if it's a 1-on-1 chat between user and economist
+            var otherParticipant = (await _chatRepo.GetParticipantsAsync(conversationId))
+                .FirstOrDefault(p => p.UserId != activeUserId);
+            
+            if (otherParticipant != null)
+            {
+                var isAssigned1 = await _econClientRepo.IsClientAssignedAsync(otherParticipant.UserId, activeUserId);
+                var isAssigned2 = await _econClientRepo.IsClientAssignedAsync(activeUserId, otherParticipant.UserId);
+
+                if (!isAssigned1 && !isAssigned2)
+                {
+                    throw new InvalidOperationException("Aktif bir ekonomist atamanız bulunmadığı için mesaj gönderemezsiniz.");
+                }
+            }
 
             if (string.IsNullOrWhiteSpace(content))
                 throw new ArgumentException("Mesaj içeriği boş olamaz.");
@@ -170,7 +184,7 @@ namespace FinTreX.Core.Services
             var message = new ChatMessage
             {
                 ConversationId = conversationId,
-                SenderId = userId,
+                SenderId = activeUserId,
                 MessageType = MessageType.Text,
                 Content = content.Trim(),
                 SentAtUtc = DateTime.UtcNow
@@ -178,7 +192,6 @@ namespace FinTreX.Core.Services
 
             var saved = await _chatRepo.AddMessageAsync(message);
 
-            // Update conversation's last message timestamp
             var conv = await _chatRepo.GetConversationByIdAsync(conversationId);
             if (conv != null)
             {
@@ -186,21 +199,20 @@ namespace FinTreX.Core.Services
                 await _chatRepo.UpdateConversationAsync(conv);
             }
 
-            // Auto-mark sender's messages as read
             participant.LastReadMessageId = saved.Id;
             await _chatRepo.UpdateParticipantAsync(participant);
 
-            return MapMessageToDto(saved, null); // senderName resolved by Hub/Controller
+            return MapMessageToDto(saved, null);
         }
 
-        public async Task<ChatMessageDto> EditMessageAsync(long messageId, string newContent)
+        public async Task<ChatMessageDto> EditMessageAsync(long messageId, string newContent, string? userId = null)
         {
-            var userId = _currentUser.UserId;
+            var activeUserId = ResolveUserId(userId);
             var message = await _chatRepo.GetMessageByIdAsync(messageId);
 
             if (message == null)
                 throw new KeyNotFoundException("Mesaj bulunamadı.");
-            if (message.SenderId != userId)
+            if (message.SenderId != activeUserId)
                 throw new UnauthorizedAccessException("Sadece kendi mesajlarınızı düzenleyebilirsiniz.");
             if (message.IsDeleted)
                 throw new InvalidOperationException("Silinmiş mesaj düzenlenemez.");
@@ -214,28 +226,28 @@ namespace FinTreX.Core.Services
             return MapMessageToDto(message, null);
         }
 
-        public async Task<ChatMessageDto> DeleteMessageAsync(long messageId)
+        public async Task<ChatMessageDto> DeleteMessageAsync(long messageId, string? userId = null)
         {
-            var userId = _currentUser.UserId;
+            var activeUserId = ResolveUserId(userId);
             var message = await _chatRepo.GetMessageByIdAsync(messageId);
 
             if (message == null)
                 throw new KeyNotFoundException("Mesaj bulunamadı.");
-            if (message.SenderId != userId)
+            if (message.SenderId != activeUserId)
                 throw new UnauthorizedAccessException("Sadece kendi mesajlarınızı silebilirsiniz.");
 
             message.IsDeleted = true;
-            message.Content = ""; // Clear content on delete
+            message.Content = "";
             await _chatRepo.UpdateMessageAsync(message);
 
             return MapMessageToDto(message, null);
         }
 
         public async Task<CursorPagedResult<ChatMessageDto>> GetMessagesAsync(
-            int conversationId, long? beforeId, int pageSize = 30)
+            int conversationId, long? beforeId, int pageSize = 30, string? userId = null)
         {
-            var userId = _currentUser.UserId;
-            await EnsureParticipantAsync(conversationId, userId);
+            var activeUserId = ResolveUserId(userId);
+            await EnsureParticipantAsync(conversationId, activeUserId);
 
             if (pageSize < 1) pageSize = 1;
             if (pageSize > 100) pageSize = 100;
@@ -254,10 +266,10 @@ namespace FinTreX.Core.Services
 
         // ── Read Tracking ─────────────────────────────────────────────
 
-        public async Task MarkAsReadAsync(int conversationId, long lastReadMessageId)
+        public async Task MarkAsReadAsync(int conversationId, long lastReadMessageId, string? userId = null)
         {
-            var userId = _currentUser.UserId;
-            var participant = await _chatRepo.GetParticipantAsync(conversationId, userId);
+            var activeUserId = ResolveUserId(userId);
+            var participant = await _chatRepo.GetParticipantAsync(conversationId, activeUserId);
             if (participant == null) return;
 
             if (!participant.LastReadMessageId.HasValue || participant.LastReadMessageId < lastReadMessageId)
@@ -267,9 +279,10 @@ namespace FinTreX.Core.Services
             }
         }
 
-        public async Task<int> GetTotalUnreadCountAsync()
+        public async Task<int> GetTotalUnreadCountAsync(string? userId = null)
         {
-            return await _chatRepo.GetTotalUnreadCountAsync(_currentUser.UserId);
+            var activeUserId = ResolveUserId(userId);
+            return await _chatRepo.GetTotalUnreadCountAsync(activeUserId);
         }
 
         public async Task<int> GetTotalUnreadCountForUserAsync(string userId)
@@ -302,6 +315,15 @@ namespace FinTreX.Core.Services
                 ? await _chatRepo.GetUnreadCountAsync(conv.Id, currentUserId, currentParticipant.LastReadMessageId)
                 : 0;
 
+            var otherParticipant = conv.Participants?.FirstOrDefault(p => p.UserId != currentUserId);
+            bool isReadOnly = false;
+            if (otherParticipant != null)
+            {
+                var isAssigned1 = await _econClientRepo.IsClientAssignedAsync(otherParticipant.UserId, currentUserId);
+                var isAssigned2 = await _econClientRepo.IsClientAssignedAsync(currentUserId, otherParticipant.UserId);
+                isReadOnly = !isAssigned1 && !isAssigned2;
+            }
+
             return new ConversationDto
             {
                 Id = conv.Id,
@@ -317,11 +339,12 @@ namespace FinTreX.Core.Services
                     IsOnline = false
                 }).ToList() ?? new(),
                 LastMessage = lastMessage != null ? MapMessageToDto(lastMessage, null) : null,
-                UnreadCount = unreadCount
+                UnreadCount = unreadCount,
+                IsReadOnly = isReadOnly
             };
         }
 
-        private static ChatMessageDto MapMessageToDto(ChatMessage msg, string senderName)
+        private static ChatMessageDto MapMessageToDto(ChatMessage msg, string? senderName)
         {
             return new ChatMessageDto
             {

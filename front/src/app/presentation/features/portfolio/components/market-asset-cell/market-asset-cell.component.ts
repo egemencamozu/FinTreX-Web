@@ -13,6 +13,8 @@ export class MarketAssetCellComponent {
   @Input({ required: true }) symbol!: string;
   /** Secondary sub-label shown below symbol (e.g. company name, coin full name) */
   @Input() subLabel = '';
+  /** When false, hides the secondary sub-label line for compact layouts */
+  @Input() showSubLabel = true;
   /** Raw identifier used to derive avatar color and logo URL (defaults to symbol) */
   @Input() avatarKey = '';
   /** When true, tries to load a crypto logo from CDN */

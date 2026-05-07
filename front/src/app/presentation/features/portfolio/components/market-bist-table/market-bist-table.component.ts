@@ -27,9 +27,55 @@ export class MarketBistTableComponent {
   @Input({ required: true }) stocks: MarketStockPrice[] = [];
   @Input({ required: true }) favorites!: Set<string>;
   @Input() colSort: StockColSort | null = null;
+  @Input() currency: 'TRY' | 'USD' = 'TRY';
+  @Input() usdTryRate = 0;
+  /**
+   * Satırdaki aksiyon modu:
+   *  - `favorite`       → sadece yıldız (favoriye ekle/çıkar).
+   *  - `favorite+alert` → yıldız + çan (alarm kur); piyasa verileri sayfası için.
+   *  - `remove`         → sondaki "İşlemler" kolonunda çöp kutusu; watchlist için.
+   */
+  @Input() rowAction: 'favorite' | 'favorite+alert' | 'remove' = 'favorite';
+
+  getPrice(item: MarketStockPrice): number {
+    if (this.currency === 'USD' && this.usdTryRate > 0) return item.price / this.usdTryRate;
+    return item.price;
+  }
 
   @Output() favoriteToggle = new EventEmitter<string>();
+  @Output() favoritePickerOpen = new EventEmitter<{ ticker: string; anchor: HTMLElement }>();
+  @Output() rowRemove = new EventEmitter<string>();
+  @Output() alertOpen = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<StockColSort | null>();
+
+  onStarClick(ticker: string, ev: Event): void {
+    ev.stopPropagation();
+    // Favori modlarında watchlist popover açmak tercih edilir; geriye uyum için
+    // `favoritePickerOpen` dinleyen yoksa parent basit `favoriteToggle` kullanabilir.
+    if (this.rowAction === 'favorite' || this.rowAction === 'favorite+alert') {
+      if (this.favoritePickerOpen.observed) {
+        this.favoritePickerOpen.emit({
+          ticker,
+          anchor: ev.currentTarget as HTMLElement,
+        });
+        return;
+      }
+      this.favoriteToggle.emit(ticker);
+      return;
+    }
+    // `remove` modunda yıldız kolonu yoktur; buraya düşülmesi beklenmez.
+    this.favoriteToggle.emit(ticker);
+  }
+
+  onRowActionClick(ticker: string): void {
+    if (this.rowAction === 'remove') this.rowRemove.emit(ticker);
+    else this.favoriteToggle.emit(ticker);
+  }
+
+  onAlertClick(ticker: string, ev: Event): void {
+    ev.stopPropagation();
+    this.alertOpen.emit(ticker);
+  }
 
   readonly ui = inject(MarketUiService);
 

@@ -1,0 +1,117 @@
+@if (visible) {
+  <div class="asm__overlay" [class.asm__overlay--embedded]="embedded" (click)="embedded ? $event.stopPropagation() : cancel()">
+    <div
+      class="asm__panel"
+      [class.asm__panel--embedded]="embedded"
+      [style.height.px]="embedded ? embeddedHeight : null"
+      [style.max-height.px]="embedded ? embeddedMaxHeight : null"
+      (click)="$event.stopPropagation()">
+
+      @if (!embedded) {
+        <!-- Header -->
+        <div class="asm__header">
+          <h3 class="asm__title">
+            @if (assetType === 'BIST') { Hisse Seç }
+            @else if (assetType === 'Crypto') { Kripto Seç }
+            @else { Değerli Metal Seç }
+          </h3>
+          <button class="asm__close" (click)="cancel()" aria-label="Kapat">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      }
+
+      <!-- Search -->
+      <div class="asm__search-wrap">
+        <i class="fa-solid fa-magnifying-glass asm__search-icon"></i>
+        <input
+          #searchInput
+          class="asm__search"
+          type="text"
+          [placeholder]="assetType === 'BIST' ? 'THYAO, Türk Hava...' : assetType === 'Crypto' ? 'BTC, Bitcoin...' : 'Altın, Gümüş...'"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <!-- List -->
+      <div class="asm__list">
+        @if (isLoading()) {
+          <div class="asm__loading">
+            <span class="asm__spinner"></span>
+            <span>Yükleniyor...</span>
+          </div>
+        } @else if (assetType === 'BIST') {
+          @if (filteredBist().length === 0) {
+            <div class="asm__empty">Sonuç bulunamadı</div>
+          } @else {
+            @for (item of filteredBist(); track item.ticker) {
+              <button class="asm__item" (click)="selectBist(item)">
+                <div class="asm__item-avatar asm__item-avatar--bist">
+                  {{ item.ticker.replace('.IS', '').slice(0, 2) }}
+                </div>
+                <div class="asm__item-info">
+                  <span class="asm__item-symbol">{{ item.ticker.replace('.IS', '') }}</span>
+                  @if (item.companyName) {
+                    <span class="asm__item-name">{{ item.companyName }}</span>
+                  }
+                </div>
+                @if (item.sector) {
+                  <span class="asm__item-tag">{{ item.sector }}</span>
+                }
+                <i class="fa-solid fa-chevron-right asm__item-arrow"></i>
+              </button>
+            }
+          }
+        } @else if (assetType === 'Crypto') {
+          @if (filteredCrypto().length === 0) {
+            <div class="asm__empty">Sonuç bulunamadı</div>
+          } @else {
+            @for (item of filteredCrypto(); track item.symbol) {
+              <button class="asm__item" (click)="selectCrypto(item)">
+                <div class="asm__item-avatar asm__item-avatar--crypto">
+                  <img
+                    [src]="'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/' + item.baseAsset.toLowerCase() + '.png'"
+                    [alt]="item.baseAsset"
+                    class="asm__item-logo"
+                    (error)="$any($event.target).style.display='none'"
+                  />
+                  <span class="asm__item-avatar-fallback">{{ item.baseAsset.slice(0, 2) }}</span>
+                </div>
+                <div class="asm__item-info">
+                  <span class="asm__item-symbol">{{ item.baseAsset }}</span>
+                  <span class="asm__item-name">{{ item.name }}</span>
+                </div>
+                <i class="fa-solid fa-chevron-right asm__item-arrow"></i>
+              </button>
+            }
+          }
+        } @else {
+          @if (filteredPreciousMetals().length === 0) {
+            <div class="asm__empty">Sonuç bulunamadı</div>
+          } @else {
+            @for (item of filteredPreciousMetals(); track item.symbol) {
+              <button class="asm__item" (click)="selectPreciousMetal(item)">
+                <div
+                  class="asm__item-avatar"
+                  [class.asm__item-avatar--gold]="item.symbol === 'XAU'"
+                  [class.asm__item-avatar--silver]="item.symbol !== 'XAU'"
+                >
+                  {{ getPreciousMetalAvatar(item.symbol) }}
+                </div>
+                <div class="asm__item-info">
+                  <span class="asm__item-symbol">{{ item.symbol }}</span>
+                  <span class="asm__item-name">{{ item.name }}</span>
+                </div>
+                <i class="fa-solid fa-chevron-right asm__item-arrow"></i>
+              </button>
+            }
+          }
+        }
+      </div>
+
+    </div>
+  </div>
+}

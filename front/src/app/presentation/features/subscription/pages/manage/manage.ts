@@ -35,7 +35,7 @@ export class Manage implements OnInit {
   readonly targetPlanId = signal<number | null>(null); // spinner on a specific card
   readonly errorMessage = signal<string | null>(null);
 
-  readonly paymentModalState = signal<'verifying' | 'success' | 'cancel' | 'error' | null>(null);
+  readonly paymentModalState = signal<'verifying' | 'success' | 'cancel' | 'cancelled' | 'error' | null>(null);
   readonly paymentModalMessage = signal<string | null>(null);
   readonly showCancelConfirm = signal(false);
 
@@ -265,7 +265,7 @@ export class Manage implements OnInit {
 
   confirmCancelSubscription(): void {
     const sub = this.currentSubscription();
-    if (!sub || sub.plan.tier === SubscriptionTier.Default || sub.cancelledAtUtc) {
+    if (!sub || sub.plan.tier === SubscriptionTier.Default || sub.cancelledAtUtc || sub.cancelAtPeriodEnd) {
       return;
     }
 
@@ -277,6 +277,10 @@ export class Manage implements OnInit {
         next: () => {
           this.loadData();
           this.isProcessing.set(false);
+          this.paymentModalState.set('cancelled');
+          this.paymentModalMessage.set(
+            'Aboneliğiniz başarıyla iptal edildi. Mevcut dönem sonuna kadar erişiminiz devam edecektir.'
+          );
         },
         error: () => {
           this.errorMessage.set('Abonelik iptal edilemedi.');

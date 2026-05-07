@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
+import { EconomistStatus } from '../enums/economist-status.enum';
 import { SubscriptionTier } from '../enums/subscription-tier.enum';
 import { UserRole } from '../enums/user-role.enum';
 import { EnvironmentConfigService } from './environment-config.service';
@@ -91,8 +92,8 @@ export class AuthService {
 
   /**
    * Submit the 6-digit email verification code. On success, backend returns
-   * a fully-authenticated response (JWT + refresh token). Session storage is
-   * used by default — caller passes rememberMe if applicable.
+   * a fully-authenticated response (JWT + refresh token). Auth state is
+   * persisted in localStorage so the session continues across tabs.
    */
   verifyEmail(
     request: VerifyEmailRequest,
@@ -149,6 +150,16 @@ export class AuthService {
   }
 
   // ── Password Operations ──────────────────────────────────────────────
+
+  requestAccountDeletionCode(password: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.envConfig.get('apiBaseUrl')}/v1/me/deletion-code`, { password });
+  }
+
+  deleteMyAccount(password: string, verificationCode: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.envConfig.get('apiBaseUrl')}/v1/me`, {
+      body: { password, verificationCode },
+    });
+  }
 
   forgotPassword(email: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.authApiUrl}/forgot-password`, { email });
@@ -210,6 +221,17 @@ export class AuthService {
   /** Check if a stored refresh token exists. */
   hasRefreshToken(): boolean {
     return !!this.readStoredValue(this.refreshTokenKey);
+  }
+
+  /** Returns economist approval status decoded from the current JWT. */
+  getEconomistStatus(): EconomistStatus {
+    const token = this.getAccessToken();
+    if (!token) return EconomistStatus.NONE;
+    const payload = this.decodeJwtPayload(token);
+    const raw = payload?.['economist_status'] as string | undefined;
+    return (Object.values(EconomistStatus) as string[]).includes(raw ?? '')
+      ? (raw as EconomistStatus)
+      : EconomistStatus.NONE;
   }
 
   // ── Private Helpers ──────────────────────────────────────────────────
@@ -352,15 +374,12 @@ export class AuthService {
     }
   }
 
-  private getWritableStorage(rememberMe: boolean): Storage | null {
-    if (rememberMe && typeof localStorage !== 'undefined') {
+  private getWritableStorage(_rememberMe: boolean): Storage | null {
+    if (typeof localStorage !== 'undefined') {
       return localStorage;
     }
     if (typeof sessionStorage !== 'undefined') {
       return sessionStorage;
-    }
-    if (typeof localStorage !== 'undefined') {
-      return localStorage;
     }
     return null;
   }

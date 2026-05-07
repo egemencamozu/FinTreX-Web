@@ -27,7 +27,7 @@
             @if (btcMarket()) {
             <div class="mk__summary-stat">
               <span class="mk__summary-stat-label">BTC</span>
-              <span class="mk__summary-stat-value">{{ btcMarket()!.priceUsdt | marketPrice: 'USD' }}</span>
+              <span class="mk__summary-stat-value">{{ getCryptoDisplayPrice(btcMarket(), cryptoCurrency()) | marketPrice: cryptoCurrency() }}</span>
               <span class="mk__summary-stat-change" [class.mk__up]="btcMarket()!.changePercent24h > 0"
                 [class.mk__down]="btcMarket()!.changePercent24h < 0">{{ btcMarket()!.changePercent24h | marketChange
                 }}</span>
@@ -36,7 +36,7 @@
             @if (ethMarket()) {
             <div class="mk__summary-stat">
               <span class="mk__summary-stat-label">ETH</span>
-              <span class="mk__summary-stat-value">{{ ethMarket()!.priceUsdt | marketPrice: 'USD' }}</span>
+              <span class="mk__summary-stat-value">{{ getCryptoDisplayPrice(ethMarket(), cryptoCurrency()) | marketPrice: cryptoCurrency() }}</span>
               <span class="mk__summary-stat-change" [class.mk__up]="ethMarket()!.changePercent24h > 0"
                 [class.mk__down]="ethMarket()!.changePercent24h < 0">{{ ethMarket()!.changePercent24h | marketChange
                 }}</span>
@@ -171,12 +171,14 @@
   <div class="mk__kpis">
     @if (activeView() === 'overview') {
     @if (btcMarket()) {
-    <app-kpi-card label="Bitcoin" [value]="btcMarket()!.priceUsdt | marketPrice: 'USD'"
-      [changeValue]="btcMarket()!.changePercent24h" [subtitle]="'₺ ' + (btcMarket()!.priceTry | compactNumber)" />
+    <app-kpi-card label="Bitcoin" [value]="getCryptoDisplayPrice(btcMarket(), overviewCurrency()) | marketPrice: overviewCurrency()"
+      [changeValue]="btcMarket()!.changePercent24h"
+      [subtitle]="getCryptoDisplayPrice(btcMarket(), overviewCurrency() === 'USD' ? 'TRY' : 'USD') | marketPrice: (overviewCurrency() === 'USD' ? 'TRY' : 'USD')" />
     }
     @if (ethMarket()) {
-    <app-kpi-card label="Ethereum" [value]="ethMarket()!.priceUsdt | marketPrice: 'USD'"
-      [changeValue]="ethMarket()!.changePercent24h" [subtitle]="'₺ ' + (ethMarket()!.priceTry | compactNumber)" />
+    <app-kpi-card label="Ethereum" [value]="getCryptoDisplayPrice(ethMarket(), overviewCurrency()) | marketPrice: overviewCurrency()"
+      [changeValue]="ethMarket()!.changePercent24h"
+      [subtitle]="getCryptoDisplayPrice(ethMarket(), overviewCurrency() === 'USD' ? 'TRY' : 'USD') | marketPrice: (overviewCurrency() === 'USD' ? 'TRY' : 'USD')" />
     }
     <app-kpi-card label="Yükselen Kripto" [value]="cryptoPositive().toString()"
       [subtitle]="cryptos().length + ' pariteden'" />
@@ -185,24 +187,24 @@
     }
     }
     @if (activeView() === 'indices') {
-    @if (bist100()) { <app-kpi-card label="BIST 100" [value]="bist100()!.price | compactNumber"
+    @if (bist100()) { <app-kpi-card label="BIST 100" [value]="getIndexDisplayPrice(bist100()!.price) | marketPrice: indexCurrency()"
       [changeValue]="bist100()!.changePercent" /> }
     @if (strongestIndex()) { <app-kpi-card label="En Güçlü" [value]="strongestIndex()!.ticker.replace('.IS', '')"
-      [changeValue]="strongestIndex()!.changePercent" [subtitle]="strongestIndex()!.price | compactNumber" /> }
+      [changeValue]="strongestIndex()!.changePercent" [subtitle]="getIndexDisplayPrice(strongestIndex()!.price) | marketPrice: indexCurrency()" /> }
     @if (weakestIndex()) { <app-kpi-card label="En Zayıf" [value]="weakestIndex()!.ticker.replace('.IS', '')"
-      [changeValue]="weakestIndex()!.changePercent" [subtitle]="weakestIndex()!.price | compactNumber" /> }
+      [changeValue]="weakestIndex()!.changePercent" [subtitle]="getIndexDisplayPrice(weakestIndex()!.price) | marketPrice: indexCurrency()" /> }
     @if (usdTry()) { <app-kpi-card label="USD / TRY" [value]="usdTry()!.rate.toFixed(4)" /> }
     }
     @if (activeView() === 'gold') {
     @if (goldSpot()) {
-    <app-kpi-card label="Gram Altın (TRY)" [value]="goldSpot()!.gramTry | marketPrice: 'TRY'"
-      [subtitle]="goldSpot()!.gramUsd | marketPrice: 'USD'" />
-    <app-kpi-card label="Ons Altın (USD)" [value]="goldSpot()!.ounceUsd | marketPrice: 'USD'"
-      [subtitle]="goldSpot()!.ounceTry | marketPrice: 'TRY'" />
+    <app-kpi-card [label]="'Gram Altın (' + goldCurrency() + ')'" [value]="getGoldSpotDisplayPrice('gram') | marketPrice: goldCurrency()"
+      [subtitle]="getGoldSpotCounterPrice('gram') | marketPrice: (goldCurrency() === 'TRY' ? 'USD' : 'TRY')" />
+    <app-kpi-card [label]="'Ons Altın (' + goldCurrency() + ')'" [value]="getGoldSpotDisplayPrice('ounce') | marketPrice: goldCurrency()"
+      [subtitle]="getGoldSpotCounterPrice('ounce') | marketPrice: (goldCurrency() === 'TRY' ? 'USD' : 'TRY')" />
     }
     @if (goldTypes()) {
-    <app-kpi-card label="Çeyrek Altın" [value]="goldTypes()!.ceyrekTry | marketPrice: 'TRY'" />
-    <app-kpi-card label="Tam Altın" [value]="goldTypes()!.tamTry | marketPrice: 'TRY'" />
+    <app-kpi-card label="Çeyrek Altın" [value]="getGoldPhysicalDisplayPrice(goldTypes()!.ceyrekTry) | marketPrice: goldCurrency()" />
+    <app-kpi-card label="Tam Altın" [value]="getGoldPhysicalDisplayPrice(goldTypes()!.tamTry) | marketPrice: goldCurrency()" />
     }
     }
   </div>
@@ -233,6 +235,11 @@
         [activeId]="activeNetwork()"
         (onSelect)="setActiveNetwork($event)"
       />
+      <app-segmented-control
+        [options]="currencyOptions"
+        [value]="cryptoCurrency()"
+        (valueChange)="setCryptoCurrency($event)"
+      />
     </div>
 
     <div class="mk__cmc-right">
@@ -259,6 +266,11 @@
         [showMenuIcons]="false"
         (selectionChange)="setActiveStockSector($event)"
       />
+      <app-segmented-control
+        [options]="stockCurrencyOptions"
+        [value]="stockCurrency()"
+        (valueChange)="setStockCurrency($event)"
+      />
     </div>
 
     <div class="mk__cmc-right">
@@ -279,6 +291,23 @@
       <input class="mk__search" type="search" placeholder="Endeks ara..." [value]="indexSearch()"
         (input)="indexSearch.set($any($event.target).value)" />
     </div>
+    <app-segmented-control
+      [options]="stockCurrencyOptions"
+      [value]="indexCurrency()"
+      (valueChange)="setIndexCurrency($event)"
+    />
+    } @else if (activeView() === 'gold') {
+    <app-segmented-control
+      [options]="stockCurrencyOptions"
+      [value]="goldCurrency()"
+      (valueChange)="setGoldCurrency($event)"
+    />
+    } @else if (activeView() === 'overview') {
+    <app-segmented-control
+      [options]="stockCurrencyOptions"
+      [value]="overviewCurrency()"
+      (valueChange)="setOverviewCurrency($event)"
+    />
     }
   </div>
   }
@@ -302,7 +331,7 @@
         <span></span>
         <span class="center">#</span>
         <span>İsim</span>
-        <span class="right">Fiyat</span>
+        <span class="right">Fiyat ({{ overviewCurrency() }})</span>
         <span class="right">Değişim %</span>
         <span class="right">Hacim</span>
       </div>
@@ -323,7 +352,7 @@
             </div>
           </div>
         </div>
-        <div class="mk__cell mk__cell--right mk__cell--mono">{{ item.price | marketPrice: item.currency }}</div>
+        <div class="mk__cell mk__cell--right mk__cell--mono">{{ getOverviewDisplayPrice(item) | marketPrice: overviewCurrency() }}</div>
         <div class="mk__cell mk__cell--right">
           <span class="mk__change" [ngClass]="ui.deltaClass(item.changePercent)">{{ item.changePercent | marketChange
             }}</span>
@@ -343,7 +372,11 @@
     <div class="mk__empty"><span>Sonuç bulunamadı.</span></div>
     } @else {
     <app-market-bist-table [stocks]="pagedStocks()" [favorites]="favoriteCryptos()" [colSort]="stockColSort()"
-      (favoriteToggle)="toggleFavorite($event)" (sortChange)="onStockSortChange($event)" />
+      [currency]="stockCurrency()" [usdTryRate]="usdTry()?.rate ?? 0"
+      [rowAction]="'favorite+alert'"
+      (favoritePickerOpen)="onBistFavoritePickerOpen($event)"
+      (sortChange)="onStockSortChange($event)"
+      (alertOpen)="onBistAlertOpen($event)" />
     <app-paginator [page]="stockPage()" [total]="visibleStocks().length" [pageSize]="PAGE_SIZE"
       (pageChange)="stockPage.set($event)" />
     }
@@ -355,7 +388,11 @@
     <div class="mk__empty"><span>Sonuç bulunamadı.</span></div>
     } @else {
     <app-market-crypto-table [cryptos]="visibleCryptos()" [favorites]="favoriteCryptos()" [colSort]="cryptoColSort()"
-      (favoriteToggle)="toggleFavorite($event)" (sortChange)="onCryptoSortChange($event)" />
+      [currency]="cryptoCurrency()" [usdTryRate]="usdTry()?.rate ?? 0"
+      [rowAction]="'favorite+alert'"
+      (favoritePickerOpen)="onCryptoFavoritePickerOpen($event)"
+      (sortChange)="onCryptoSortChange($event)"
+      (alertOpen)="onCryptoAlertOpen($event)" />
     <app-paginator [page]="cryptoPage()" [total]="allVisibleCryptos().length" [pageSize]="PAGE_SIZE"
       (pageChange)="cryptoPage.set($event)" />
     }
@@ -367,6 +404,7 @@
     <div class="mk__empty"><span>Sonuç bulunamadı.</span></div>
     } @else {
     <app-market-indices-table [indices]="visibleIndices()" [favorites]="favoriteCryptos()"
+      [currency]="indexCurrency()" [usdTryRate]="usdTry()?.rate ?? 0"
       (favoriteToggle)="toggleFavorite($event)" />
     }
     }
@@ -385,8 +423,8 @@
           <div class="mk__list-header">
             <span></span>
             <span>Birim</span>
-            <span class="right">USD</span>
-            <span class="right">TRY</span>
+            <span class="right">{{ goldCurrency() }}</span>
+            <span class="right">{{ goldCurrency() === 'TRY' ? 'USD' : 'TRY' }}</span>
           </div>
           <div class="mk__list-row">
             <div class="mk__cell mk__cell--star"></div>
@@ -399,9 +437,9 @@
                 </div>
               </div>
             </div>
-            <div class="mk__cell mk__cell--right mk__cell--mono">{{ goldSpot()!.ounceUsd | marketPrice: 'USD' }}</div>
-            <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">{{ goldSpot()!.ounceTry | marketPrice:
-              'TRY' }}</div>
+            <div class="mk__cell mk__cell--right mk__cell--mono">{{ getGoldSpotDisplayPrice('ounce') | marketPrice: goldCurrency() }}</div>
+            <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">{{ getGoldSpotCounterPrice('ounce') | marketPrice:
+              (goldCurrency() === 'TRY' ? 'USD' : 'TRY') }}</div>
           </div>
           <div class="mk__list-row">
             <div class="mk__cell mk__cell--star"></div>
@@ -414,9 +452,9 @@
                 </div>
               </div>
             </div>
-            <div class="mk__cell mk__cell--right mk__cell--mono">{{ goldSpot()!.gramUsd | marketPrice: 'USD' }}</div>
-            <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">{{ goldSpot()!.gramTry | marketPrice:
-              'TRY' }}</div>
+            <div class="mk__cell mk__cell--right mk__cell--mono">{{ getGoldSpotDisplayPrice('gram') | marketPrice: goldCurrency() }}</div>
+            <div class="mk__cell mk__cell--right mk__cell--mono mk__cell--muted">{{ getGoldSpotCounterPrice('gram') | marketPrice:
+              (goldCurrency() === 'TRY' ? 'USD' : 'TRY') }}</div>
           </div>
         </div>
       </div>
@@ -429,7 +467,7 @@
           <div class="mk__list-header">
             <span></span>
             <span>Tür</span>
-            <span class="right">TRY</span>
+            <span class="right">{{ goldCurrency() }}</span>
           </div>
           @for (row of goldPhysicalRows(); track row.symbol) {
           <div class="mk__list-row">
@@ -443,7 +481,7 @@
                 </div>
               </div>
             </div>
-            <div class="mk__cell mk__cell--right mk__cell--mono">{{ row.price | marketPrice: 'TRY' }}</div>
+            <div class="mk__cell mk__cell--right mk__cell--mono">{{ getGoldPhysicalDisplayPrice(row.price) | marketPrice: goldCurrency() }}</div>
           </div>
           }
         </div>
@@ -458,3 +496,22 @@
   </div>
 
 </section>
+
+<!-- Alarm Kur Drawer — piyasa verileri satırlarından çağrılır -->
+<app-alert-editor-drawer
+  [visible]="alertDrawerOpen()"
+  [symbol]="alertDrawerSymbol()"
+  [assetName]="alertDrawerName()"
+  [assetType]="alertDrawerAssetType()"
+  [currentPrice]="alertDrawerPrice()"
+  [currency]="alertDrawerCurrency()"
+  [userEmail]="alertDrawerUserEmail()"
+  (closed)="closeAlertDrawer()" />
+
+<!-- İzleme Listesi Picker — yıldıza tıklanınca ortalanmış modal -->
+<app-watchlist-picker-popover
+  [visible]="pickerOpen()"
+  [symbol]="pickerSymbol()"
+  [assetType]="pickerAssetType()"
+  [assetName]="pickerAssetName()"
+  (closed)="closePicker()" />

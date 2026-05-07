@@ -38,8 +38,8 @@
           <span class="conversation-item__time">
             {{ conversation.lastMessageAtUtc | date: 'HH:mm' }}
           </span>
-          <div class="conversation-item__menu">
-            <button class="conversation-item__menu-trigger">
+          <div class="conversation-item__menu" [class.conversation-item__menu--open]="isMenuOpen()">
+            <button class="conversation-item__menu-trigger" (click)="toggleMenu($event)">
               <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
             <div class="conversation-item__dropdown">

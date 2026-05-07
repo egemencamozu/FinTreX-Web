@@ -1,605 +1,416 @@
-<section class="db-c">
-  <div class="db-c__wrapper">
-    <div class="db-c__container">
-
-      <!-- ══════════════════════════════════════════════════════════════
-           TICKER BAR
-      ══════════════════════════════════════════════════════════════ -->
-      <div class="db-c__ticker-bar">
-        <div class="db-c__ticker-track">
-          @for (item of ticker(); track item.label) {
-            <div class="db-c__ticker-item">
-              <span class="db-c__ticker-label">{{ item.label }}</span>
-              <span class="db-c__ticker-value">
-                {{ item.value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) }}
-              </span>
-              <span class="db-c__ticker-pct"
-                    [class.db-c__ticker-pct--up]="item.changePct >= 0"
-                    [class.db-c__ticker-pct--down]="item.changePct < 0">
-                {{ formatPct(item.changePct) }}
-              </span>
-            </div>
-          }
-          <!-- duplicate for seamless scroll -->
-          @for (item of ticker(); track item.label + '_dup') {
-            <div class="db-c__ticker-item" aria-hidden="true">
-              <span class="db-c__ticker-label">{{ item.label }}</span>
-              <span class="db-c__ticker-value">
-                {{ item.value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) }}
-              </span>
-              <span class="db-c__ticker-pct"
-                    [class.db-c__ticker-pct--up]="item.changePct >= 0"
-                    [class.db-c__ticker-pct--down]="item.changePct < 0">
-                {{ formatPct(item.changePct) }}
-              </span>
-            </div>
-          }
+<section class="db" aria-label="FinTreX gösterge paneli">
+  <div class="db__shell">
+    @if (errors().portfolios || errors().markets || errors().watchlists || errors().consultancy || errors().support) {
+      <div class="db__notice" role="status">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        <div class="db__notice-copy">
+          @if (errors().portfolios) { <span>{{ errors().portfolios }}</span> }
+          @if (errors().markets) { <span>{{ errors().markets }}</span> }
+          @if (errors().watchlists) { <span>{{ errors().watchlists }}</span> }
+          @if (errors().consultancy) { <span>{{ errors().consultancy }}</span> }
+          @if (errors().support) { <span>{{ errors().support }}</span> }
         </div>
+        <button class="db__ghost-btn" type="button" (click)="reload()">
+          <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+          Yenile
+        </button>
+      </div>
+    }
+
+    <app-market-ticker [items]="marketTickerItems()" />
+
+    <header class="db__header">
+      <div class="db__title-block">
+        <span class="db__eyebrow">Genel bakış</span>
+        <h1 class="db__title">Tüm Portföyler</h1>
       </div>
 
-      <!-- ══════════════════════════════════════════════════════════════
-           PAGE HEADER
-      ══════════════════════════════════════════════════════════════ -->
-      <div class="db-c__page-header">
-        <div>
-          <h1 class="db-c__page-title">Dashboard</h1>
-          <p class="db-c__page-date">{{ formatLongDate(lastRefresh()) }}</p>
-        </div>
-        <div class="db-c__header-actions">
-          <span class="db-c__refresh-chip">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-            </svg>
-            {{ formatRefresh(lastRefresh()) }}
-          </span>
-          <button class="db-c__btn db-c__btn--secondary" type="button" (click)="refresh()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-            </svg>
-            Yenile
-          </button>
-        </div>
+      <div class="db__header-actions">
+        <span class="db__portfolio-count">{{ portfolios().length }} portföy</span>
+
       </div>
+    </header>
 
-      <!-- ══════════════════════════════════════════════════════════════
-           HERO — TOTAL PORTFOLIO VALUE
-      ══════════════════════════════════════════════════════════════ -->
-      <div class="db-c__hero">
-
-        <!-- Left: main value -->
-        <div class="db-c__hero-main">
-          <p class="db-c__hero-label">Toplam Portföy Değeri</p>
-          <div class="db-c__hero-value">
-            <span class="db-c__hero-symbol">₺</span>{{ formatTry(portfolio().totalValueTry) }}
+    @if (isLoading()) {
+      <section class="db__state" aria-label="Dashboard yükleniyor">
+        <div class="db__spinner" aria-hidden="true"></div>
+        <p>Portföy verileri hazırlanıyor...</p>
+      </section>
+    } @else if (portfolios().length === 0) {
+      <section class="db__state db__state--empty">
+        <i class="fa-solid fa-briefcase db__state-icon" aria-hidden="true"></i>
+        <h2>Portföy bulunamadı</h2>
+        <p>İlk portföyünü oluşturduğunda burada piyasa ve varlık görünümü açılacak.</p>
+        <a class="db__primary-action" routerLink="/app/portfolio">Portföy oluştur</a>
+      </section>
+    } @else {
+      <section class="db__kpis" aria-label="Portföy metrikleri">
+        <app-kpi-card
+          [compact]="true"
+          label="Toplam Değer"
+          [value]="formatMoney(totalPortfolioValue())"
+          [changeValue]="totalPnlPercent()"
+          subtitle="Tüm portföyler"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Toplam K/Z"
+          [value]="formatMoney(totalPnl())"
+          [changeValue]="totalPnlPercent()"
+          subtitle="Kar / Zarar"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Portföy / Varlık"
+          [value]="totalAssetCount().toString()"
+          subtitle="Toplam pozisyon"
+        >
+          <div kpiFooter class="db__badge-rail" aria-label="Portföyler">
+            @for (portfolio of portfolioBadges(); track portfolio.id) {
+              <a
+                class="db__entity-badge"
+                [routerLink]="['/app/portfolio']"
+                [queryParams]="{ portfolioId: portfolio.id }"
+                [attr.aria-label]="portfolio.name + ' portföyüne git'"
+              >
+                <span class="db__entity-arrow" aria-hidden="true">›</span>
+                <span class="db__entity-label">{{ portfolio.name }}</span>
+              </a>
+            }
+            @if (portfolioBadgeOverflow() > 0) {
+              <a
+                class="db__entity-badge db__entity-badge--muted"
+                routerLink="/app/portfolio"
+                [attr.aria-label]="'Tüm portföyleri aç'"
+              >
+                +{{ portfolioBadgeOverflow() }}
+              </a>
+            }
           </div>
-          <div class="db-c__hero-usd">≈ {{ formatUsd(portfolio().totalValueUsd) }}</div>
-          <div class="db-c__hero-daily"
-               [class.db-c__hero-daily--up]="portfolio().dailyChangePct >= 0"
-               [class.db-c__hero-daily--down]="portfolio().dailyChangePct < 0">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              @if (portfolio().dailyChangePct >= 0) {
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-              } @else {
-                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/>
+        </app-kpi-card>
+        <app-kpi-card
+          [compact]="true"
+          label="Yoğunlaşma"
+          [value]="formatPercent(largestHoldingWeight(), false)"
+          subtitle="En yüksek pozisyon"
+        >
+          <div kpiFooter class="db__concentration-list">
+            @for (holding of topThreeHoldings(); track holding.symbol; let i = $index) {
+              <div class="db__concentration-item" [class]="'db__concentration-item--' + (i + 1)">
+                <span class="db__concentration-number">{{ i + 1 }}</span>
+                <span class="db__concentration-symbol">{{ holding.symbol }}</span>
+                <div class="db__concentration-bar" [style.--bar-width]="holding.weight + '%'"></div>
+                <span class="db__concentration-weight">{{ formatPercent(holding.weight, false) }}</span>
+              </div>
+            }
+            @if (topThreeHoldings().length === 0) {
+              <div class="db__concentration-item db__concentration-item--empty">Veri yok</div>
+            }
+          </div>
+        </app-kpi-card>
+        <app-kpi-card
+          [compact]="true"
+          label="Watchlist"
+          [value]="isWatchlistLoading() ? 'Bekleniyor' : watchlistTotalItems().toString()"
+          subtitle="Takip edilen sembol"
+        >
+          <div kpiFooter class="db__badge-rail" aria-label="Watchlistler">
+            @if (isWatchlistLoading()) {
+              <span class="db__entity-badge db__entity-badge--muted">Yükleniyor</span>
+            } @else {
+              @for (watchlist of primaryWatchlists(); track watchlist.id) {
+                <a
+                  class="db__entity-badge db__entity-badge--watchlist"
+                  [routerLink]="['/app/portfolio/watchlist']"
+                  [queryParams]="{ watchlistId: watchlist.id }"
+                  [attr.aria-label]="watchlist.name + ' izleme listesine git'"
+                >
+                  <span class="db__entity-arrow" aria-hidden="true">›</span>
+                  <span class="db__entity-label">{{ watchlist.name }}</span>
+                  <span class="db__entity-count">{{ watchlist.itemCount }}</span>
+                </a>
+              } @empty {
+                <span class="db__entity-badge db__entity-badge--muted">Liste yok</span>
               }
-            </svg>
-            +₺{{ formatCompact(portfolio().dailyChangeTry) }}
-            ({{ formatPct(portfolio().dailyChangePct) }}) bugün
+              @if (watchlistBadgeOverflow() > 0) {
+                <a
+                  class="db__entity-badge db__entity-badge--muted"
+                  routerLink="/app/portfolio/watchlist"
+                  [attr.aria-label]="'Tüm izleme listelerini aç'"
+                >
+                  +{{ watchlistBadgeOverflow() }}
+                </a>
+              }
+            }
           </div>
-        </div>
+        </app-kpi-card>
+      </section>
 
-        <!-- Right: period returns -->
-        <div class="db-c__hero-metrics">
-          <div class="db-c__period-card">
-            <span class="db-c__period-label">Bugün</span>
-            <span class="db-c__period-value"
-                  [class.db-c__period-value--up]="portfolio().dailyChangePct >= 0"
-                  [class.db-c__period-value--down]="portfolio().dailyChangePct < 0">
-              {{ formatPct(portfolio().dailyChangePct) }}
-            </span>
-            <span class="db-c__period-abs">₺{{ formatCompact(portfolio().dailyChangeTry) }}</span>
-          </div>
-          <div class="db-c__period-card">
-            <span class="db-c__period-label">Bu Hafta</span>
-            <span class="db-c__period-value"
-                  [class.db-c__period-value--up]="portfolio().weeklyChangePct >= 0"
-                  [class.db-c__period-value--down]="portfolio().weeklyChangePct < 0">
-              {{ formatPct(portfolio().weeklyChangePct) }}
-            </span>
-            <span class="db-c__period-abs">₺{{ formatCompact(portfolio().weeklyChangeTry) }}</span>
-          </div>
-          <div class="db-c__period-card">
-            <span class="db-c__period-label">Bu Ay</span>
-            <span class="db-c__period-value"
-                  [class.db-c__period-value--up]="portfolio().monthlyChangePct >= 0"
-                  [class.db-c__period-value--down]="portfolio().monthlyChangePct < 0">
-              {{ formatPct(portfolio().monthlyChangePct) }}
-            </span>
-            <span class="db-c__period-abs">₺{{ formatCompact(portfolio().monthlyChangeTry) }}</span>
-          </div>
-          <div class="db-c__period-card">
-            <span class="db-c__period-label">YTD</span>
-            <span class="db-c__period-value"
-                  [class.db-c__period-value--up]="portfolio().ytdChangePct >= 0"
-                  [class.db-c__period-value--down]="portfolio().ytdChangePct < 0">
-              {{ formatPct(portfolio().ytdChangePct) }}
-            </span>
-            <span class="db-c__period-abs">₺{{ formatCompact(portfolio().ytdChangeTry) }}</span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           SEGMENT CARDS
-      ══════════════════════════════════════════════════════════════ -->
-      <div class="db-c__segments">
-
-        <div class="db-c__seg-card db-c__seg-card--bist">
-          <div class="db-c__seg-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
-            </svg>
-          </div>
-          <div class="db-c__seg-body">
-            <span class="db-c__seg-label">BIST Portföyü</span>
-            <span class="db-c__seg-value">₺{{ formatCompact(portfolio().bist.valueTry) }}</span>
-            <div class="db-c__seg-row">
-              <span class="db-c__seg-weight">Ağırlık: {{ portfolio().bist.weight }}%</span>
-              <span class="db-c__seg-change"
-                    [class.db-c__seg-change--up]="portfolio().bist.dailyChangePct >= 0"
-                    [class.db-c__seg-change--down]="portfolio().bist.dailyChangePct < 0">
-                {{ formatPct(portfolio().bist.dailyChangePct) }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="db-c__seg-card db-c__seg-card--crypto">
-          <div class="db-c__seg-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><path d="M9.5 8H14a2 2 0 0 1 0 4H9.5V8z"/><path d="M9.5 12H14.5a2 2 0 0 1 0 4H9.5V12z"/>
-            </svg>
-          </div>
-          <div class="db-c__seg-body">
-            <span class="db-c__seg-label">Kripto Portföyü</span>
-            <span class="db-c__seg-value">₺{{ formatCompact(portfolio().crypto.valueTry) }}</span>
-            <div class="db-c__seg-row">
-              <span class="db-c__seg-weight">Ağırlık: {{ portfolio().crypto.weight }}%</span>
-              <span class="db-c__seg-change"
-                    [class.db-c__seg-change--up]="portfolio().crypto.dailyChangePct >= 0"
-                    [class.db-c__seg-change--down]="portfolio().crypto.dailyChangePct < 0">
-                {{ formatPct(portfolio().crypto.dailyChangePct) }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="db-c__seg-card db-c__seg-card--precious">
-          <div class="db-c__seg-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-          </div>
-          <div class="db-c__seg-body">
-            <span class="db-c__seg-label">Değerli Madenler</span>
-            <span class="db-c__seg-value">₺{{ formatCompact(portfolio().precious.valueTry) }}</span>
-            <div class="db-c__seg-row">
-              <span class="db-c__seg-weight">Ağırlık: {{ portfolio().precious.weight }}%</span>
-              <span class="db-c__seg-change"
-                    [class.db-c__seg-change--up]="portfolio().precious.dailyChangePct >= 0"
-                    [class.db-c__seg-change--down]="portfolio().precious.dailyChangePct < 0">
-                {{ formatPct(portfolio().precious.dailyChangePct) }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="db-c__seg-card db-c__seg-card--cash">
-          <div class="db-c__seg-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
-            </svg>
-          </div>
-          <div class="db-c__seg-body">
-            <span class="db-c__seg-label">Nakit</span>
-            <span class="db-c__seg-value">₺{{ formatCompact(portfolio().cash.valueTry) }}</span>
-            <div class="db-c__seg-row">
-              <span class="db-c__seg-weight">Ağırlık: {{ portfolio().cash.weight }}%</span>
-              <span class="db-c__seg-change db-c__seg-change--neutral">—</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           MAIN GRID: Chart + Allocation
-      ══════════════════════════════════════════════════════════════ -->
-      <div class="db-c__main-grid">
-
-        <!-- Portfolio Performance Chart -->
-        <div class="db-c__chart-card">
-          <div class="db-c__chart-header">
+      <div class="db__grid">
+        <section class="db__panel db__panel--chart">
+          <div class="db__panel-header">
             <div>
-              <h2 class="db-c__card-title">Portföy Performansı</h2>
-              <p class="db-c__card-subtitle">Seçili dönem değer değişimi</p>
+              <span class="db__panel-kicker">Performans</span>
+              <h2 class="db__panel-title">Toplam portföy eğrisi</h2>
             </div>
-            <div class="db-c__range-tabs">
-              @for (r of chartRanges; track r.id) {
-                <button
-                  [class]="'db-c__range-btn' + (activeRange() === r.id ? ' db-c__range-btn--active' : '')"
-                  type="button"
-                  (click)="setRange(r.id)">
-                  {{ r.label }}
-                </button>
-              }
-            </div>
+            <app-segmented-control
+              [options]="dashboardRangeOptions"
+              [value]="activeRange()"
+              variant="outline"
+              (valueChange)="setRange($any($event))"
+            />
           </div>
 
-          <div class="db-c__chart-body">
-            <svg class="db-c__chart-svg"
-                 viewBox="0 0 560 160"
-                 preserveAspectRatio="none"
-                 [class.db-c__chart-svg--up]="chartIsUp()"
-                 [class.db-c__chart-svg--down]="!chartIsUp()">
-              <defs>
-                <linearGradient id="chartGradUp" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stop-color="var(--chart-profit)" stop-opacity="0.25"/>
-                  <stop offset="100%" stop-color="var(--chart-profit)" stop-opacity="0"/>
-                </linearGradient>
-                <linearGradient id="chartGradDown" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stop-color="var(--chart-loss)" stop-opacity="0.25"/>
-                  <stop offset="100%" stop-color="var(--chart-loss)" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <!-- Grid lines -->
-              <line class="db-c__chart-grid" x1="0" y1="40"  x2="560" y2="40"/>
-              <line class="db-c__chart-grid" x1="0" y1="80"  x2="560" y2="80"/>
-              <line class="db-c__chart-grid" x1="0" y1="120" x2="560" y2="120"/>
-              <!-- Area fill -->
-              <path class="db-c__chart-area" [attr.d]="chartAreaPath()"
-                    [attr.fill]="chartIsUp() ? 'url(#chartGradUp)' : 'url(#chartGradDown)'"/>
-              <!-- Line -->
-              <polyline class="db-c__chart-line" [attr.points]="chartPolyline()"/>
-              <!-- End dot -->
-            </svg>
-
-            <!-- Y-axis labels -->
-            <div class="db-c__chart-y-labels">
-              <span>₺{{ formatCompact(chartMax()) }}</span>
-              <span></span>
-              <span>₺{{ formatCompact(chartMin()) }}</span>
-            </div>
-          </div>
-
-          <!-- Chart footer: current value + unrealized P&L -->
-          <div class="db-c__chart-footer">
-            <div class="db-c__chart-stat">
-              <span class="db-c__chart-stat-label">Toplam Gerçekleşmemiş K/Z</span>
-              <span class="db-c__chart-stat-value"
-                    [class.db-c__chart-stat-value--up]="totalUnrealizedPnl() >= 0"
-                    [class.db-c__chart-stat-value--down]="totalUnrealizedPnl() < 0">
-                {{ totalUnrealizedPnl() >= 0 ? '+' : '' }}₺{{ formatCompact(totalUnrealizedPnl()) }}
-                ({{ formatPct(totalUnrealizedPct()) }})
-              </span>
-            </div>
-            <div class="db-c__chart-stat">
-              <span class="db-c__chart-stat-label">Aktif Varlık</span>
-              <span class="db-c__chart-stat-value">{{ holdings().length }}</span>
-            </div>
-            <div class="db-c__chart-stat">
-              <span class="db-c__chart-stat-label">Son Güncelleme</span>
-              <span class="db-c__chart-stat-value">{{ formatRefresh(lastRefresh()) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Asset Allocation -->
-        <div class="db-c__alloc-card">
-          <div class="db-c__card-header">
-            <h2 class="db-c__card-title">Varlık Dağılımı</h2>
-          </div>
-
-          <!-- Donut -->
-          <div class="db-c__donut-wrap">
-            <div class="db-c__donut" [style.background]="donutGradient()">
-              <div class="db-c__donut-hole">
-                <span class="db-c__donut-pct">100%</span>
-                <span class="db-c__donut-sub">DAĞILIM</span>
+          <div class="db__chart-wrap">
+            <app-line-chart [data]="lineChartData()" [height]="260" />
+            @if (!hasHistoryData()) {
+              <div class="db__chart-empty db__empty-state db__empty-state--chart">
+                <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                <strong>Henüz performans verisi yok</strong>
+                <span>Portföy değeri oluştuğunda zaman içindeki değişim burada görünür.</span>
               </div>
-            </div>
-          </div>
-
-          <!-- Legend -->
-          <ul class="db-c__alloc-legend">
-            @for (seg of donutSegments(); track seg.label) {
-              <li class="db-c__alloc-legend-item">
-                <span class="db-c__alloc-dot" [style.background]="'var(' + seg.colorVar + ')'"></span>
-                <span class="db-c__alloc-name">{{ seg.label }}</span>
-                <span class="db-c__alloc-pct">{{ seg.pct }}%</span>
-              </li>
             }
-          </ul>
+          </div>
+        </section>
 
-          <!-- Category performance bars -->
-          <div class="db-c__cat-bars">
-            <p class="db-c__cat-bars-title">Kategori Bazlı Performans (Bugün)</p>
-            @for (bar of categoryBars(); track bar.label) {
-              <div class="db-c__cat-bar-item">
-                <div class="db-c__cat-bar-header">
-                  <span class="db-c__cat-bar-label">{{ bar.label }}</span>
-                  <span class="db-c__cat-bar-pct"
-                        [class.db-c__cat-bar-pct--up]="bar.changePct >= 0"
-                        [class.db-c__cat-bar-pct--down]="bar.changePct < 0">
-                    {{ formatPct(bar.changePct) }}
+        <aside class="db__side">
+          <section class="db__panel db__panel--allocation">
+            <div class="db__panel-header">
+              <div>
+                <span class="db__panel-kicker">Dağılım</span>
+                <h2 class="db__panel-title">{{ allocationPanelTitle() }}</h2>
+              </div>
+              <app-segmented-control
+                [options]="allocationViewOptions"
+                [value]="allocationView()"
+                variant="outline"
+                (valueChange)="setAllocationView($any($event))"
+              />
+            </div>
+
+            @if (allocationDisplayTotalValue() > 0) {
+              <div class="db__allocation-body">
+                <app-doughnut-chart [items]="doughnutItems()" [height]="180" />
+              </div>
+            } @else {
+              <div class="db__empty-state db__empty-state--compact">
+                <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
+                <strong>Dağılım henüz oluşmadı</strong>
+                <span>{{ allocationEmptyMessage() }}</span>
+              </div>
+            }
+          </section>
+
+          <section class="db__panel db__panel--signals">
+            <div class="db__panel-header">
+              <div>
+                <span class="db__panel-kicker">Risk</span>
+                <h2 class="db__panel-title">Pozisyon sinyalleri</h2>
+              </div>
+              <a class="db__text-link db__text-link--compact" routerLink="/app/portfolio/watchlist">
+                Alarmlar
+              </a>
+            </div>
+
+            <div class="db__alert-list">
+              @for (alert of dashboardAlerts(); track alert.id) {
+                <a class="db__alert-row" routerLink="/app/portfolio/watchlist">
+                  <span
+                    class="db__alert-status"
+                    [ngClass]="'db__alert-status--' + alertStatusTone(alert)"
+                  >
+                    {{ alertStatusLabel(alert) }}
                   </span>
+                  <span class="db__alert-main">
+                    <strong>{{ alert.symbol }}</strong>
+                    <small>{{ alert.assetName || alertTargetLabel(alert) }}</small>
+                  </span>
+                  <span class="db__alert-target">{{ alertTargetLabel(alert) }}</span>
+                </a>
+              } @empty {
+                <div class="db__alert-empty db__empty-state db__empty-state--compact">
+                  <i class="fa-regular fa-bell" aria-hidden="true"></i>
+                  <strong>Alarm yok</strong>
+                  <span>Takip etmek istediğin fiyat seviyeleri için alarm kurabilirsin.</span>
                 </div>
-                <div class="db-c__cat-bar-track">
-                  <div class="db-c__cat-bar-fill"
-                       [style.width.%]="bar.pct"
-                       [style.background]="'var(' + bar.colorVar + ')'">
-                  </div>
-                </div>
+              }
+              @if (dashboardAlertOverflow() > 0) {
+                <a class="db__alert-more" routerLink="/app/portfolio/watchlist">
+                  +{{ dashboardAlertOverflow() }} alarm daha
+                </a>
+              }
+            </div>
+          </section>
+        </aside>
+
+      <div class="db__lower-grid">
+        <section class="db__panel db__panel--table">
+          <div class="db__panel-header">
+            <div>
+              <span class="db__panel-kicker">Pozisyonlar</span>
+              <h2 class="db__panel-title">En büyük varlıklar</h2>
+            </div>
+            <a class="db__text-link" routerLink="/app/portfolio">Tümünü gör</a>
+          </div>
+
+          <div class="db__asset-table" role="table" aria-label="En büyük varlıklar">
+            <div class="db__asset-row db__asset-row--head" role="row">
+              <span>Varlık</span>
+              <span>Adet</span>
+              <span>Değer</span>
+              <span>K/Z</span>
+            </div>
+            @for (holding of holdingRows(); track holding.symbol) {
+              <div class="db__asset-row" role="row">
+                <span class="db__asset-name">
+                  <span
+                    class="db__asset-avatar"
+                    [ngClass]="'db__asset-avatar--' + getAssetTypeClass(holding.assetType)"
+                  >
+                    {{ holding.symbol.charAt(0) }}
+                  </span>
+                  <span>
+                    <strong>{{ holding.symbol }}</strong>
+                    <small>{{ holding.name }}</small>
+                  </span>
+                </span>
+                <span>{{ formatNumber(holding.quantity, isCryptoAsset(holding.assetType) ? 6 : 2) }}</span>
+                <span>{{ formatMoney(holding.value, holding.currency) }}</span>
+                <span
+                  class="db__delta"
+                  [class.db__delta--up]="holding.pnlPercent > 0"
+                  [class.db__delta--down]="holding.pnlPercent < 0"
+                >
+                  {{ formatPercent(holding.pnlPercent) }}
+                </span>
+              </div>
+            } @empty {
+              <div class="db__empty-state">
+                <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                <strong>Varlık bulunmuyor</strong>
+                <span>Portföyüne ilk varlığı eklediğinde en büyük pozisyonlar burada listelenir.</span>
               </div>
             }
           </div>
+        </section>
 
-        </div>
-
-      </div>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           BOTTOM GRID: Holdings + Movers + Transactions
-      ══════════════════════════════════════════════════════════════ -->
-      <div class="db-c__bottom-grid">
-
-        <div class="db-c__left-col">
-          <!-- Holdings Table -->
-          <div class="db-c__holdings-card">
-          <div class="db-c__card-header">
-            <h2 class="db-c__card-title">Portföy Varlıkları</h2>
-            <span class="db-c__card-badge">{{ holdings().length }} Varlık</span>
-          </div>
-          <div class="db-c__table-wrap">
-            <table class="db-c__table">
-              <thead>
-                <tr>
-                  <th class="db-c__th">Varlık</th>
-                  <th class="db-c__th db-c__th--right">Son Fiyat</th>
-                  <th class="db-c__th db-c__th--right db-c__th--hide-mobile">Günlük</th>
-                  <th class="db-c__th db-c__th--right db-c__th--hide-tablet">Maliyet</th>
-                  <th class="db-c__th db-c__th--right">K/Z</th>
-                  <th class="db-c__th db-c__th--right db-c__th--hide-mobile">Portföy %</th>
-                  <th class="db-c__th db-c__th--center db-c__th--hide-tablet">Son 7G</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (h of holdings(); track h.id) {
-                  <tr class="db-c__tr">
-                    <td class="db-c__td">
-                      <div class="db-c__asset">
-                        <div class="db-c__asset-icon db-c__asset-icon--{{ h.category }}">
-                          {{ h.symbol.charAt(0) }}
-                        </div>
-                        <div class="db-c__asset-info">
-                          <span class="db-c__asset-symbol">{{ h.symbol }}</span>
-                          <span class="db-c__asset-name">{{ h.name }}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="db-c__td db-c__td--right">
-                      <span class="db-c__price">{{ formatPrice(h.currentPrice, h.currency) }}</span>
-                    </td>
-                    <td class="db-c__td db-c__td--right db-c__td--hide-mobile">
-                      <span class="db-c__pct-pill"
-                            [class.db-c__pct-pill--up]="h.dailyChangePct >= 0"
-                            [class.db-c__pct-pill--down]="h.dailyChangePct < 0">
-                        {{ formatPct(h.dailyChangePct) }}
-                      </span>
-                    </td>
-                    <td class="db-c__td db-c__td--right db-c__td--hide-tablet">
-                      <span class="db-c__muted">₺{{ formatCompact(h.costBasisTry) }}</span>
-                    </td>
-                    <td class="db-c__td db-c__td--right">
-                      <div class="db-c__pnl-group">
-                        <span class="db-c__pnl-try"
-                              [class.db-c__pnl-try--up]="h.unrealizedPnlTry >= 0"
-                              [class.db-c__pnl-try--down]="h.unrealizedPnlTry < 0">
-                          {{ h.unrealizedPnlTry >= 0 ? '+' : '' }}₺{{ formatCompact(h.unrealizedPnlTry) }}
-                        </span>
-                        <span class="db-c__pnl-pct"
-                              [class.db-c__pnl-pct--up]="h.unrealizedPnlPct >= 0"
-                              [class.db-c__pnl-pct--down]="h.unrealizedPnlPct < 0">
-                          {{ formatPct(h.unrealizedPnlPct) }}
-                        </span>
-                      </div>
-                    </td>
-                    <td class="db-c__td db-c__td--right db-c__td--hide-mobile">
-                      <div class="db-c__weight-cell">
-                        <span class="db-c__weight-val">{{ h.weight.toFixed(1) }}%</span>
-                        <div class="db-c__weight-track">
-                          <div class="db-c__weight-fill db-c__weight-fill--{{ h.category }}"
-                               [style.width.%]="h.weight">
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="db-c__td db-c__td--center db-c__td--hide-tablet">
-                      <svg class="db-c__sparkline"
-                           viewBox="0 0 80 28" width="80" height="28"
-                           [class.db-c__sparkline--up]="h.dailyChangePct >= 0"
-                           [class.db-c__sparkline--down]="h.dailyChangePct < 0">
-                        <polyline class="db-c__sparkline-line"
-                                  [attr.points]="getSparklinePoints(h.sparkline)"/>
-                      </svg>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- NEW FEATURE: AI Analysis -->
-        <div class="db-c__ai-card">
-          <div class="db-c__card-header" style="justify-content: flex-start; gap: var(--space-3)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-brand" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-            </svg>
-            <h2 class="db-c__card-title">FinTreX AI Analizi</h2>
-            <span class="db-c__card-badge" style="background: rgba(var(--color-gold-500-rgb, 234, 179, 8), 0.15); color: var(--color-gold-600, #b4860b); border-color: rgba(var(--color-gold-500-rgb, 234, 179, 8), 0.3); margin-left: auto;">Beta</span>
-          </div>
-          <div class="db-c__ai-body">
-            <p class="db-c__ai-text">
-              Portföyünüz bugün <strong>Teknoloji (BIST)</strong> ağırlıklı olarak pozitif ayrışıyor. <strong>Kripto</strong> varlıklarınızda (%{{ portfolio().crypto.weight }}), özellikle Ethereum'daki alım dalgası ile kısa vadeli yükseliş sinyalleri tespit edildi. Değerli maden oranınız, sistemdeki volatilite riskinizi optimize edip dengede tutuyor.
-            </p>
-            <div class="db-c__ai-actions">
-              <button class="db-c__btn db-c__btn--primary">Tavsiyeleri Gör</button>
-              <button class="db-c__btn db-c__btn--secondary">Detaylı Rapor</button>
+        <section class="db__panel db__panel--movers">
+          <div class="db__panel-header">
+            <div>
+              <span class="db__panel-kicker">Piyasa</span>
+              <h2 class="db__panel-title">Hareketli semboller</h2>
             </div>
-          </div>
-        </div>
-
-        <!-- NEW FEATURE: Quick Actions -->
-        <div class="db-c__quick-actions">
-          <button class="db-c__qa-btn">
-             <span class="db-c__qa-icon" style="color: var(--text-success)">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-             </span>
-             <span class="db-c__qa-label">Para Yatır</span>
-          </button>
-          <button class="db-c__qa-btn">
-             <span class="db-c__qa-icon" style="color: var(--text-warning, #f59e0b)">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-             </span>
-             <span class="db-c__qa-label">Para Çek</span>
-          </button>
-          <button class="db-c__qa-btn">
-             <span class="db-c__qa-icon" style="color: var(--text-brand)">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3v18"></path><path d="M3 17l4 4 4-4"></path><path d="M13 7l4-4 4 4"></path><path d="M7 21V3"></path></svg>
-             </span>
-             <span class="db-c__qa-label">Al / Sat</span>
-          </button>
-          <button class="db-c__qa-btn">
-             <span class="db-c__qa-icon" style="color: var(--text-info, #3b82f6)">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"></path></svg>
-             </span>
-             <span class="db-c__qa-label">Ekstre</span>
-          </button>
-        </div>
-
-        </div> <!-- End of left column -->
-
-        <!-- Right column: Movers + Transactions -->
-        <div class="db-c__right-col">
-
-          <!-- Market Movers -->
-          <div class="db-c__movers-card">
-            <div class="db-c__card-header">
-              <h2 class="db-c__card-title">Piyasa Hareketleri</h2>
-              <div class="db-c__mover-tabs">
-                <button
-                  [class]="'db-c__mover-tab' + (activeMoverTab() === 'gainers' ? ' db-c__mover-tab--active db-c__mover-tab--up' : '')"
-                  type="button" (click)="setMoverTab('gainers')">
-                  Kazananlar
-                </button>
-                <button
-                  [class]="'db-c__mover-tab' + (activeMoverTab() === 'losers' ? ' db-c__mover-tab--active db-c__mover-tab--down' : '')"
-                  type="button" (click)="setMoverTab('losers')">
-                  Kaybedenler
-                </button>
-              </div>
-            </div>
-            <ul class="db-c__mover-list">
-              @for (m of activeMoverList(); track m.symbol) {
-                <li class="db-c__mover-item">
-                  <div class="db-c__mover-badge"
-                       [class.db-c__mover-badge--up]="m.changePct >= 0"
-                       [class.db-c__mover-badge--down]="m.changePct < 0">
-                    {{ formatPct(m.changePct, false) }}
-                  </div>
-                  <div class="db-c__mover-icon db-c__mover-icon--{{ m.category }}">{{ m.symbol.charAt(0) }}</div>
-                  <div class="db-c__mover-info">
-                    <span class="db-c__mover-symbol">{{ m.symbol }}</span>
-                    <span class="db-c__mover-name">{{ m.name }}</span>
-                  </div>
-                  <span class="db-c__mover-price">{{ m.price.toLocaleString('tr-TR') }} {{ m.currency }}</span>
-                </li>
-              }
-            </ul>
+            <a class="db__text-link" routerLink="/app/portfolio/markets">Piyasalar</a>
           </div>
 
-          <!-- Recent Transactions -->
-          <div class="db-c__tx-card">
-            <div class="db-c__card-header">
-              <h2 class="db-c__card-title">Son İşlemler</h2>
-              <span class="db-c__card-link">Tümü</span>
-            </div>
-            <ul class="db-c__tx-list">
-              @for (tx of transactions(); track tx.id) {
-                <li class="db-c__tx-item">
-                  <div class="db-c__tx-type"
-                       [class.db-c__tx-type--buy]="tx.type === 'buy'"
-                       [class.db-c__tx-type--sell]="tx.type === 'sell'">
-                    @if (tx.type === 'buy') {
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
-                      </svg>
-                    } @else {
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
-                      </svg>
-                    }
-                  </div>
-                  <div class="db-c__mover-icon db-c__mover-icon--{{ tx.category }}">{{ tx.symbol.charAt(0) }}</div>
-                  <div class="db-c__tx-info">
-                    <span class="db-c__tx-title">
-                      {{ tx.type === 'buy' ? 'Alış' : 'Satış' }} · {{ tx.symbol }}
-                    </span>
-                    <span class="db-c__tx-date">{{ formatDate(tx.date) }}</span>
-                  </div>
-                  <div class="db-c__tx-amount">
-                    <span class="db-c__tx-try"
-                          [class.db-c__tx-try--buy]="tx.type === 'buy'"
-                          [class.db-c__tx-try--sell]="tx.type === 'sell'">
-                      {{ tx.type === 'buy' ? '-' : '+' }}₺{{ formatCompact(tx.totalTry) }}
-                    </span>
-                    <span class="db-c__tx-qty">{{ tx.quantity }} adet</span>
-                  </div>
-                </li>
-              }
-            </ul>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ══════════════════════════════════════════════════════════════
-           ALERTS ROW
-      ══════════════════════════════════════════════════════════════ -->
-      <div class="db-c__alerts-card">
-        <div class="db-c__card-header">
-          <h2 class="db-c__card-title">Bildirimler</h2>
-          @if (unreadAlerts() > 0) {
-            <span class="db-c__alert-badge">{{ unreadAlerts() }} yeni</span>
-          }
-        </div>
-        <div class="db-c__alerts-list">
-          @for (al of alerts(); track al.id) {
-            <div class="db-c__alert-item" [class.db-c__alert-item--unread]="!al.read">
-              <div class="db-c__alert-dot db-c__alert-dot--{{ al.type }}"></div>
-              <div class="db-c__alert-body">
-                <p class="db-c__alert-msg">{{ al.message }}</p>
-                <span class="db-c__alert-time">{{ al.time }}</span>
-              </div>
+          @if (moverListItems().length > 0) {
+            <app-mover-list [items]="moverListItems()" />
+          } @else {
+            <div class="db__empty-state db__empty-state--compact">
+              <i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i>
+              <strong>Piyasa hareketi bekleniyor</strong>
+              <span>Canlı piyasa verisi geldiğinde en hareketli semboller burada görünür.</span>
             </div>
           }
-        </div>
-      </div>
+        </section>
 
-    </div>
+        <section class="db__panel db__panel--activity-panel">
+          <div class="db__panel-header">
+            <div>
+              <span class="db__panel-kicker">Aktivite</span>
+              <h2 class="db__panel-title">Son işlemler</h2>
+            </div>
+          </div>
+
+          <div class="db__activity-list">
+            @for (transaction of latestTransactions(); track transaction.id) {
+              <div class="db__activity">
+                <span
+                  class="db__activity-type"
+                  [class.db__activity-type--sell]="transaction.type === 'Sell'"
+                >
+                  {{ transaction.type === 'Buy' ? 'Alış' : 'Satış' }}
+                </span>
+                <span class="db__activity-main">
+                  <strong>{{ transaction.symbol }}</strong>
+                  <small>{{ formatDateTime(transaction.executedAtUtc) }}</small>
+                </span>
+                <span class="db__activity-value">
+                  {{ formatMoney(transactionTotal(transaction), transaction.currency) }}
+                </span>
+              </div>
+            } @empty {
+              <div class="db__empty-state db__empty-state--compact">
+                <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+                <strong>İşlem kaydı yok</strong>
+                <span>Alış veya satış yaptığında son işlemler burada listelenir.</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="db__panel db__panel--economist">
+          <div class="db__panel-header">
+            <div>
+              <span class="db__panel-kicker">Bildirim</span>
+              <h2 class="db__panel-title">Genel bildirimler</h2>
+            </div>
+            <app-segmented-control
+              [options]="notificationViewOptions"
+              [value]="notificationView()"
+              variant="outline"
+              (valueChange)="setNotificationView($any($event))"
+            />
+          </div>
+
+          <div class="db__economist-list">
+            @if (notificationView() === 'admin') {
+              @for (notification of adminNotifications(); track notification.id) {
+                <a class="db__economist-row" routerLink="/app/consultancy/my-economist">
+                  <span
+                    class="db__economist-status"
+                    [ngClass]="'db__economist-status--' + notification.tone"
+                  >
+                    {{ notification.status }}
+                  </span>
+                  <span class="db__economist-main">
+                    <strong>{{ notification.title }}</strong>
+                    <small>{{ notification.detail }} · {{ notification.date }}</small>
+                  </span>
+                </a>
+              } @empty {
+                <div class="db__economist-empty db__empty-state db__empty-state--compact">
+                  <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+                  <strong>Admin bildirimi yok</strong>
+                  <span>Admin yanıtları ve talep durumları burada görünür.</span>
+                </div>
+              }
+            } @else {
+              @for (notification of economistNotifications(); track notification.id) {
+                <a class="db__economist-row" routerLink="/app/consultancy/my-requests">
+                  <span
+                    class="db__economist-status"
+                    [ngClass]="'db__economist-status--' + notification.tone"
+                  >
+                    {{ notification.status }}
+                  </span>
+                  <span class="db__economist-main">
+                    <strong>{{ notification.title }}</strong>
+                    <small>{{ notification.economistName }} · {{ notification.date }}</small>
+                  </span>
+                </a>
+              } @empty {
+                <div class="db__economist-empty db__empty-state db__empty-state--compact">
+                  <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+                  <strong>Ekonomist bildirimi yok</strong>
+                  <span>Danışmanlık taleplerinden gelen son durumlar burada görünür.</span>
+                </div>
+              }
+            }
+          </div>
+        </section>
+      </div>
+      </div>
+    }
   </div>
 </section>

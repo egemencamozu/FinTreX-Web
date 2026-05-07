@@ -10,8 +10,8 @@ namespace FinTreX.Core.Interfaces.Repositories
         Task<Conversation> CreateConversationAsync(Conversation conversation);
         Task<Conversation> GetConversationByIdAsync(int conversationId);
 
-        /// <summary>Get all conversations where the user is a non-deleted participant.</summary>
         Task<IReadOnlyList<Conversation>> GetConversationsByUserIdAsync(string userId);
+
         Task UpdateConversationAsync(Conversation conversation);
 
         // ── Participants ──

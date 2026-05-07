@@ -1,81 +1,92 @@
-<div class="customers-container">
-  <!-- Error Banner -->
-  <div *ngIf="errorMessage()" class="customers-error-banner">
-    <span>{{ errorMessage() }}</span>
-    <button (click)="errorMessage.set(null)">✕</button>
-  </div>
-
-  <!-- Header -->
-  <div class="customers-header">
-    <div class="customers-title-section">
-      <h1>Müşterilerim</h1>
-      <p class="customers-subtitle">Size atanan tüm müşterilerinizi yönetin</p>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="isLoading()" class="customers-loading">
-    <div class="customers-spinner"></div>
-    <p>Müşteriler yükleniyor...</p>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!isLoading() && customers().length === 0" class="customers-empty">
-    <div class="customers-empty-icon">👥</div>
-    <h3>Müşteri Yok</h3>
-    <p>Şu anda atanmış müşteriniz bulunmamaktadır.</p>
-  </div>
-
-  <!-- Customers Content -->
-  <div *ngIf="!isLoading() && customers().length > 0" class="customers-content">
-    <!-- Search Bar -->
-    <div class="customers-search">
-      <input
-        type="text"
-        placeholder="Müşteri adına göre ara..."
-        (input)="searchTerm.set($event.target.value)"
-        class="search-input"
-      />
-      <span class="search-icon">🔍</span>
-    </div>
-
-    <!-- Customers Grid -->
-    <div class="customers-grid">
-      <div
-        *ngFor="let customer of filteredCustomers()"
-        class="customer-card"
-      >
-        <!-- Avatar -->
-        <div class="customer-avatar">
-          {{ getInitials(customer.clientName) }}
-        </div>
-
-        <!-- Customer Info -->
-        <div class="customer-info">
-          <h3 class="customer-name">{{ customer.clientName }}</h3>
-          <p class="customer-meta">
-            <span class="assigned-badge">Atandı</span>
-            <span class="assigned-date">{{ customer.assignedAtUtc | date: 'dd.MM.yyyy' }}</span>
-          </p>
-
-          <!-- Status -->
-          <div class="customer-status">
-            <span [class.status-active]="customer.isActive" [class.status-inactive]="!customer.isActive" class="status-indicator">
-              {{ customer.isActive ? 'Aktif' : 'İnaktif' }}
-            </span>
-          </div>
-
-          <!-- Notes -->
-          <p *ngIf="customer.notes" class="customer-notes">
-            <strong>Not:</strong> {{ customer.notes }}
-          </p>
-        </div>
+<section class="customers-page" aria-label="Ekonomist müşterileri">
+  <div class="customers-page__shell">
+    @if (errorMessage()) {
+      <div class="customers-page__notice">
+        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+        <span>{{ errorMessage() }}</span>
+        <button type="button" (click)="errorMessage.set(null)" aria-label="Uyarıyı kapat">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
       </div>
-    </div>
+    }
 
-    <!-- No Results -->
-    <div *ngIf="filteredCustomers().length === 0" class="customers-no-results">
-      <p>Arama kriterlerine uygun müşteri bulunamadı.</p>
-    </div>
+    <header class="customers-page__header">
+      <div>
+        <span class="customers-page__eyebrow">Danışmanlık</span>
+        <h1>Müşterilerim</h1>
+        <p>Atanmış müşterinizi seçerek portföy ekranını kullanıcıyla aynı görünümde, salt okuma modunda açın.</p>
+      </div>
+
+      <div class="customers-page__summary">
+        <span>{{ customers().length }} müşteri</span>
+        <span>{{ activeCustomerCount() }} aktif</span>
+        <span>
+          <i class="fa-solid fa-lock" aria-hidden="true"></i>
+          Salt okuma
+        </span>
+      </div>
+    </header>
+
+    <section class="customers-page__toolbar" aria-label="Müşteri arama">
+      <div class="customers-page__search">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input
+          type="text"
+          placeholder="Müşteri adı veya ID ara..."
+          [value]="searchTerm()"
+          (input)="onSearchInput($event)"
+        />
+      </div>
+      <span class="customers-page__hint">Kartı seçerek aynı portföy ekranını salt okuma modunda açabilirsiniz.</span>
+    </section>
+
+    @if (isLoading()) {
+      <section class="customers-page__state">
+        <div class="customers-page__spinner" aria-hidden="true"></div>
+        <p>Müşteriler yükleniyor...</p>
+      </section>
+    } @else if (customers().length === 0) {
+      <section class="customers-page__state customers-page__state--empty">
+        <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+        <h2>Müşteri yok</h2>
+        <p>Şu anda atanmış müşteriniz bulunmuyor.</p>
+      </section>
+    } @else if (filteredCustomers().length === 0) {
+      <section class="customers-page__state customers-page__state--empty">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <h2>Sonuç bulunamadı</h2>
+        <p>Arama kriterine uygun müşteri yok.</p>
+      </section>
+    } @else {
+      <section class="customers-page__grid" aria-label="Müşteri listesi">
+        @for (customer of filteredCustomers(); track customer.id) {
+          <button
+            type="button"
+            class="customers-page__card"
+            (click)="selectCustomer(customer)"
+          >
+            <span class="customers-page__card-top">
+              <span class="customers-page__avatar">{{ getInitials(customer.clientName) }}</span>
+              <span
+                class="customers-page__status"
+                [class.customers-page__status--inactive]="!customer.isActive"
+              >
+                {{ customer.isActive ? 'Aktif' : 'Pasif' }}
+              </span>
+            </span>
+
+            <span class="customers-page__card-main">
+              <strong>{{ customer.clientName || customer.clientId }}</strong>
+              <small>{{ formatDate(customer.assignedAtUtc) }}</small>
+            </span>
+
+            <span class="customers-page__open">
+              Portföyü Gör
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </span>
+          </button>
+        }
+      </section>
+    }
   </div>
-</div>
+</section>

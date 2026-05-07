@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { UserManagementRepository } from '../../core/interfaces/user-management.repository';
-import { UserSummary } from '../../core/models/user-summary.model';
+import { UpdateMyProfileRequest, UserSummary } from '../../core/models/user-summary.model';
 import { EnvironmentConfigService } from '../../core/services/environment-config.service';
 
 interface UserManagementActionResponse {
@@ -31,6 +31,10 @@ export class UserManagementApiRepository extends UserManagementRepository {
     return this.http
       .get<UserSummary>(this.meUrl)
       .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
+  }
+
+  updateMyProfile(request: UpdateMyProfileRequest): Observable<UserSummary> {
+    return this.http.put<UserSummary>(this.meUrl, request);
   }
 
   getAllUsers(): Observable<UserSummary[]> {

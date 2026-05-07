@@ -1,19 +1,26 @@
+:host {
+  display: block;
+}
+
 .conversation-item {
   display: flex;
   align-items: center;
   padding: 1rem;
-  cursor: pointer;
+  position: relative;
   transition: var(--transition-all);
   border-bottom: 1px solid var(--border-subtle);
   gap: 1rem;
+  z-index: 1;
 
   &:hover {
     background: var(--state-hover);
+    z-index: 10;
   }
 
   &--active {
     background: var(--state-selected);
-    border-left: 3px solid var(--color-gold-500); // Updated to generic gold accent
+    border-left: 3px solid var(--color-gold-500); 
+    z-index: 2;
   }
 
   &__avatar {
@@ -139,16 +146,10 @@
 
   &__menu {
     position: relative;
-    opacity: 0;
-    transition: opacity 0.2s;
 
-    &:hover .conversation-item__dropdown {
+    &--open .conversation-item__dropdown {
       display: block;
     }
-  }
-
-  &:hover &__menu {
-    opacity: 1;
   }
 
   &__menu-trigger {

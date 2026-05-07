@@ -3,6 +3,7 @@ using FinTreX.Core.Interfaces;
 using FinTreX.Core.Interfaces.Repositories;
 using FinTreX.Core.Settings;
 using FinTreX.Infrastructure.Services.MarketData.Session;
+using FinTreX.Infrastructure.Services.MarketData.Symbols;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
@@ -19,17 +20,39 @@ namespace FinTreX.WebApi.Controllers.v1
         private readonly IDailyCloseRepository _dailyCloseRepository;
         private readonly MarketDataSettings _marketDataSettings;
         private readonly BistSessionManager _sessionManager;
+        private readonly IBistSymbolProvider _bistSymbolProvider;
 
         public StocksController(
             IMarketDataCache marketDataCache,
             IDailyCloseRepository dailyCloseRepository,
             IOptions<MarketDataSettings> marketDataSettings,
-            BistSessionManager sessionManager)
+            BistSessionManager sessionManager,
+            IBistSymbolProvider bistSymbolProvider)
         {
             _marketDataCache = marketDataCache;
             _dailyCloseRepository = dailyCloseRepository;
             _marketDataSettings = marketDataSettings.Value;
             _sessionManager = sessionManager;
+            _bistSymbolProvider = bistSymbolProvider;
+        }
+
+        [HttpGet("symbols")]
+        public IActionResult GetSymbols()
+        {
+            var symbols = _bistSymbolProvider.GetSymbols()
+                .Select(ticker => {
+                    var info = _bistSymbolProvider.GetSymbolInfo(ticker);
+                    return new
+                    {
+                        ticker,
+                        companyName = info?.CompanyName ?? string.Empty,
+                        sector = info?.Sector ?? string.Empty
+                    };
+                })
+                .OrderBy(x => x.ticker)
+                .ToList();
+
+            return Ok(symbols);
         }
 
         [HttpGet]

@@ -17,6 +17,12 @@ namespace FinTreX.Infrastructure.Models
         public string? RevokedByIp { get; set; }
         public string? ReplacedByToken { get; set; }
 
+        /// <summary>Raw User-Agent header captured at token creation (nullable for legacy rows).</summary>
+        public string? UserAgent { get; set; }
+
+        /// <summary>Parsed, human-readable device/browser label (e.g. "Chrome on Windows").</summary>
+        public string? DeviceName { get; set; }
+
         /// <summary>Token is active if not expired and not revoked.</summary>
         public bool IsActive => !IsExpired && !IsRevoked;
 

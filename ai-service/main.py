@@ -1,14 +1,21 @@
 import json
 import traceback
 from datetime import datetime, timezone
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
 from models import AnalyzeRequest, AnalyzeResponse
-from crew import run_pre_analysis_crew
+from pre_analysis_crew.crew import run_pre_analysis_crew
 from config import FASTAPI_PORT
 from validators import PortfolioValidator, ReportValidator
+
+try:
+    from mcp_demo.client import run_mcp_demo
+except ImportError:
+    run_mcp_demo = None
 
 # === LangGraph AI Assistant Imports ===
 import uuid
@@ -26,9 +33,65 @@ app = FastAPI(
 )
 
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "service": "paa-crew"}
+
+
+@app.get("/mcp/health")
+def mcp_health_check():
+    return {
+        "status": "healthy",
+        "service": "fintrex-mcp",
+        "transport": "stdio",
+        "description": "FinTreX MCP server is available through the AI service.",
+    }
+
+
+@app.get("/mcp/demo")
+async def get_mcp_demo():
+    if run_mcp_demo is None:
+        raise HTTPException(status_code=503, detail="MCP is not available in this environment.")
+
+    try:
+        return await run_mcp_demo()
+    except Exception as e:
+        logger.error(f"MCP Error: {str(e)}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"MCP failed: {str(e)}")
+
+
+@app.post("/mcp/demo")
+async def post_mcp_demo(payload: dict[str, Any]):
+    if run_mcp_demo is None:
+        raise HTTPException(status_code=503, detail="MCP is not available in this environment.")
+
+    try:
+        return await run_mcp_demo(payload)
+    except Exception as e:
+        logger.error(f"MCP Error: {str(e)}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"MCP failed: {str(e)}")
+
+
+@app.get("/mcp/run")
+async def get_mcp_run():
+    return await get_mcp_demo()
+
+
+@app.post("/mcp/run")
+async def post_mcp_run(payload: dict[str, Any]):
+    return await post_mcp_demo(payload)
 
 
 @app.post("/analyze", response_model=AnalyzeResponse)

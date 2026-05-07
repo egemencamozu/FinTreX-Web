@@ -11,5 +11,7 @@ namespace FinTreX.Core.Interfaces.Services
         Task<ConsultancyTaskDto> CreateTaskAsync(CreateConsultancyTaskRequest request);
         Task<bool> UpdateTaskStatusAsync(int taskId, UpdateTaskStatusRequest request);
         Task<ConsultancyTaskDto> GeneratePreAnalysisAsync(int taskId);
+        Task<ConsultancyTaskDto> SubmitReportAsync(int taskId, SubmitReportRequest request);
+        Task<ConsultancyTaskDto> RateTaskAsync(int taskId, RateTaskRequest request);
     }
 }

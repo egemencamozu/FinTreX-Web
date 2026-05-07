@@ -1,0 +1,150 @@
+<section class="mcp-demo">
+  <app-public-navbar></app-public-navbar>
+
+  <div class="mcp-demo__shell">
+    <header class="mcp-demo__header">
+      <div>
+        <span class="mcp-demo__eyebrow">Model Context Protocol</span>
+        <h1>FinTreX MCP Lab</h1>
+        <p>
+          AI service starts a FinTreX MCP server, discovers its tools, reads a resource,
+          calls portfolio analysis tools, and shows the returned results.
+        </p>
+      </div>
+
+      <div class="mcp-demo__actions">
+        <button type="button" class="mcp-demo__run" (click)="runDemo()" [disabled]="isLoading()">
+          <i class="fa-solid" [class.fa-circle-notch]="isLoading()" [class.fa-spin]="isLoading()" [class.fa-play]="!isLoading()"></i>
+          <span>{{ isLoading() ? 'Running MCP' : 'Run Demo' }}</span>
+        </button>
+        <a routerLink="/" class="mcp-demo__link">Home</a>
+      </div>
+    </header>
+
+    <main class="mcp-demo__grid">
+      <section class="mcp-demo__panel mcp-demo__panel--controls">
+        <div class="mcp-demo__panel-header">
+          <span>Input Context</span>
+          <strong>{{ formatTry(totalTry()) }}</strong>
+        </div>
+
+        <div class="mcp-demo__fields">
+          <label>
+            <span>Cash</span>
+            <input type="number" min="0" [value]="portfolio().cashTry" (input)="updatePortfolio('cashTry', $event)" />
+          </label>
+          <label>
+            <span>Stocks</span>
+            <input type="number" min="0" [value]="portfolio().stockTry" (input)="updatePortfolio('stockTry', $event)" />
+          </label>
+          <label>
+            <span>Crypto</span>
+            <input type="number" min="0" [value]="portfolio().cryptoTry" (input)="updatePortfolio('cryptoTry', $event)" />
+          </label>
+          <label>
+            <span>Gold</span>
+            <input type="number" min="0" [value]="portfolio().goldTry" (input)="updatePortfolio('goldTry', $event)" />
+          </label>
+        </div>
+      </section>
+
+      <section class="mcp-demo__panel mcp-demo__panel--wide">
+        <div class="mcp-demo__panel-header">
+          <span>MCP Process</span>
+          @if (result(); as demo) {
+            <strong>{{ demo.transport }} / {{ demo.elapsed_ms }} ms</strong>
+          }
+        </div>
+
+        @if (errorMessage(); as message) {
+          <div class="mcp-demo__error">{{ message }}</div>
+        }
+
+        @if (result(); as demo) {
+          <div class="mcp-demo__server">
+            <span>{{ demo.server.name }}</span>
+            <strong>Protocol {{ demo.server.protocol_version }}</strong>
+          </div>
+
+          <ol class="mcp-demo__timeline">
+            @for (step of demo.process; track step.stage) {
+              <li>
+                <span class="mcp-demo__step-index">{{ $index + 1 }}</span>
+                <div>
+                  <h2>{{ step.title }}</h2>
+                  <p>{{ step.detail }}</p>
+                  <pre>{{ formatJson(step.result) }}</pre>
+                </div>
+              </li>
+            }
+          </ol>
+        } @else {
+          <div class="mcp-demo__empty">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <span>Preparing MCP session...</span>
+          </div>
+        }
+      </section>
+
+      @if (result(); as demo) {
+        <section class="mcp-demo__panel">
+          <div class="mcp-demo__panel-header">
+            <span>Discovered Tools</span>
+            <strong>{{ demo.tools.length }}</strong>
+          </div>
+
+          <div class="mcp-demo__tools">
+            @for (tool of demo.tools; track tool.name) {
+              <article>
+                <h2>{{ tool.title || tool.name }}</h2>
+                <p>{{ tool.description }}</p>
+                <code>{{ tool.name }}</code>
+              </article>
+            }
+          </div>
+        </section>
+
+        <section class="mcp-demo__panel">
+          <div class="mcp-demo__panel-header">
+            <span>Resource</span>
+            <strong>{{ demo.resources.length }}</strong>
+          </div>
+
+          @for (resource of demo.resources; track resource.uri) {
+            <div class="mcp-demo__resource">
+              <span>{{ resource.name }}</span>
+              <code>{{ resource.uri }}</code>
+            </div>
+          }
+          <pre>{{ formatJson(demo.resource_preview) }}</pre>
+        </section>
+
+        <section class="mcp-demo__panel mcp-demo__panel--wide">
+          <div class="mcp-demo__panel-header">
+            <span>Tool Results</span>
+            <strong>{{ demo.status }}</strong>
+          </div>
+
+          <div class="mcp-demo__calls">
+            @for (call of demo.calls; track call.tool) {
+              <article>
+                <div>
+                  <h2>{{ call.tool }}</h2>
+                  <small>Arguments</small>
+                  <pre>{{ formatJson(call.arguments) }}</pre>
+                </div>
+                <div>
+                  <small>Result</small>
+                  <pre>{{ formatJson(call.result) }}</pre>
+                </div>
+              </article>
+            }
+          </div>
+
+          <p class="mcp-demo__summary">{{ demo.final_summary }}</p>
+        </section>
+      }
+    </main>
+  </div>
+</section>
+

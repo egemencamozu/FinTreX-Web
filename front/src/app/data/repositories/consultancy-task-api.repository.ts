@@ -5,7 +5,7 @@ import {
   ConsultancyTaskRepository,
   CreateConsultancyTaskRequest,
 } from '../../core/interfaces/consultancy-task.repository';
-import { ConsultancyTask } from '../../core/models/task.model';
+import { ConsultancyTask, RateTaskRequest } from '../../core/models/task.model';
 import { EnvironmentConfigService } from '../../core/services/environment-config.service';
 
 @Injectable({
@@ -41,5 +41,13 @@ export class ConsultancyTaskApiRepository extends ConsultancyTaskRepository {
 
   generateAnalysis(taskId: number): Observable<ConsultancyTask> {
     return this.http.post<ConsultancyTask>(`${this.baseUrl}/${taskId}/generate-analysis`, {});
+  }
+
+  submitReport(taskId: number, report: string): Observable<ConsultancyTask> {
+    return this.http.post<ConsultancyTask>(`${this.baseUrl}/${taskId}/report`, { report });
+  }
+
+  rateTask(taskId: number, request: RateTaskRequest): Observable<ConsultancyTask> {
+    return this.http.post<ConsultancyTask>(`${this.baseUrl}/${taskId}/rate`, request);
   }
 }

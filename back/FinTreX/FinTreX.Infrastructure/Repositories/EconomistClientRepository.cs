@@ -34,6 +34,12 @@ namespace FinTreX.Infrastructure.Repositories
                 .AnyAsync(x => x.EconomistId == economistId && x.ClientId == clientId && x.IsActive);
         }
 
+        public async Task<EconomistClient?> GetAssignmentAsync(string economistId, string clientId)
+        {
+            return await _dbContext.EconomistClients
+                .FirstOrDefaultAsync(x => x.EconomistId == economistId && x.ClientId == clientId);
+        }
+
         public async Task<int> GetActiveEconomistCountAsync(string clientId)
         {
             return await _dbContext.EconomistClients

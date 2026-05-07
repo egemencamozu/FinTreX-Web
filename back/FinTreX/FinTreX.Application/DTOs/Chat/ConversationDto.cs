@@ -19,6 +19,9 @@ namespace FinTreX.Core.DTOs.Chat
 
         /// <summary>Unread message count for the requesting user.</summary>
         public int UnreadCount { get; set; }
+        
+        /// <summary>Whether the conversation is read-only (no active assignment).</summary>
+        public bool IsReadOnly { get; set; }
     }
 
     public class ConversationParticipantDto

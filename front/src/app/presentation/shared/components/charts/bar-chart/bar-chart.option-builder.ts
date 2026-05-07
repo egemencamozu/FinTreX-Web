@@ -242,7 +242,7 @@ export function buildBarChartOption(
           axisPointer: buildAxisPointer(opts, gridColor),
           borderColor: 'transparent',
           padding: TOOLTIP_PADDING_PX,
-          extraCssText: 'box-shadow: 0 4px 16px rgba(0,0,0,.12); border-radius: 8px;',
+          extraCssText: 'box-shadow: var(--shadow-lg); border-radius: 8px;',
           ...(opts.tooltipFormatter ? { formatter: opts.tooltipFormatter } : {}),
         }
       : { show: false },

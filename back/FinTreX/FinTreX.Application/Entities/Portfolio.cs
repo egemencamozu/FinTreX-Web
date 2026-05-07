@@ -30,9 +30,17 @@ namespace FinTreX.Core.Entities
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAtUtc { get; set; }
 
+        /// <summary>
+        /// When true, economists assigned to this user cannot view this portfolio.
+        /// Only the owner can toggle this setting.
+        /// </summary>
+        public bool IsHiddenFromEconomists { get; set; } = false;
+
         // ── Navigation Properties ────────────────────────────────────────────
         public Portfolio ParentPortfolio { get; set; }
         public ICollection<Portfolio> SubPortfolios { get; set; } = new List<Portfolio>();
         public ICollection<PortfolioAsset> Assets { get; set; } = new List<PortfolioAsset>();
+        public ICollection<PortfolioValueSnapshot> ValueSnapshots { get; set; } = new List<PortfolioValueSnapshot>();
+        public ICollection<PortfolioTransaction> Transactions { get; set; } = new List<PortfolioTransaction>();
     }
 }

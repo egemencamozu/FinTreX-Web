@@ -106,10 +106,16 @@ namespace FinTreX.Core.Services
             if (sub == null) return false;
 
             // If this user has a live Stripe subscription, delegate to Stripe.
-            // DB will be updated via the customer.subscription.updated webhook.
+            // Also update the local DB immediately so the frontend sees the change
+            // without waiting for the webhook (which may be delayed).
             if (!string.IsNullOrEmpty(sub.StripeSubscriptionId))
             {
                 await _stripePaymentService.CancelStripeSubscriptionAsync(atPeriodEnd: true);
+
+                // Optimistic local update — webhook will confirm later.
+                sub.CancelAtPeriodEnd = true;
+                await _subRepository.UpdateAsync(sub);
+
                 return true;
             }
 
@@ -129,6 +135,8 @@ namespace FinTreX.Core.Services
             plan.Description = dto.Description;
             plan.MonthlyPriceTRY = dto.MonthlyPriceTRY;
             plan.YearlyPriceTRY = dto.YearlyPriceTRY;
+            plan.MaxPortfolios = dto.MaxPortfolios;
+            plan.MaxDailyChatMessages = dto.MaxDailyChatMessages;
             plan.MaxEconomists = dto.MaxEconomists;
             plan.CanChangeEconomist = dto.CanChangeEconomist;
             plan.HasPrioritySupport = dto.HasPrioritySupport;
@@ -182,6 +190,8 @@ namespace FinTreX.Core.Services
                 Description = p.Description,
                 MonthlyPriceTRY = p.MonthlyPriceTRY,
                 YearlyPriceTRY = p.YearlyPriceTRY,
+                MaxPortfolios = p.MaxPortfolios,
+                MaxDailyChatMessages = p.MaxDailyChatMessages,
                 MaxEconomists = p.MaxEconomists,
                 CanChangeEconomist = p.CanChangeEconomist,
                 HasPrioritySupport = p.HasPrioritySupport,

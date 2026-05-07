@@ -33,6 +33,7 @@ export class KpiCardComponent {
   @Input() hasIcon = false;
   @Input() loading = false;
   @Input() clickable = false;
+  @Input() compact = false;
   @Input() tooltip: KpiTooltipConfig | null = null;
 
   @Output() cardClick = new EventEmitter<void>();

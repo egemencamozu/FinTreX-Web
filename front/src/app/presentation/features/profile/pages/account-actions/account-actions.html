@@ -1,0 +1,98 @@
+<div class="account-actions">
+  <h2 class="account-actions__title">Hesap İşlemleri</h2>
+
+  <div class="account-actions__card danger-zone">
+    <h3 class="danger-zone__heading">Hesabı Kalıcı Olarak Sil</h3>
+    <p class="danger-zone__description">
+      Bu işlem geri alınamaz. Tüm portföy verileriniz, abonelikleriniz ve kişisel bilgileriniz
+      kalıcı olarak silinecektir.
+    </p>
+
+    <!-- Error / Success messages -->
+    @if (errorMessage) {
+      <div class="alert alert--error">{{ errorMessage }}</div>
+    }
+
+    <!-- Step 1: Password -->
+    @if (step === 'password') {
+      <form [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()" class="account-actions__form">
+        <div class="form-group">
+          <label for="password" class="form-label">Mevcut Şifreniz</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="form-input"
+            [class.form-input--error]="isFieldInvalid(passwordForm, 'password')"
+            placeholder="Şifrenizi girin"
+          />
+          @if (isFieldInvalid(passwordForm, 'password')) {
+            <span class="form-error">Şifre en az 6 karakter olmalıdır.</span>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn--danger"
+          [disabled]="isSubmitting"
+        >
+          {{ isSubmitting ? 'Gönderiliyor...' : 'Doğrulama Kodu Gönder' }}
+        </button>
+      </form>
+    }
+
+    <!-- Step 2: OTP Code -->
+    @if (step === 'code') {
+      <p class="account-actions__info">
+        E-posta adresinize 6 haneli bir doğrulama kodu gönderildi. Lütfen aşağıya girin.
+      </p>
+      <form [formGroup]="codeForm" (ngSubmit)="onCodeSubmit()" class="account-actions__form">
+        <div class="form-group">
+          <label for="verificationCode" class="form-label">Doğrulama Kodu</label>
+          <input
+            id="verificationCode"
+            type="text"
+            formControlName="verificationCode"
+            class="form-input form-input--code"
+            [class.form-input--error]="isFieldInvalid(codeForm, 'verificationCode')"
+            placeholder="000000"
+            maxlength="6"
+          />
+          @if (isFieldInvalid(codeForm, 'verificationCode')) {
+            <span class="form-error">6 haneli rakam girmelisiniz.</span>
+          }
+        </div>
+
+        <button type="submit" class="btn btn--danger">Devam Et</button>
+      </form>
+    }
+
+    <!-- Step 3: Final Confirmation -->
+    @if (step === 'confirm') {
+      <div class="account-actions__confirm">
+        <p class="account-actions__confirm-text">
+          <strong>Bu işlemi onaylıyor musunuz?</strong><br />
+          Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.
+        </p>
+        <div class="account-actions__confirm-actions">
+          <button
+            type="button"
+            class="btn btn--danger"
+            (click)="onConfirmDelete()"
+            [disabled]="isSubmitting"
+          >
+            {{ isSubmitting ? 'Siliniyor...' : 'Evet, Hesabımı Sil' }}
+          </button>
+          <button
+            type="button"
+            class="btn btn--secondary"
+            (click)="onCancelConfirm()"
+            [disabled]="isSubmitting"
+          >
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

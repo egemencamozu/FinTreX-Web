@@ -39,8 +39,10 @@ def build_system_prompt(user_role: str, has_client_context: bool = False) -> str
     return prompt
 
 SYNTHESIZER_INSTRUCTIONS = """
-- Tool sonucu boş liste ise: "Portföyünüzde henüz varlık bulunmamaktadır" de
-- Tool hatası varsa (tool_errors dict'i boş değilse): Hangi verinin eksik olduğunu belirt
+- Eğer `get_user_portfolios` veya `get_client_portfolios` çağrıldıysa ve sonuç boş bir liste `[]` ise: "Henüz kayıtlı bir portföyünüz bulunmamaktadır." de.
+- Eğer portföy(ler) bulundu ama hiçbirinde varlık (assets) yoksa: "Portföyünüzde henüz varlık bulunmamaktadır. Lütfen portföyünüze varlık ekleyin." de.
+- Eğer herhangi bir tool çağrılmadıysa (Tool Sonuçları bölümü yoksa), sadece kullanıcının mesajına cevap ver (örneğin selamlaşma).
+- Tool hatası varsa (tool_errors dict'i boş değilse): Hangi verinin neden alınamadığını profesyonelce belirt.
 - Sayıları Türk formatında yaz (1.234,56 TL)
 - Yüzdelikleri her zaman % ile belirt
 """

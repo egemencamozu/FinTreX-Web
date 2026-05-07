@@ -5,6 +5,7 @@ export interface Portfolio {
   name: string;
   description?: string;
   parentPortfolioId?: number;
+  isHiddenFromEconomists: boolean;
   assets: PortfolioAsset[];
   subPortfolios: Portfolio[];
   totalValue: number;

@@ -171,15 +171,6 @@ namespace FinTreX.Infrastructure.Services.MarketData.WebSocket
                 _bistIndexHandler.HandleYahoo(data);
             }
 
-            Logger.LogDebug(
-                "{ServiceName}: route={Route} ticker={Ticker} price={Price} change={Change} pct={ChangePercent}",
-                ServiceName,
-                route,
-                data.Id,
-                data.Price,
-                data.Change,
-                data.ChangePercent);
-
             return Task.CompletedTask;
         }
 

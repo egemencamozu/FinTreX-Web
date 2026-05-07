@@ -25,6 +25,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,9 +62,18 @@ namespace FinTreX.Infrastructure
             services.AddScoped<IConsultancyTaskRepository, ConsultancyTaskRepository>();
             services.AddScoped<IEconomistClientRepository, EconomistClientRepository>();
             services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
+            services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
             services.AddScoped<IPreAnalysisReportRepository, PreAnalysisReportRepository>();
             services.AddScoped<IChatRepository, ChatRepository>();
             services.AddScoped<IAiConversationRepository, AiConversationRepository>();
+            services.AddScoped<ISupportTicketRepository, SupportTicketRepository>();
+            services.AddScoped<ISupportTicketMessageRepository, SupportTicketMessageRepository>();
+            services.AddScoped<IPortfolioValueSnapshotRepository, PortfolioValueSnapshotRepository>();
+            services.AddScoped<IPortfolioTransactionRepository, PortfolioTransactionRepository>();
+            services.AddScoped<IWatchlistRepository, WatchlistRepository>();
+            services.AddScoped<IWatchlistItemRepository, WatchlistItemRepository>();
+            services.AddScoped<IPriceAlertRepository, PriceAlertRepository>();
+            services.AddScoped<IEconomistApplicationRepository, EconomistApplicationRepository>();
             #endregion
 
             #region Services
@@ -72,7 +82,14 @@ namespace FinTreX.Infrastructure
             services.AddTransient<IEmailService, SmtpEmailService>();
             services.AddTransient<IMailKitEmailService, MailKitEmailService>();
             services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+            // PaymentHistoryService is registered both as interface and as concrete type
+            // because StripePaymentService depends on it directly to reuse the webhook
+            // upsert logic (internal helper).
+            services.AddScoped<PaymentHistoryService>();
+            services.AddScoped<IPaymentHistoryService>(sp => sp.GetRequiredService<PaymentHistoryService>());
             services.AddScoped<IStripePaymentService, StripePaymentService>();
+            services.AddScoped<IAdminRevenueDashboardService, AdminRevenueDashboardService>();
+            services.AddScoped<IFileStorageService, LocalFileStorageService>();
             #endregion
 
             #region PAA — Python CrewAI microservice client
@@ -139,11 +156,39 @@ namespace FinTreX.Infrastructure
                             var path = context.HttpContext.Request.Path;
                             if (!string.IsNullOrEmpty(accessToken) &&
                                 (path.StartsWithSegments("/hubs/market") ||
-                                 path.StartsWithSegments("/hubs/chat")))
+                                 path.StartsWithSegments("/hubs/chat") ||
+                                 path.StartsWithSegments("/hubs/alerts")))
                             {
                                 context.Token = accessToken;
                             }
                             return Task.CompletedTask;
+                        },
+                        OnTokenValidated = async context =>
+                        {
+                            var userId = context.Principal?.FindFirst("uid")?.Value;
+                            if (string.IsNullOrWhiteSpace(userId))
+                            {
+                                context.Fail("Token does not contain a valid user id.");
+                                return;
+                            }
+
+                            var dbContext = context.HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
+                            var user = await dbContext.Users
+                                .AsNoTracking()
+                                .Where(u => u.Id == userId)
+                                .Select(u => new { u.LockoutEnd })
+                                .SingleOrDefaultAsync();
+
+                            if (user == null)
+                            {
+                                context.Fail("User account no longer exists.");
+                                return;
+                            }
+
+                            if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow)
+                            {
+                                context.Fail("User account is deactivated.");
+                            }
                         },
                         OnAuthenticationFailed = c =>
                         {
@@ -204,6 +249,8 @@ namespace FinTreX.Infrastructure
             services.AddHostedService<BinanceWebSocketService>();
             services.AddHostedService(sp => sp.GetRequiredService<CryptoEnrichmentService>());
             services.AddHostedService<DailySnapshotService>();
+            services.AddHostedService<PortfolioValueSnapshotService>();
+            services.AddHostedService<AlertEvaluationService>();
 
             return services;
         }

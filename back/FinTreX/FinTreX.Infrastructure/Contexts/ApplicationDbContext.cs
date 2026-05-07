@@ -1,9 +1,12 @@
+using System;
+using System.Linq;
 using FinTreX.Infrastructure.Models;
 using FinTreX.Core.Entities;
 using FinTreX.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinTreX.Infrastructure.Contexts
 {
@@ -12,10 +15,12 @@ namespace FinTreX.Infrastructure.Contexts
         // ── Domain DbSets ────────────────────────────────────────────────────
         public DbSet<Portfolio> Portfolios { get; set; }
         public DbSet<PortfolioAsset> PortfolioAssets { get; set; }
+        public DbSet<PortfolioValueSnapshot> PortfolioValueSnapshots { get; set; }
         public DbSet<DailyClose> DailyCloses { get; set; }
         public DbSet<CryptoEnrichmentSnapshot> CryptoEnrichmentSnapshots { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
+        public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
         public DbSet<EconomistClient> EconomistClients { get; set; }
         public DbSet<ConsultancyTask> ConsultancyTasks { get; set; }
         public DbSet<PreAnalysisReport> PreAnalysisReports { get; set; }
@@ -25,6 +30,14 @@ namespace FinTreX.Infrastructure.Contexts
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<AiConversation> AiConversations { get; set; }
         public DbSet<AiChatMessage> AiChatMessages { get; set; }
+        public DbSet<SupportTicket> SupportTickets { get; set; }
+        public DbSet<SupportTicketMessage> SupportTicketMessages { get; set; }
+        public DbSet<PortfolioTransaction> PortfolioTransactions { get; set; }
+        public DbSet<Watchlist> Watchlists { get; set; }
+        public DbSet<WatchlistItem> WatchlistItems { get; set; }
+        public DbSet<PriceAlert> PriceAlerts { get; set; }
+        public DbSet<EconomistApplication> EconomistApplications { get; set; }
+        public DbSet<EconomistApplicationLink> EconomistApplicationLinks { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -82,6 +95,8 @@ namespace FinTreX.Infrastructure.Contexts
                 entity.Property(t => t.CreatedByIp).IsRequired(false);
                 entity.Property(t => t.RevokedByIp).IsRequired(false);
                 entity.Property(t => t.ReplacedByToken).IsRequired(false);
+                entity.Property(t => t.UserAgent).HasMaxLength(512);
+                entity.Property(t => t.DeviceName).HasMaxLength(128);
                 entity.HasIndex(t => t.Token).IsUnique();
             });
 
@@ -141,6 +156,25 @@ namespace FinTreX.Infrastructure.Contexts
                 // Unique: same symbol+type can't appear twice in the same portfolio
                 entity.HasIndex(x => new { x.PortfolioId, x.Symbol, x.AssetType })
                     .IsUnique();
+            });
+
+            // ── PortfolioValueSnapshot ──────────────────────────────────────
+            builder.Entity<PortfolioValueSnapshot>(entity =>
+            {
+                entity.ToTable("PortfolioValueSnapshots");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.CapturedAtUtc).IsRequired();
+                entity.Property(x => x.TotalValueTry).HasPrecision(24, 8);
+                entity.Property(x => x.TotalValueUsd).HasPrecision(24, 8);
+                entity.Property(x => x.UsdTryRate).HasPrecision(18, 6);
+
+                entity.HasOne(x => x.Portfolio)
+                    .WithMany(p => p.ValueSnapshots)
+                    .HasForeignKey(x => x.PortfolioId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(x => new { x.PortfolioId, x.CapturedAtUtc });
             });
 
             // CryptoEnrichmentSnapshot
@@ -232,6 +266,60 @@ namespace FinTreX.Infrastructure.Contexts
                 entity.HasIndex(x => x.ApplicationUserId).IsUnique();
             });
 
+            // ── PaymentTransaction ───────────────────────────────────────────
+            builder.Entity<PaymentTransaction>(entity =>
+            {
+                entity.ToTable("PaymentTransactions");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ApplicationUserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.StripeInvoiceId).IsRequired().HasMaxLength(100);
+                entity.Property(x => x.StripeChargeId).HasMaxLength(100);
+                entity.Property(x => x.StripePaymentIntentId).HasMaxLength(100);
+                entity.Property(x => x.StripeSubscriptionId).HasMaxLength(100);
+                entity.Property(x => x.StripeCustomerId).HasMaxLength(100);
+                entity.Property(x => x.InvoiceNumber).HasMaxLength(50);
+
+                entity.Property(x => x.Currency).IsRequired().HasMaxLength(8);
+                entity.Property(x => x.BillingPeriod).HasMaxLength(10);
+
+                entity.Property(x => x.Status)
+                    .HasConversion<string>()
+                    .HasMaxLength(25);
+
+                entity.Property(x => x.CardBrand).HasMaxLength(20);
+                entity.Property(x => x.CardLast4).HasMaxLength(4);
+                entity.Property(x => x.CardCountry).HasMaxLength(4);
+                entity.Property(x => x.CardFunding).HasMaxLength(20);
+
+                entity.Property(x => x.HostedInvoiceUrl).HasMaxLength(1000);
+                entity.Property(x => x.ReceiptUrl).HasMaxLength(1000);
+
+                entity.Property(x => x.FailureCode).HasMaxLength(100);
+                entity.Property(x => x.FailureMessage).HasMaxLength(1000);
+
+                // FK → User (payer)
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // FK → SubscriptionPlan (nullable — plan may be deleted later)
+                entity.HasOne(x => x.SubscriptionPlan)
+                    .WithMany()
+                    .HasForeignKey(x => x.SubscriptionPlanId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                // Unique — idempotency key for webhook retries and backfill re-runs
+                entity.HasIndex(x => x.StripeInvoiceId).IsUnique();
+
+                // Fast lookup: "my payments" sorted by date
+                entity.HasIndex(x => new { x.ApplicationUserId, x.PaidAtUtc });
+
+                // Admin listing sorted by date
+                entity.HasIndex(x => x.PaidAtUtc);
+            });
+
             // ── EconomistClient ──────────────────────────────────────────────
             builder.Entity<EconomistClient>(entity =>
             {
@@ -293,6 +381,9 @@ namespace FinTreX.Infrastructure.Contexts
                     .WithMany()
                     .HasForeignKey(x => x.EconomistId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(x => x.EconomistReport).HasMaxLength(8000);
+                entity.Property(x => x.RatingFeedback).HasMaxLength(1000);
 
                 // Index for query optimization
                 entity.HasIndex(x => x.UserId);
@@ -409,6 +500,117 @@ namespace FinTreX.Infrastructure.Contexts
                 entity.HasIndex(x => x.SenderId);
             });
 
+            // ── PortfolioTransaction ─────────────────────────────────────────
+            builder.Entity<PortfolioTransaction>(entity =>
+            {
+                entity.ToTable("PortfolioTransactions");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Symbol).IsRequired().HasMaxLength(20);
+                entity.Property(x => x.AssetName).IsRequired().HasMaxLength(100);
+                entity.Property(x => x.Currency).IsRequired().HasMaxLength(8);
+                entity.Property(x => x.Notes).HasMaxLength(500);
+                entity.Property(x => x.Quantity).HasPrecision(18, 6);
+                entity.Property(x => x.Price).HasPrecision(18, 6);
+                entity.Property(x => x.Fees).HasPrecision(18, 6);
+
+                entity.Property(x => x.AssetType)
+                    .HasConversion<string>()
+                    .HasMaxLength(40);
+
+                entity.Property(x => x.Type)
+                    .HasConversion<string>()
+                    .HasMaxLength(10);
+
+                entity.HasOne(x => x.Portfolio)
+                    .WithMany(p => p.Transactions)
+                    .HasForeignKey(x => x.PortfolioId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(x => x.PortfolioId);
+            });
+
+            // ── Watchlist ────────────────────────────────────────────────────
+            builder.Entity<Watchlist>(entity =>
+            {
+                entity.ToTable("Watchlists");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ApplicationUserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Name).IsRequired().HasMaxLength(60);
+                entity.Property(x => x.Color).HasMaxLength(16);
+
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Aynı kullanıcıda aynı isimde iki liste olmasın
+                entity.HasIndex(x => new { x.ApplicationUserId, x.Name }).IsUnique();
+            });
+
+            // ── WatchlistItem ────────────────────────────────────────────────
+            builder.Entity<WatchlistItem>(entity =>
+            {
+                entity.ToTable("WatchlistItems");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Symbol).IsRequired().HasMaxLength(24);
+                entity.Property(x => x.AssetName).HasMaxLength(120);
+                entity.Property(x => x.Note).HasMaxLength(500);
+
+                entity.Property(x => x.AssetType)
+                    .HasConversion<string>()
+                    .HasMaxLength(40);
+
+                entity.HasOne(x => x.Watchlist)
+                    .WithMany(w => w.Items)
+                    .HasForeignKey(x => x.WatchlistId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(x => new { x.WatchlistId, x.Symbol }).IsUnique();
+            });
+
+            // ── PriceAlert ───────────────────────────────────────────────────
+            builder.Entity<PriceAlert>(entity =>
+            {
+                entity.ToTable("PriceAlerts");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ApplicationUserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Symbol).IsRequired().HasMaxLength(24);
+                entity.Property(x => x.AssetName).HasMaxLength(120);
+                entity.Property(x => x.Currency).IsRequired().HasMaxLength(8);
+                entity.Property(x => x.Note).HasMaxLength(500);
+
+                entity.Property(x => x.TargetValue).HasPrecision(24, 8);
+                entity.Property(x => x.BaselinePrice).HasPrecision(24, 8);
+                entity.Property(x => x.TriggeredPrice).HasPrecision(24, 8);
+
+                entity.Property(x => x.AssetType).HasConversion<string>().HasMaxLength(40);
+                entity.Property(x => x.Kind).HasConversion<string>().HasMaxLength(20);
+                entity.Property(x => x.Direction).HasConversion<string>().HasMaxLength(10);
+                entity.Property(x => x.Repeat).HasConversion<string>().HasMaxLength(20);
+                entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+                // AlertChannel is [Flags] — store as int for bitwise eval
+                entity.Property(x => x.Channels).HasConversion<int>();
+
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Watchlist)
+                    .WithMany()
+                    .HasForeignKey(x => x.WatchlistId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                // Background evaluator için hızlı taramalar
+                entity.HasIndex(x => new { x.Status, x.AssetType });
+                entity.HasIndex(x => new { x.ApplicationUserId, x.Status });
+                entity.HasIndex(x => x.Symbol);
+            });
+
             // ── Seed: Subscription Plans ─────────────────────────────────────
             builder.Entity<SubscriptionPlan>().HasData(
                 new SubscriptionPlan
@@ -416,9 +618,11 @@ namespace FinTreX.Infrastructure.Contexts
                     Id = 1,
                     Tier = SubscriptionTier.Default,
                     DisplayName = "Ücretsiz",
-                    Description = "Temel erişim — 1 ekonomist ataması, değiştirilemez.",
+                    Description = "Temel erişim — 1 portfolyo, 1 ekonomist ataması, değiştirilemez.",
                     MonthlyPriceTRY = 0m,
                     YearlyPriceTRY = 0m,
+                    MaxPortfolios = 1,
+                    MaxDailyChatMessages = 10,
                     MaxEconomists = 1,
                     CanChangeEconomist = false,
                     HasPrioritySupport = false,
@@ -429,10 +633,12 @@ namespace FinTreX.Infrastructure.Contexts
                     Id = 2,
                     Tier = SubscriptionTier.Premium,
                     DisplayName = "Premium",
-                    Description = "Gelişmiş erişim — 3 ekonomist, değiştirilebilir, genişletilmiş analiz.",
+                    Description = "Gelişmiş erişim — 5 portfolyo, 2 ekonomist, değiştirilebilir.",
                     MonthlyPriceTRY = 299m,
                     YearlyPriceTRY = 2870m,
-                    MaxEconomists = 3,
+                    MaxPortfolios = 5,
+                    MaxDailyChatMessages = 50,
+                    MaxEconomists = 2,
                     CanChangeEconomist = true,
                     HasPrioritySupport = false,
                     IsActive = true
@@ -442,9 +648,11 @@ namespace FinTreX.Infrastructure.Contexts
                     Id = 3,
                     Tier = SubscriptionTier.Ultra,
                     DisplayName = "Ultra",
-                    Description = "Sınırsız erişim — sınırsız ekonomist, öncelikli destek, tam analiz.",
+                    Description = "Sınırsız erişim — sınırsız portfolyo, ekonomist, öncelikli destek.",
                     MonthlyPriceTRY = 799m,
                     YearlyPriceTRY = 7670m,
+                    MaxPortfolios = 999,
+                    MaxDailyChatMessages = 999,
                     MaxEconomists = 999,
                     CanChangeEconomist = true,
                     HasPrioritySupport = true,
@@ -488,7 +696,145 @@ namespace FinTreX.Infrastructure.Contexts
                  .HasDatabaseName("IX_AiChatMessages_Conv_SentAt");
             });
 
+            // ── SupportTicket ────────────────────────────────────────────────
+            builder.Entity<SupportTicket>(entity =>
+            {
+                entity.ToTable("SupportTickets");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.UserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Subject).IsRequired().HasMaxLength(200);
+                entity.Property(x => x.HandledByAdminId).HasMaxLength(450);
+
+                entity.Property(x => x.Type)
+                    .HasConversion<string>()
+                    .HasMaxLength(20);
+
+                entity.Property(x => x.Status)
+                    .HasConversion<string>()
+                    .HasMaxLength(20);
+
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(x => x.UserId);
+                entity.HasIndex(x => x.Status);
+                entity.HasIndex(x => x.CreatedAtUtc);
+            });
+
+            // ── SupportTicketMessage ─────────────────────────────────────────
+            builder.Entity<SupportTicketMessage>(entity =>
+            {
+                entity.ToTable("SupportTicketMessages");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.SenderId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.SenderRole).IsRequired().HasMaxLength(10);
+                entity.Property(x => x.SenderName).HasMaxLength(200);
+                entity.Property(x => x.Body).IsRequired().HasMaxLength(4000);
+
+                entity.HasOne(x => x.SupportTicket)
+                    .WithMany()
+                    .HasForeignKey(x => x.SupportTicketId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(x => x.SupportTicketId);
+                entity.HasIndex(x => x.SentAtUtc);
+            });
+
+            // ── EconomistApplication ─────────────────────────────────────────
+            builder.Entity<EconomistApplication>(entity =>
+            {
+                entity.ToTable("EconomistApplications");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ApplicantUserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.FullName).IsRequired().HasMaxLength(200);
+                entity.Property(x => x.Phone).HasMaxLength(30);
+                entity.Property(x => x.Biography).HasMaxLength(2000);
+                entity.Property(x => x.Education).HasMaxLength(500);
+                entity.Property(x => x.CurrentTitle).HasMaxLength(200);
+                entity.Property(x => x.Institution).HasMaxLength(200);
+                entity.Property(x => x.AdminDecisionNote).HasMaxLength(2000);
+                entity.Property(x => x.ReviewedByAdminId).HasMaxLength(450);
+
+                entity.Property(x => x.Status)
+                    .HasConversion<string>()
+                    .HasMaxLength(20);
+
+                entity.Property(x => x.ExpertiseAreas)
+                    .HasConversion(
+                        v => System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions)null),
+                        v => string.IsNullOrWhiteSpace(v) ? new System.Collections.Generic.List<FinTreX.Core.Enums.ExpertiseArea>() : System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<FinTreX.Core.Enums.ExpertiseArea>>(v, (System.Text.Json.JsonSerializerOptions)null))
+                    .HasColumnType("text")
+                    .Metadata.SetValueComparer(new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<System.Collections.Generic.List<FinTreX.Core.Enums.ExpertiseArea>>(
+                        (c1, c2) => System.Linq.Enumerable.SequenceEqual(c1, c2),
+                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                        c => c.ToList()));
+
+                entity.Property(x => x.LicensesAndCertificates)
+                    .HasConversion(
+                        v => System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions)null),
+                        v => string.IsNullOrWhiteSpace(v) ? new System.Collections.Generic.List<string>() : System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<string>>(v, (System.Text.Json.JsonSerializerOptions)null))
+                    .HasColumnType("text")
+                    .Metadata.SetValueComparer(new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<System.Collections.Generic.List<string>>(
+                        (c1, c2) => System.Linq.Enumerable.SequenceEqual(c1, c2),
+                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v == null ? 0 : v.GetHashCode())),
+                        c => c.ToList()));
+
+                entity.HasOne<ApplicationUser>()
+                    .WithMany()
+                    .HasForeignKey(x => x.ApplicantUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(x => x.ApplicantUserId);
+                entity.HasIndex(x => x.Status);
+                entity.HasIndex(x => x.SubmittedAtUtc);
+            });
+
+            builder.Entity<EconomistApplicationLink>(entity =>
+            {
+                entity.ToTable("EconomistApplicationLinks");
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Platform).IsRequired().HasMaxLength(50);
+                entity.Property(x => x.Url).IsRequired().HasMaxLength(500);
+
+                entity.HasOne(x => x.EconomistApplication)
+                    .WithMany(a => a.Links)
+                    .HasForeignKey(x => x.EconomistApplicationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             base.OnModelCreating(builder);
+
+            // Global DateTime to UTC conversion for PostgreSQL
+            var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+                v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v.ToUniversalTime(),
+                v => v);
+
+            var nullableDateTimeConverter = new ValueConverter<DateTime?, DateTime?>(
+                v => v.HasValue ? (v.Value.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v.Value.ToUniversalTime()) : null,
+                v => v);
+
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                if (entityType.IsKeyless) continue;
+
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTime))
+                    {
+                        property.SetValueConverter(dateTimeConverter);
+                    }
+                    else if (property.ClrType == typeof(DateTime?))
+                    {
+                        property.SetValueConverter(nullableDateTimeConverter);
+                    }
+                }
+            }
         }
     }
 }

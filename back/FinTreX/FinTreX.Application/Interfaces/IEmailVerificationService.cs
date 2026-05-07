@@ -24,5 +24,11 @@ namespace FinTreX.Core.Interfaces
         /// Resend a fresh OTP. Enforces a 60-second cooldown between sends.
         /// </summary>
         Task ResendAsync(string email);
+
+        /// <summary>Generate and send a 6-digit OTP specifically for account deletion.</summary>
+        Task GenerateAndSendDeletionCodeAsync(string applicationUserId, string email);
+
+        /// <summary>Verify the deletion OTP. Throws on invalid/expired/over-attempted codes.</summary>
+        Task VerifyDeletionCodeAsync(string applicationUserId, string code);
     }
 }

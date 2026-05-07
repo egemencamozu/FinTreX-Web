@@ -1,0 +1,71 @@
+<section class="billing-page-c">
+  <div class="billing-page-c__wrapper">
+    <div class="billing-page-c__container">
+      <div class="billing-page-c__shell">
+
+        <section class="billing-page-c__hero-panel">
+          <div class="billing-page-c__hero">
+            <h1 class="billing-page-c__title">
+              <i class="fa-solid fa-receipt"></i> Ödeme Geçmişi
+            </h1>
+            <p class="billing-page-c__subtitle">
+              Abonelik ödemelerinizi, kullanılan kartı ve fatura makbuzlarını buradan görüntüleyebilirsiniz.
+            </p>
+          </div>
+          <div class="billing-page-c__actions">
+            <button
+              class="billing-page-c__portal-btn"
+              (click)="openPaymentPortal()"
+              [disabled]="isPortalLoading()"
+            >
+              <i class="fa-solid fa-credit-card"></i>
+              {{ isPortalLoading() ? 'Yükleniyor...' : 'Ödeme Yöntemini Güncelle' }}
+            </button>
+          </div>
+        </section>
+
+        <section class="billing-page-c__content-panel">
+
+          @if (isLoading()) {
+            <div class="billing-page-c__state">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Ödeme geçmişi yükleniyor…</span>
+            </div>
+          } @else if (errorMessage()) {
+            <div class="billing-page-c__state billing-page-c__state--error">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          } @else if (!hasPayments()) {
+            <div class="billing-page-c__empty">
+              <i class="fa-regular fa-file-lines"></i>
+              <h2>Henüz ödeme kaydınız yok</h2>
+              <p>Bir abonelik planı satın aldığınızda ödeme geçmişiniz burada listelenecek.</p>
+            </div>
+          } @else {
+            <div class="billing-page-c__summary">
+              <span>Toplam <strong>{{ totalCount() }}</strong> ödeme kaydı</span>
+            </div>
+
+            <div class="billing-page-c__list">
+              @for (payment of payments(); track payment.id) {
+                <app-payment-card [payment]="payment" />
+              }
+            </div>
+
+            <div class="billing-page-c__paginator">
+              <app-paginator
+                [page]="pageNumber()"
+                [total]="totalCount()"
+                [pageSize]="pageSize()"
+                (pageChange)="onPageChange($event)"
+              />
+            </div>
+          }
+
+        </section>
+
+      </div>
+    </div>
+  </div>
+</section>
